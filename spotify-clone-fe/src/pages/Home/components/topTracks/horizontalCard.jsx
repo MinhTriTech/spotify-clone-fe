@@ -1,41 +1,27 @@
-import React, { memo, useCallback, useEffect } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
 import TrackActionsWrapper from '../../../../components/Actions/TrackActions';
 
-import { useAppSelector } from '../../../../store/store';
 import tinycolor from 'tinycolor2';
 import useIsMobile from '../../../../utils/isMobile';
-import { getImageAnalysis2 } from '../../../../utils/imageAnyliser';
-import { playerService } from '../../../../services/player';
-import { EQUILISER_IMAGE } from '../../../../constants/spotify';
 
 export const HorizontalCard = memo(({ item, setColor }) => {
-  const currentSong = useAppSelector(
-    (state) => state.spotify.state?.track_window.current_track.id
-  );
-  const isPlaying = useAppSelector((state) => !state.spotify.state?.paused);
-  const isCurrent = currentSong === item.id;
-
   const isMobile = useIsMobile();
 
+  // MOCK: giả định không cần kiểm tra bài hát đang phát
+  const isCurrent = false;
+  const isPlaying = false;
+
+  // MOCK player service
   const onClick = useCallback(() => {
-    if (isCurrent) return;
-    playerService.startPlayback({ uris: [item.uri] });
-  }, [isCurrent, item.uri]);
+    console.log('Mock play:', item.uri);
+  }, [item.uri]);
 
-  useEffect(() => {
-    if (item) getImageAnalysis2(item.album.images[0].url).then();
-  }, [item]);
-
+  // MOCK màu ảnh
   const handleMouseEnter = () => {
-    getImageAnalysis2(item.album.images[0].url).then((r) => {
-      let color = tinycolor(r);
-      while (color.isLight()) {
-        color = color.darken(10);
-      }
-      setColor(color.toHexString());
-    });
+    const randomColor = tinycolor.random().darken(10).toHexString();
+    setColor?.(randomColor);
   };
 
   return (
@@ -69,7 +55,7 @@ export const HorizontalCard = memo(({ item, setColor }) => {
 
           <div className="button-container">
             {isCurrent && isPlaying && (
-              <img height={20} alt={item.name} src={EQUILISER_IMAGE} />
+              <img height={20} alt={item.name} src="/mock/equaliser.gif" />
             )}
             <PlayCircle size={15} isCurrent={isCurrent} context={{ uris: [item.uri] }} />
           </div>

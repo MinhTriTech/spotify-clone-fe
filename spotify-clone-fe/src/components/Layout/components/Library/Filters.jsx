@@ -1,52 +1,50 @@
-import { memo, useMemo } from 'react';
-
+import { memo, useMemo, useState } from 'react';
 import Chip from '../../../Chip';
 import { Dropdown, Flex, Space } from 'antd';
-import { CloseIcon2, GridIcon, OrderCompactIcon, OrderListIcon, SearchIcon } from '../../../Icons';
+import {
+  CloseIcon2,
+  GridIcon,
+  OrderCompactIcon,
+  OrderListIcon,
+  SearchIcon,
+} from '../../../Icons';
 
-// Utils
-import { useTranslation } from 'react-i18next';
-
-// Redux
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
-import { yourLibraryActions } from '../../../../store/slices/yourLibrary';
-
+const t = (s) => s;
 const VIEW = ['COMPACT', 'LIST', 'GRID'];
 
 const SearchSelector = memo(() => {
   return (
-    <button className='addButton'>
+    <button className="addButton">
       <SearchIcon style={{ height: '1rem' }} />
     </button>
   );
 });
 
 const ViewSelector = memo(() => {
-  const dispatch = useAppDispatch();
-  const [t] = useTranslation('navbar');
-  const view = useAppSelector((state) => state.yourLibrary.view);
+  const [view, setView] = useState('GRID');
 
-  const items = VIEW.map((view) => ({
-    key: view,
-    label: t(view),
+  const items = VIEW.map((v) => ({
+    key: v,
+    label: t(v),
     onClick: () => {
-      dispatch(yourLibraryActions.setView({ view }));
+      console.log('Mock setView:', v);
+      setView(v);
     },
   }));
 
   return (
     <Dropdown
-      placement='bottomRight'
-      className='viewSelector'
+      placement="bottomRight"
+      className="viewSelector"
       menu={{ items, selectedKeys: [view] }}
       trigger={['click']}
     >
-      <button className='order-button'>
-        <Space align='center'>
+      <button className="order-button">
+        <Space align="center">
           <span>{t(view)}</span>
-          {view === 'GRID' ? <GridIcon style={{ height: '1rem' }} /> : null}
-          {view === 'LIST' ? <OrderListIcon style={{ height: '1rem' }} /> : null}
-          {view === 'COMPACT' ? <OrderCompactIcon style={{ height: '1rem' }} /> : null}
+          {view === 'GRID' && <GridIcon style={{ height: '1rem' }} />}
+          {view === 'LIST' && <OrderListIcon style={{ height: '1rem' }} />}
+          {view === 'COMPACT' && <OrderCompactIcon style={{ height: '1rem' }} />}
         </Space>
       </button>
     </Dropdown>
@@ -55,7 +53,7 @@ const ViewSelector = memo(() => {
 
 export const SearchArea = () => {
   return (
-    <Flex align='center' justify='space-between' style={{ margin: '0px 10px', marginBottom: 10 }}>
+    <Flex align="center" justify="space-between" style={{ margin: '0px 10px', marginBottom: 10 }}>
       <SearchSelector />
       <ViewSelector />
     </Flex>
@@ -63,16 +61,16 @@ export const SearchArea = () => {
 };
 
 const TypeSelector = memo(() => {
-  const dispatch = useAppDispatch();
-  const [t] = useTranslation('navbar');
-  const filter = useAppSelector((state) => state.yourLibrary.filter);
+  const [filter, setFilter] = useState('ALL');
 
-  const hasAlbums = useAppSelector((state) => state.yourLibrary.myAlbums.length > 0);
-  const hasArtists = useAppSelector((state) => state.yourLibrary.myArtists.length > 0);
-  const hasPlaylists = useAppSelector((state) => state.yourLibrary.myPlaylists.length > 0);
+  // ✅ Mock dữ liệu thư viện
+  const hasAlbums = true;
+  const hasArtists = true;
+  const hasPlaylists = true;
 
-  const onClick = (filter) => {
-    dispatch(yourLibraryActions.setFilter({ filter }));
+  const onClick = (f) => {
+    console.log('Mock setFilter:', f);
+    setFilter(f);
   };
 
   const items = useMemo(() => {
@@ -87,9 +85,9 @@ const TypeSelector = memo(() => {
 
   return (
     <Space>
-      {filter !== 'ALL' ? (
-        <Chip key='close' text={<CloseIcon2 />} onClick={() => onClick('ALL')} />
-      ) : null}
+      {filter !== 'ALL' && (
+        <Chip key="close" text={<CloseIcon2 />} onClick={() => onClick('ALL')} />
+      )}
 
       {items.map(({ text, type }) => {
         if (filter === 'ALL' || type === filter) {

@@ -1,27 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// Services
-import { categoriesService } from '../../services/categories';
-
 const initialState = {
   category: null,
   playlists: [],
   loading: true,
 };
 
+// ✅ Mock fetchGenre
 export const fetchGenre = createAsyncThunk('genre/fetchGenre', async (id) => {
-  const promises = [
-    categoriesService.fetchCategory(id),
-    categoriesService.fetchCategoryPlaylists(id, { limit: 50 }),
-  ];
+  // ⚙️ Dữ liệu giả lập category
+  const mockCategory = {
+    id,
+    name: `Mock Category: ${id}`,
+    icons: [{ url: 'https://via.placeholder.com/150' }],
+  };
 
-  const responses = await Promise.all(promises);
-  const category = responses[0].data;
-  const {
-    playlists: { items },
-  } = responses[1].data;
+  // ⚙️ Dữ liệu giả lập danh sách playlist trong category
+  const mockPlaylists = Array.from({ length: 10 }, (_, i) => ({
+    id: `mock-playlist-${i + 1}`,
+    name: `Mock Playlist ${i + 1}`,
+    description: `Description for playlist ${i + 1}`,
+    images: [{ url: 'https://via.placeholder.com/300' }],
+    owner: { id: 'mock-owner', name: 'Mock Owner' },
+  }));
 
-  return [category, items];
+  return [mockCategory, mockPlaylists];
 });
 
 const genreSlice = createSlice({

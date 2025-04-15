@@ -14,8 +14,7 @@ import { Trending } from '../components/trending';
 import { FavouriteArtists } from '../components/favouriteArtists';
 import { YourPlaylists } from '../components/yourPlaylists';
 
-// Hooks & utils
-import { useAppSelector } from '../../../store/store';
+// Utils
 import useIsMobile from '../../../utils/isMobile';
 
 const HomePageContainer = memo(({ container }) => {
@@ -23,8 +22,10 @@ const HomePageContainer = memo(({ container }) => {
   const sectionContainerRef = useRef(null);
 
   const isMobile = useIsMobile();
-  const user = useAppSelector((state) => !!state.auth.user);
-  const section = useAppSelector((state) => state.home.section);
+
+  // MOCK cứng
+  const user = true;
+  const section = 'ALL';
 
   return (
     <div ref={sectionContainerRef}>

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Space } from 'antd';
 import Chip from '../../../../components/Chip';
 import { PageHeader } from '../../../../components/Layout/components/Header';
@@ -6,16 +6,10 @@ import { PageHeader } from '../../../../components/Layout/components/Header';
 // i18n
 import { useTranslation } from 'react-i18next';
 
-// Redux
-import { homeActions } from '../../../../store/slices/home';
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
-
 const SECTIONS = ['ALL', 'MUSIC', 'PODCASTS'];
 
-const ChipsSection = memo(() => {
-  const dispatch = useAppDispatch();
+const ChipsSection = memo(({ section, setSection }) => {
   const [t] = useTranslation(['home']);
-  const section = useAppSelector((state) => state.home.section);
 
   return (
     <Space style={{ marginLeft: 10, marginTop: 5, marginBottom: 5 }}>
@@ -24,7 +18,7 @@ const ChipsSection = memo(() => {
           key={item}
           text={t(item)}
           active={section === item}
-          onClick={() => dispatch(homeActions.setSection(item))}
+          onClick={() => setSection(item)}
         />
       ))}
     </Space>
@@ -32,7 +26,8 @@ const ChipsSection = memo(() => {
 });
 
 export const HomeHeader = ({ color, container, sectionContainer }) => {
-  const user = useAppSelector((state) => state.auth.user);
+  const [section, setSection] = useState('ALL'); // ✅ mock trạng thái lọc
+  const user = true; // ✅ giả lập có user
 
   // if (!user) return null;
 
@@ -43,7 +38,7 @@ export const HomeHeader = ({ color, container, sectionContainer }) => {
       container={container}
       sectionContainer={sectionContainer}
     >
-      <ChipsSection />
+      <ChipsSection section={section} setSection={setSection} />
     </PageHeader>
   );
 };

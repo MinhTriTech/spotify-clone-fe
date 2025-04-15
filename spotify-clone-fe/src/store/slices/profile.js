@@ -1,9 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// Services
-import { userService } from '../../services/users';
-import { playlistService } from '../../services/playlists';
-
 const initialState = {
   songs: [],
   user: null,
@@ -12,105 +8,63 @@ const initialState = {
   following: false,
 };
 
-const fetchMyArtists = createAsyncThunk(
-  'profile/fetchMyArtists',
-  async (_, api) => {
-    const response = await userService.fetchFollowedArtists({ limit: 50 });
-    return response.data.artists.items;
-  }
-);
+// 👉 MOCK generators
+const mockTrack = (i) => ({
+  id: `track-${i}`,
+  name: `Track ${i}`,
+  saved: false,
+});
 
-const fetchPlaylists = createAsyncThunk(
-  'profile/fetchMyPlaylists',
-  async (id, api) => {
-    const response = await playlistService.getPlaylists(id, { limit: 50 });
-    return response.data.items;
-  }
-);
+const mockArtist = (i) => ({
+  id: `artist-${i}`,
+  name: `Artist ${i}`,
+  images: [{ url: 'https://via.placeholder.com/200' }],
+});
 
-const fetchMyTracks = createAsyncThunk(
-  'profile/fetchMyTracks',
-  async (_, api) => {
-    const response = await userService.fetchTopTracks({
-      limit: 50,
-      timeRange: 'short_term',
-    });
-    const tracks = response.data.items;
+const mockPlaylist = (i) => ({
+  id: `playlist-${i}`,
+  name: `Playlist ${i}`,
+  public: true,
+  images: [{ url: 'https://via.placeholder.com/200' }],
+});
 
-    const saved = await userService
-      .checkSavedTracks(tracks.map((t) => t.id))
-      .then((res) => res.data);
+const mockUser = (id = 'mock-user') => ({
+  id,
+  display_name: 'Mock User',
+  images: [{ url: 'https://via.placeholder.com/300' }],
+});
 
-    return tracks.map((track, i) => {
-      return {
-        ...track,
-        saved: saved[i],
-      };
-    });
-  }
-);
+export const fetchMyArtists = createAsyncThunk('profile/fetchMyArtists', async () => {
+  return Array.from({ length: 5 }, (_, i) => mockArtist(i + 1));
+});
 
-const fetchCurrentUserData = createAsyncThunk(
-  'profile/fetchCurrentUserData',
-  async (_, api) => {
-    const promises = [
-      userService.fetchFollowedArtists({ limit: 10 }),
-      userService.fetchTopTracks({
-        limit: 10,
-        timeRange: 'short_term',
-      }),
-    ];
+export const fetchPlaylists = createAsyncThunk('profile/fetchMyPlaylists', async () => {
+  return Array.from({ length: 5 }, (_, i) => mockPlaylist(i + 1));
+});
 
-    const responses = await Promise.all(promises).then((res) => res.map((r) => r.data));
-    const [artistsResponse, tracksResponse] = responses;
+export const fetchMyTracks = createAsyncThunk('profile/fetchMyTracks', async () => {
+  return Array.from({ length: 5 }, (_, i) => ({
+    ...mockTrack(i + 1),
+    saved: Math.random() < 0.5,
+  }));
+});
 
-    const artists = artistsResponse.artists.items;
-    const tracks = tracksResponse.items;
+export const fetchCurrentUserData = createAsyncThunk('profile/fetchCurrentUserData', async () => {
+  const artists = Array.from({ length: 4 }, (_, i) => mockArtist(i + 1));
+  const tracks = Array.from({ length: 4 }, (_, i) => ({
+    ...mockTrack(i + 1),
+    saved: Math.random() < 0.5,
+  }));
+  return [artists, tracks];
+});
 
-    const saved = await userService
-      .checkSavedTracks(tracks.map((t) => t.id))
-      .then((res) => res.data);
+export const fetchUser = createAsyncThunk('profile/fetchUser', async (id) => {
+  const userData = mockUser(id);
+  const playlists = Array.from({ length: 5 }, (_, i) => mockPlaylist(i + 1));
+  const following = true;
 
-    const tracksWithSave = tracks.map((track, i) => {
-      return {
-        ...track,
-        saved: saved[i],
-      };
-    });
-
-    return [artists, tracksWithSave];
-  }
-);
-
-const fetchUser = createAsyncThunk(
-  'profile/fetchUser',
-  async (id, api) => {
-    const { auth } = api.getState();
-    const user = auth.user;
-
-    if (user && user.id === id) {
-      api.dispatch(fetchCurrentUserData());
-    }
-
-    const promises = [
-      userService.getUser(id),
-      playlistService.getPlaylists(id, { limit: 10 }),
-      user && user.id === id
-        ? userService.checkFollowingUsers([id]).catch(() => {
-            return { data: [true] };
-          })
-        : Promise.resolve({ data: [true] }),
-    ];
-    const responses = await Promise.all(promises);
-    const [userData, playlistsData, following] = responses;
-
-    return [
-      userData.data,
-      playlistsData.data.items,
-      following.data[0],
-    ];
-  }
-);
+  return [userData, playlists, following];
+});
 
 const profileSlice = createSlice({
   name: 'profile',
@@ -124,15 +78,11 @@ const profileSlice = createSlice({
       state.songs = [];
     },
     setLinkedStateForTrack: (state, action) => {
-      state.songs = state.songs.map((track) => {
-        if (track.id === action.payload.id) {
-          return {
-            ...track,
-            saved: action.payload.saved,
-          };
-        }
-        return track;
-      });
+      state.songs = state.songs.map((track) =>
+        track.id === action.payload.id
+          ? { ...track, saved: action.payload.saved }
+          : track
+      );
     },
   },
   extraReducers: (builder) => {

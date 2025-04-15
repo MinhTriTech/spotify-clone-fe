@@ -1,34 +1,16 @@
+// AddSongToLibraryButton (mocked, cleaned)
+import React from 'react';
 import { Tooltip } from '../Tooltip';
-import { useTranslation } from 'react-i18next';
-import { userService } from '../../services/users';
 import { AddedToLibrary, AddToLibrary } from '../Icons';
-import { message } from 'antd';
-import { useAppDispatch, useAppSelector } from '../../store/store';
-import { albumActions } from '../../store/slices/album';
-import { artistActions } from '../../store/slices/artist';
-import { playlistActions } from '../../store/slices/playlist';
-import { uiActions } from '../../store/slices/ui';
 
 const AddSongToLibrary = ({ id, size, onToggle }) => {
-  const { t } = useTranslation(['playlist']);
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
-
   const handleAddToLibrary = () => {
-    if (!user) {
-      console.warn('Không có token, nhưng vẫn cho load UI');
-    }
-    userService.saveTracks([id]).then(() => {
-      message.success(t('Song added to Liked Songs'));
-      onToggle();
-      dispatch(albumActions.updateTrackLikeState({ id: id, saved: true }));
-      dispatch(artistActions.setTopSongLikeState({ id: id, saved: true }));
-      dispatch(playlistActions.setTrackLikeState({ id: id, saved: true }));
-    });
+    console.log(`Mock add song ${id} to library`);
+    onToggle();
   };
 
   return (
-    <Tooltip title={t('Add to Liked Songs')}>
+    <Tooltip title={'Add to Liked Songs'}>
       <button className="actions" onClick={handleAddToLibrary}>
         <AddToLibrary height={size} width={size} />
       </button>
@@ -37,25 +19,13 @@ const AddSongToLibrary = ({ id, size, onToggle }) => {
 };
 
 const DeleteSongFromLibrary = ({ id, size, onToggle }) => {
-  const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
-
   const handleDeleteFromLibrary = () => {
-    if (!user) {
-      console.warn('Không có token, nhưng vẫn cho load UI');
-    }
-    userService.deleteTracks([id]).then(() => {
-      message.success(t('Song removed from Liked Songs'));
-      onToggle();
-      dispatch(albumActions.updateTrackLikeState({ id: id, saved: false }));
-      dispatch(artistActions.setTopSongLikeState({ id: id, saved: false }));
-      dispatch(playlistActions.setTrackLikeState({ id: id, saved: false }));
-    });
+    console.log(`Mock remove song ${id} from library`);
+    onToggle();
   };
 
   return (
-    <Tooltip title={t('Remove from Liked Songs')}>
+    <Tooltip title={'Remove from Liked Songs'}>
       <button onClick={handleDeleteFromLibrary}>
         <AddedToLibrary height={size} width={size} />
       </button>

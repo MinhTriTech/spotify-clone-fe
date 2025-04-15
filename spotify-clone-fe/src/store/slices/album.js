@@ -1,10 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// Services
-import { userService } from '../../services/users';
-import { albumsService } from '../../services/albums';
-import { artistService } from '../../services/artist';
-
 const initialState = {
   artist: null,
   tracks: [],
@@ -16,42 +11,44 @@ const initialState = {
   view: 'LIST',
 };
 
-export const fetchAlbum = createAsyncThunk(
-  'album/fetchAlbum',
-  async (id, { getState }) => {
-    const state = getState();
-    const user = state.auth.user;
+// ✅ Mock fetchAlbum
+export const fetchAlbum = createAsyncThunk('album/fetchAlbum', async (id) => {
+  // 👉 Giả lập dữ liệu album
+  const album = {
+    id,
+    name: 'Mock Album',
+    artists: [{ id: 'artist-1', name: 'Mock Artist' }],
+    images: [{ url: 'https://via.placeholder.com/300' }],
+    uri: `spotify:album:${id}`,
+  };
 
-    const promises = [
-      albumsService.fetchAlbum(id),
-      albumsService.fetchAlbumTracks(id, { limit: 50 }),
-      user ? userService.checkFollowingArtists([id]) : Promise.resolve({ data: [false] }),
-    ];
+  // 👉 Giả lập danh sách track
+  const tracks = Array.from({ length: 10 }, (_, i) => ({
+    id: `track-${i + 1}`,
+    name: `Track ${i + 1}`,
+    uri: `spotify:track:track-${i + 1}`,
+    saved: false,
+  }));
 
-    const responses = await Promise.all(promises);
-    const album = responses[0].data;
-    const { items } = responses[1].data;
-    const [following] = responses[2].data;
+  // 👉 Giả lập artist
+  const artist = {
+    id: 'artist-1',
+    name: 'Mock Artist',
+    images: [{ url: 'https://via.placeholder.com/300' }],
+  };
 
-    const extraPromises = [
-      userService.checkSavedTracks(items.map((item) => item.id)),
-      artistService.fetchArtist(album.artists[0].id),
-      artistService.fetchArtistAlbums(album.artists[0].id, { limit: 10 }),
-    ];
+  // 👉 Giả lập các album khác của artist
+  const otherAlbums = Array.from({ length: 5 }, (_, i) => ({
+    id: `other-album-${i + 1}`,
+    name: `Other Album ${i + 1}`,
+    images: [{ url: 'https://via.placeholder.com/300' }],
+  }));
 
-    const extraResponses = await Promise.all(extraPromises);
-    const saved = extraResponses[0].data;
-    const artist = extraResponses[1].data;
-    const albums = extraResponses[2].data.items;
+  // 👉 Giả lập người dùng không follow artist
+  const following = false;
 
-    const itemsWithSave = items.map((item, index) => ({
-      ...item,
-      saved: saved[index],
-    }));
-
-    return [album, itemsWithSave, following, artist, albums];
-  }
-);
+  return [album, tracks, following, artist, otherAlbums];
+});
 
 const albumSlice = createSlice({
   name: 'album',
@@ -93,8 +90,8 @@ const albumSlice = createSlice({
     builder.addCase(fetchAlbum.fulfilled, (state, action) => {
       state.album = action.payload[0];
       state.tracks = action.payload[1];
-      state.artist = action.payload[3];
       state.following = action.payload[2];
+      state.artist = action.payload[3];
       state.otherAlbums = action.payload[4];
       state.loading = false;
     });

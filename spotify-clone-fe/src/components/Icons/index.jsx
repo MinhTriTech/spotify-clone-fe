@@ -198,6 +198,22 @@ export const ActiveHomeIcon = (props) => {
   );
 };
 
+export const ActiveMessageIcon = () => (
+  <svg
+    data-encore-id="icon"
+    role="img"
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="#fff"
+  >
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
+
+
 export const BrowseIcon = (props) => {
   return (
     <svg
@@ -235,6 +251,26 @@ export const HomeIcon = (props) => {
   </svg>
   );
 };
+
+export const MessageIcon = () => (
+  <svg
+    data-encore-id="icon"
+    role="img"
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="none"
+    stroke="#b3b3b3"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
+
 
 export const SearchIcon = (props) => {
   return (

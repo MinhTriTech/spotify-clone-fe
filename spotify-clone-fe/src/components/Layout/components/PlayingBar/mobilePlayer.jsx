@@ -1,61 +1,67 @@
-import SongDetails from './SongDetails';
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
+// Cleaned NowPlayingBarMobile component for frontend-only usage
+import { useEffect, useState } from 'react';
 import { Col, Row } from 'antd';
 import { ListIcon, Pause, Play } from '../../../Icons';
-
-// Redux
-import { playerService } from '../../../../services/player';
-import { useEffect, useState } from 'react';
-import { getImageAnalysis2 } from '../../../../utils/imageAnyliser';
-import { uiActions } from '../../../../store/slices/ui';
 import tinycolor from 'tinycolor2';
+import SongDetails from './SongDetails';
 import AddSongToLibraryButton from '../../../Actions/AddSongToLibrary';
-import { spotifyActions } from '../../../../store/slices/spotify';
 
-const PlayButton = () => {
-  const paused = useAppSelector((state) => state.spotify.state?.paused);
+const PlayButton = ({ isPlaying, togglePlay }) => {
   return (
-    <button
-      onClick={() => (!paused ? playerService.pausePlayback() : playerService.startPlayback())}
-    >
-      {paused ? <Play /> : <Pause />}
+    <button onClick={togglePlay}>
+      {isPlaying ? <Pause /> : <Play />}
     </button>
   );
 };
 
 const QueueButton = () => {
-  const dispatch = useAppDispatch();
   return (
-    <button onClick={() => dispatch(uiActions.toggleQueue())}>
+    <button onClick={() => console.log('Toggle queue')}>
       <ListIcon />
     </button>
   );
 };
 
 const NowPlayingBarMobile = () => {
-  const dispatch = useAppDispatch();
-  const position = useAppSelector((state) => state.spotify.state?.position || 0);
-  const duration = useAppSelector((state) => state.spotify.state?.duration || 1);
-  const currentSong = useAppSelector(
-    (state) => state.spotify.state?.track_window.current_track,
-    (a, b) => a?.id === b?.id
-  );
-  const liked = useAppSelector((state) => state.spotify.liked);
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(240000); // mock 4 min
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [liked, setLiked] = useState(false);
   const [currentColor, setColor] = useState('blue');
+
+  const currentSong = {
+    id: 'mock-song-id',
+    album: {
+      images: [
+        {
+          url: 'https://via.placeholder.com/150',
+        },
+      ],
+    },
+  };
+
+  useEffect(() => {
+    let interval = setInterval(() => {
+      if (isPlaying) {
+        setPosition((prev) => {
+          const next = prev + 1000;
+          return next >= duration ? 0 : next;
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isPlaying, duration]);
 
   useEffect(() => {
     if (currentSong) {
-      getImageAnalysis2(currentSong.album.images[0].url).then((r) => {
-        let color = tinycolor(r);
-        while (color.isLight()) {
-          color = color.darken(10);
-        }
-        setColor(color.toHexString());
-      });
+      const r = '#1db954';
+      let color = tinycolor(r);
+      while (color.isLight()) {
+        color = color.darken(10);
+      }
+      setColor(color.toHexString());
     }
   }, [currentSong]);
-
-  if (!currentSong) return <div></div>;
 
   return (
     <div>
@@ -83,20 +89,16 @@ const NowPlayingBarMobile = () => {
                 size={17}
                 isSaved={liked}
                 id={currentSong?.id}
-                onToggle={() => {
-                  dispatch(spotifyActions.setLiked({ liked: !liked }));
-                }}
+                onToggle={() => setLiked(!liked)}
               />
-              <PlayButton />
+              <PlayButton isPlaying={isPlaying} togglePlay={() => setIsPlaying(!isPlaying)} />
             </div>
           </Col>
         </Row>
         <div className='time-line'>
           <div
             className='current-time'
-            style={{
-              width: `${(position / duration) * 100}%`,
-            }}
+            style={{ width: `${(position / duration) * 100}%` }}
           ></div>
         </div>
       </div>

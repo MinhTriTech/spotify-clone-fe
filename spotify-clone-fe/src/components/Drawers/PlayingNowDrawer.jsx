@@ -4,10 +4,6 @@ import { memo, useLayoutEffect, useState } from 'react';
 import { Drawer } from 'antd';
 import PlayingNow from '../Layout/components/NowPlaying';
 
-// Redux
-import { useAppSelector } from '../../store/store';
-import { isRightLayoutOpen } from '../../store/slices/ui';
-
 function useWindowSize() {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -24,13 +20,14 @@ function useWindowSize() {
 export const PlayingNowDrawer = memo(() => {
   const [width] = useWindowSize();
 
-  const open = useAppSelector(isRightLayoutOpen);
+  // ✅ MOCK trạng thái mở drawer
+  const open = true; // ← đổi thành false nếu bạn muốn ẩn nó
 
   if (width > 900) return null;
 
   return (
-    <div className='playing-now-drawer'>
-      <Drawer open={open}>
+    <div className="playing-now-drawer">
+      <Drawer open={open} onClose={() => {}} placement="right">
         <PlayingNow />
       </Drawer>
     </div>

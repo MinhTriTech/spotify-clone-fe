@@ -1,33 +1,21 @@
-// Components
+import { memo } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { getLibraryCollapsed, uiActions } from '../../../../store/slices/ui';
+
 import { AddPlaylistButton } from './AddPlaylistButton';
 import { CloseIcon, LibraryCollapsedIcon, LibraryIcon } from '../../../Icons';
-
-// Utils
-import { memo } from 'react';
-
-// Components
 import { Flex, Space } from 'antd';
 import { Tooltip } from '../../../Tooltip';
 
-// I18n
-import { useTranslation } from 'react-i18next';
-
-// Redux
-import { getLibraryCollapsed, uiActions } from '../../../../store/slices/ui';
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
-
 const isMobile = window.innerWidth < 900;
+const t = (x) => x;
 
 const CloseButton = () => {
   const dispatch = useAppDispatch();
 
   return (
-    <div className='playing-section-close-button'>
-      <button
-        onClick={() => {
-          dispatch(uiActions.collapseLibrary());
-        }}
-      >
+    <div className="playing-section-close-button">
+      <button onClick={() => dispatch(uiActions.collapseLibrary())}>
         <CloseIcon />
       </button>
     </div>
@@ -36,18 +24,21 @@ const CloseButton = () => {
 
 export const LibraryTitle = memo(() => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation(['navbar']);
   const collapsed = useAppSelector(getLibraryCollapsed);
+
+  const toggleLibrary = () => {
+    dispatch(uiActions.toggleLibrary());
+  };
 
   if (collapsed) {
     return (
-      <Tooltip placement='right' title={t('Expand your library')}>
+      <Tooltip placement="right" title={t('Expand your library')}>
         <button
           style={{
             display: 'flex',
             justifyContent: 'center',
           }}
-          onClick={() => dispatch(uiActions.toggleLibrary())}
+          onClick={toggleLibrary}
         >
           <LibraryCollapsedIcon />
         </button>
@@ -56,14 +47,14 @@ export const LibraryTitle = memo(() => {
   }
 
   return (
-    <Flex align='center' justify='space-between'>
-      <Space wrap align='center'>
-        <Tooltip placement='top' title={t('Collapse your library')}>
-          <button onClick={() => dispatch(uiActions.toggleLibrary())}>
+    <Flex align="center" justify="space-between">
+      <Space wrap align="center">
+        <Tooltip placement="top" title={t('Collapse your library')}>
+          <button onClick={toggleLibrary}>
             <LibraryIcon />
           </button>
         </Tooltip>
-        <span className='Navigation-button'>{t('Your Library')}</span>
+        <span className="Navigation-button">{t('Your Library')}</span>
       </Space>
 
       {isMobile ? <CloseButton /> : <AddPlaylistButton />}

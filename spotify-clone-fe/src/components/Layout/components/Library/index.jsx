@@ -1,20 +1,15 @@
 import React, { useEffect } from 'react';
 import YourLibrary from './list';
 
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
-import { yourLibraryActions } from '../../../../store/slices/yourLibrary';
-
 export const Library = () => {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
+  const user = true; // ✅ mock trạng thái đăng nhập
 
   useEffect(() => {
     if (user) {
-      dispatch(yourLibraryActions.fetchMyAlbums());
-      dispatch(yourLibraryActions.fetchMyArtists());
-      dispatch(yourLibraryActions.fetchMyPlaylists());
+      console.log('Mock fetch: albums, artists, playlists');
+      // Không cần dispatch thật
     }
-  }, [user, dispatch]);
+  }, [user]);
 
   return (
     <div style={{ height: '100%' }}>

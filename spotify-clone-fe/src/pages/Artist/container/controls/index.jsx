@@ -9,27 +9,26 @@ import { ArtistActionsWrapper } from '../../../../components/Actions/ArtistActio
 import { useTranslation } from 'react-i18next';
 
 // Interfaces
-import type { FC } from 'react';
 import { useAppSelector } from '../../../../store/store';
 
-export const ArtistControls: FC = () => {
+const ArtistControls = () => {
   const [tor] = useTranslation(['order']);
   const artist = useAppSelector((state) => state.artist.artist);
 
   return (
-    <div className='playlist-controls'>
-      <Row justify='space-between' align='middle'>
+    <div className="playlist-controls">
+      <Row justify="space-between" align="middle">
         <Col>
-          <Space align='center'>
+          <Space align="center">
             <PlayCircleButton />
 
             <div style={{ marginRight: 10 }}>
-              <FollowArtistButton id={artist!.id} />
+              <FollowArtistButton id={artist?.id} />
             </div>
 
-            <ArtistActionsWrapper artist={artist!} trigger={['click']}>
+            <ArtistActionsWrapper artist={artist} trigger={['click']}>
               <Tooltip title={`${tor('More options for')} ${artist?.name}`}>
-                <div className='scale'>
+                <div className="scale">
                   <MenuDots />
                 </div>
               </Tooltip>
@@ -40,3 +39,5 @@ export const ArtistControls: FC = () => {
     </div>
   );
 };
+
+export default ArtistControls;

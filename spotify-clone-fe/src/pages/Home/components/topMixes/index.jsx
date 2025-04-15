@@ -1,14 +1,42 @@
 import React, { useMemo } from 'react';
 import { GridItemList } from '../../../../components/Lists/list';
-
-import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../store/store';
 import { getPlaylistDescription } from '../../../../utils/getDescription';
 import { MADE_FOR_YOU_URI } from '../../../../constants/spotify';
+import { useTranslation } from 'react-i18next';
 
 export const TopMixes = () => {
   const { t } = useTranslation(['home']);
-  const madeForYou = useAppSelector((state) => state.home.madeForYou);
+
+  // ✅ Dữ liệu mock thay vì useAppSelector
+  const madeForYou = [
+    {
+      id: 'mix1',
+      name: 'Focus Mix',
+      description: 'Stay in the zone with curated tracks.',
+      type: 'playlist',
+      uri: 'spotify:playlist:focusmix',
+      images: [{ url: 'https://via.placeholder.com/300' }],
+      owner: { display_name: 'Spotify' },
+    },
+    {
+      id: 'mix2',
+      name: 'Workout Mix',
+      description: 'High-intensity music for your gym session.',
+      type: 'playlist',
+      uri: 'spotify:playlist:workoutmix',
+      images: [{ url: 'https://via.placeholder.com/300' }],
+      owner: { display_name: 'Spotify' },
+    },
+    {
+      id: 'mix3',
+      name: 'Chill Mix',
+      description: 'Easy-going songs to relax.',
+      type: 'playlist',
+      uri: 'spotify:playlist:chillmix',
+      images: [{ url: 'https://via.placeholder.com/300' }],
+      owner: { display_name: 'Spotify' },
+    },
+  ];
 
   const items = useMemo(() => {
     return madeForYou

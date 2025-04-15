@@ -1,7 +1,7 @@
 import { ArtistsCard } from './card';
 import { useAppSelector } from '../../../../../store/store';
 import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
-import { FollowArtistButton } from '../../../../../pages/Artist/container/controls/followButton';
+import FollowArtistButton from '../../../../../pages/Artist/container/controls/followButton';
 import { useTranslation } from 'react-i18next';
 
 export const Artist = () => {

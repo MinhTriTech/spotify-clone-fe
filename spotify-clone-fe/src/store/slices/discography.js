@@ -1,76 +1,86 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-// Services
-import { artistService } from '../../services/artist';
-
-// Initial state with default values
 const initialState = {
   artist: null,
-  filter: 'All',
-  loading: true,
-  albums: [],
-  singles: [],
-  compilations: [],
+  album: null,
+  playlist: null,
+  myAlbums: [],
+  myArtists: [],
+  myPlaylists: [],
+  search: '',
+  view: 'LIST',
+  filter: 'ALL',
+  orderBy: 'default',
+  discography: {
+    artist: null,
+    filter: 'All',
+    loading: true,
+    albums: [],
+    singles: [],
+    compilations: [],
+  },
 };
 
-// Asynchronous action to fetch artist data and albums
-const fetchData = createAsyncThunk(
-  'discography/fetchData',
-  async (id) => {
-    const promises = [
-      artistService.fetchArtist(id),
-      artistService.fetchArtistAlbums(id, { limit: 50, include_groups: 'album' }),
-      artistService.fetchArtistAlbums(id, { limit: 50, include_groups: 'single' }),
-      artistService.fetchArtistAlbums(id, { limit: 50, include_groups: 'compilation' }),
-    ];
-
-    const responses = await Promise.all(promises);
-
-    const artist = responses[0].data;
-    const albums = responses[1].data.items;
-    const singles = responses[2].data.items;
-    const compilations = responses[3].data.items;
-
-    return [artist, [albums, singles, compilations]];
-  }
-);
-
-const artistDiscographySlice = createSlice({
-  name: 'discography',
+const playingNowSlice = createSlice({
+  name: 'playingNow',
   initialState,
   reducers: {
-    setArtist(state, action) {
-      state.artist = action.payload.artist;
-      if (!action.payload.artist) {
-        state.albums = [];
-        state.singles = [];
-        state.compilations = [];
-        state.loading = true;
-        state.artist = null;
-      }
+    setArtist: (state, action) => {
+      state.artist = action.payload;
     },
-    setFilter(state, action) {
-      state.filter = action.payload.filter;
+    setAlbum: (state, action) => {
+      state.album = action.payload;
+      state.playlist = null;
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(fetchData.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(fetchData.fulfilled, (state, action) => {
-      state.artist = action.payload[0];
-      state.albums = action.payload[1][0];
-      state.singles = action.payload[1][1];
-      state.compilations = action.payload[1][2];
-      state.loading = false;
-    });
+    setPlaylist: (state, action) => {
+      state.playlist = action.payload;
+      state.album = null;
+    },
+    setLibrarySearch: (state, action) => {
+      state.search = action.payload;
+    },
+    setLibraryView: (state, action) => {
+      state.view = action.payload;
+    },
+    setLibraryFilter: (state, action) => {
+      state.filter = action.payload;
+    },
+    setLibraryOrderBy: (state, action) => {
+      state.orderBy = action.payload;
+    },
+    setMyAlbums: (state, action) => {
+      state.myAlbums = action.payload;
+    },
+    setMyArtists: (state, action) => {
+      state.myArtists = action.payload;
+    },
+    setMyPlaylists: (state, action) => {
+      state.myPlaylists = action.payload;
+    },
+    // Discography-specific reducers
+    setDiscographyArtist: (state, action) => {
+      state.discography.artist = action.payload;
+    },
+    setDiscographyFilter: (state, action) => {
+      state.discography.filter = action.payload;
+    },
+    setDiscographyLoading: (state, action) => {
+      state.discography.loading = action.payload;
+    },
+    setDiscographyAlbums: (state, action) => {
+      state.discography.albums = action.payload;
+    },
+    setDiscographySingles: (state, action) => {
+      state.discography.singles = action.payload;
+    },
+    setDiscographyCompilations: (state, action) => {
+      state.discography.compilations = action.payload;
+    },
   },
 });
 
-// Exporting actions and reducer for use in the store
-export const artistDiscographyActions = {
-  fetchData,
-  ...artistDiscographySlice.actions,
+export const playingNowActions = {
+  ...playingNowSlice.actions,
 };
 
-export default artistDiscographySlice.reducer;
+export default playingNowSlice.reducer;

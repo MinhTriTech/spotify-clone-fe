@@ -1,19 +1,16 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Modal } from 'antd';
 
 // Constants
 import { AVAILABLE_LANGUAGES } from '../../constants/languages';
 
-// Redux
-import { languageActions } from '../../store/slices/language';
-import { useAppDispatch, useAppSelector } from '../../store/store';
-
 const LanguageModal = memo(() => {
-  const dispatch = useAppDispatch();
-  const open = useAppSelector((state) => state.language.isModalOpen);
+  // MOCK trạng thái modal mở / đóng
+  const [open, setOpen] = useState(false); // bạn có thể đổi thành true để test
 
   const onClose = (value) => {
-    dispatch(languageActions.closeLanguageModal({ language: value }));
+    console.log('Selected language:', value || 'No change');
+    setOpen(false); // Đóng modal
   };
 
   return (

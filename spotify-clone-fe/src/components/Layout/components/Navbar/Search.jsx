@@ -1,6 +1,6 @@
 import { Input, Space } from 'antd';
 import NavigationButton from './NavigationButton';
-import { ActiveHomeIcon, BrowseIcon, HomeIcon, SearchIcon } from '../../../Icons';
+import { ActiveMessageIcon, ActiveHomeIcon, BrowseIcon, HomeIcon, MessageIcon, SearchIcon } from '../../../Icons';
 
 // Utils
 import { useTranslation } from 'react-i18next';
@@ -42,6 +42,12 @@ export const Search = memo(() => {
       <NavigationButton
         text={t('Home')}
         icon={isHome ? <ActiveHomeIcon /> : <HomeIcon />}
+        onClick={() => navigate('/')}
+      />
+
+      <NavigationButton
+        text={t('Message')}
+        icon={isHome ? <ActiveMessageIcon /> : <MessageIcon />}
         onClick={() => navigate('/')}
       />
 

@@ -1,50 +1,39 @@
-import { memo, useMemo } from 'react';
+// Cleaned QueueSongDetails component without Redux or service dependencies
+import { memo, useMemo, useState } from 'react';
 import { Pause, Play } from '../../../../Icons';
-import { useAppSelector } from '../../../../../store/store';
-import { playerService } from '../../../../../services/player';
 import useIsMobile from '../../../../../utils/isMobile';
 
-const QueueSongDetails = memo(({ song, isPlaying }) => {
+const QueueSongDetails = memo(({ song, isPlayingInitial = false }) => {
   const isMobile = useIsMobile();
-  const queue = useAppSelector((state) => state.queue.queue);
-  const isPaused = useAppSelector((state) => state.spotify.state?.paused);
+  const [isPlaying, setIsPlaying] = useState(isPlayingInitial);
+  const [isPaused, setIsPaused] = useState(false);
 
   const onClick = async () => {
     if (!isPaused && isPlaying) {
-      return playerService.pausePlayback();
-    }
-    if (isPlaying) {
-      return playerService.startPlayback();
+      setIsPaused(true);
+      setIsPlaying(false);
+    } else if (isPlaying) {
+      setIsPaused(false);
+      setIsPlaying(true);
     } else {
-      const index = queue.findIndex((q) => q.id === song.id);
-      return playerService.startPlayback({ uris: queue.slice(index).map((q_1) => q_1.uri) });
+      setIsPaused(false);
+      setIsPlaying(true);
     }
   };
 
   const image = useMemo(() => {
-    if (song.type === 'track') {
-      return song.album.images[0].url;
-    }
-
-    if (song.type === 'episode') {
-      return song.images[0].url;
-    }
-
+    if (song.type === 'track') return song.album.images[0].url;
+    if (song.type === 'episode') return song.images[0].url;
     return '';
   }, [song]);
 
   const artists = useMemo(() => {
     if (song.type === 'track') {
-      return song.artists
-        .slice(0, 3)
-        .map((a) => a.name)
-        .join(', ');
+      return song.artists.slice(0, 3).map((a) => a.name).join(', ');
     }
-
     if (song.type === 'episode') {
       return song.show.publisher;
     }
-
     return '';
   }, [song]);
 

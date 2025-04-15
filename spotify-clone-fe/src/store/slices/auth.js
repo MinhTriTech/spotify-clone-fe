@@ -2,10 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 // Utils
 import axios from '../../axios';
-// import login from '../../utils/spotify/login'; // ❌ Gỡ hoàn toàn
-
-// Services
-import { authService } from '../../services/auth';
 import { getFromLocalStorageWithExpiry } from '../../utils/localstorage';
 
 const initialState = {
@@ -15,30 +11,35 @@ const initialState = {
   token: getFromLocalStorageWithExpiry('access_token') || undefined,
 };
 
+// 👉 Đăng nhập mock (giữ token nếu có, không gọi BE)
 export const loginToSpotify = createAsyncThunk(
   'auth/loginToSpotify',
   async (_anonymous, api) => {
     const userToken = getFromLocalStorageWithExpiry('access_token');
     const anonymousToken = getFromLocalStorageWithExpiry('public_access_token');
-
     let token = userToken || anonymousToken;
 
     if (token) {
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+
+      // 👉 Gọi fetchUser nếu có userToken
       if (userToken) api.dispatch(fetchUser());
       return { token, loaded: false };
     }
 
-    // Không gọi login nữa – giữ hệ thống ở trạng thái "không đăng nhập"
     console.warn('Spotify login bị vô hiệu hóa. Đang chạy không cần token.');
-
     return { token: null, loaded: false };
   }
 );
 
+// ❌ Không gọi authService.fetchUser nữa → mock user luôn
 export const fetchUser = createAsyncThunk('auth/fetchUser', async () => {
-  const response = await authService.fetchUser();
-  return response.data;
+  // Mock dữ liệu user giả định
+  return {
+    id: 'mock-user-123',
+    display_name: 'Guest User',
+    email: 'guest@example.com',
+  };
 });
 
 const authSlice = createSlice({
@@ -67,6 +68,10 @@ const authSlice = createSlice({
   },
 });
 
-export const authActions = { ...authSlice.actions, loginToSpotify, fetchUser };
+export const authActions = {
+  ...authSlice.actions,
+  loginToSpotify,
+  fetchUser,
+};
 
 export default authSlice.reducer;

@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { memo } from 'react';
 
 import { ArtistControls } from './controls';
 import { AppearsOn } from '../components/appearsOn';
@@ -6,15 +6,12 @@ import { Discography } from '../components/discography';
 import { ArtistTopTracks } from '../components/topTracks';
 import { OtherArtists } from '../components/otherArtists';
 
-export const ArtistContent: FC<{
-  color: string;
-}> = memo((props) => {
+const ArtistContent = ({ color }) => {
   return (
     <div
-      className='artist-page-content'
+      className="artist-page-content"
       style={{
-        // @ts-ignore
-        '--background-base': props.color,
+        '--background-base': color,
       }}
     >
       <div style={{ margin: 20, paddingTop: 30, paddingBottom: 30 }}>
@@ -30,8 +27,8 @@ export const ArtistContent: FC<{
       </div>
     </div>
   );
-});
+};
 
 ArtistContent.displayName = 'GenreContent';
 
-export default ArtistContent;
+export default memo(ArtistContent);

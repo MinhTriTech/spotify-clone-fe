@@ -2,27 +2,20 @@ import { memo, useCallback, useMemo } from 'react';
 import { Dropdown, message } from 'antd';
 import { AddToQueueIcon, AddedToLibrary, AddToLibrary, AddToPlaylist } from '../Icons';
 
-// Services
-import { playerService } from '../../services/player';
-import { albumsService } from '../../services/albums';
-import { playlistService } from '../../services/playlists';
-
 // Utils
 import { useTranslation } from 'react-i18next';
-
-// Redux
-import { useAppDispatch, useAppSelector } from '../../store/store';
-import { fetchQueue } from '../../store/slices/queue';
-import { fetchMyPlaylists, yourLibraryActions } from '../../store/slices/yourLibrary';
-import { uiActions } from '../../store/slices/ui';
 
 const AlbumActionsWrapper = memo((props) => {
   const { children, album } = props;
   const { t } = useTranslation(['playlist']);
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user?.id);
-  const myAlbums = useAppSelector((state) => state.yourLibrary.myAlbums);
-  const myPlaylists = useAppSelector((state) => state.yourLibrary.myPlaylists);
+
+  // ✅ MOCK DATA
+  const user = 'mock-user-id';
+  const myAlbums = [{ id: '1' }, { id: album.id }];
+  const myPlaylists = [
+    { id: '101', name: 'Chill Mix', snapshot_id: 'abc123' },
+    { id: '102', name: 'Workout', snapshot_id: 'xyz789' },
+  ];
 
   const inLibrary = useMemo(() => {
     return myAlbums.some((p) => p.id === album.id);
@@ -31,55 +24,38 @@ const AlbumActionsWrapper = memo((props) => {
   const handleUserValidation = useCallback(
     (button) => {
       if (!user) {
-        console.warn('Không có token, nhưng vẫn cho load UI');
+        console.warn('Mock: Không có token – mở login UI nếu cần');
       }
       return true;
     },
-    [dispatch, user]
+    [user]
   );
 
   const options = useMemo(() => {
-    const items = myPlaylists.map((p) => {
-      return {
-        key: p.id,
-        label: p.name,
-        onClick: async () => {
-          if (!handleUserValidation()) return;
-          const { data: { items: tracks } } = await albumsService.fetchAlbumTracks(album.id);
-          const uris = tracks.map((t) => t.uri);
-          playlistService.addPlaylistItems(p.id, uris, p.snapshot_id).then(() => {
-            message.open({
-              type: 'success',
-              content: t('Added to playlist'),
-            });
-          });
-        },
-      };
-    });
+    const items = myPlaylists.map((p) => ({
+      key: p.id,
+      label: p.name,
+      onClick: async () => {
+        if (!handleUserValidation()) return;
+        console.log(`Mock: add album ${album.id} to playlist ${p.id}`);
+        message.success(t('Added to playlist'));
+      },
+    }));
 
-    if (myPlaylists.length) {
-      items.unshift({ type: 'divider' });
-    }
+    if (myPlaylists.length) items.unshift({ type: 'divider' });
 
     items.unshift({
       label: t('New playlist'),
       key: 'new',
       onClick: async () => {
         if (!handleUserValidation()) return;
-        const { data: { items: tracks } } = await albumsService.fetchAlbumTracks(album.id);
-        const uris = tracks.map((t) => t.uri);
-        return playlistService.createPlaylist(user, { name: album.name }).then((response) => {
-          const playlist = response.data;
-          playlistService.addPlaylistItems(playlist.id, uris, playlist.snapshot_id).then(() => {
-            dispatch(fetchMyPlaylists());
-            message.success(t('Added to playlist'));
-          });
-        });
+        console.log(`Mock: create playlist from album ${album.id}`);
+        message.success(t('Added to playlist'));
       },
     });
 
     return items;
-  }, [myPlaylists, t, handleUserValidation, album.id, album.name, user, dispatch]);
+  }, [album.id, myPlaylists, t, handleUserValidation]);
 
   const items = useMemo(() => {
     const items = [];
@@ -91,13 +67,8 @@ const AlbumActionsWrapper = memo((props) => {
         icon: <AddedToLibrary style={{ height: 16, width: 16, marginInlineEnd: 0 }} />,
         onClick: () => {
           if (!handleUserValidation(true)) return;
-          albumsService.deleteAlbums([album.id]).then(() => {
-            dispatch(yourLibraryActions.fetchMyAlbums());
-            message.open({
-              type: 'success',
-              content: t('Removed from Your Library'),
-            });
-          });
+          console.log(`Mock: removed album ${album.id} from library`);
+          message.success(t('Removed from Your Library'));
         },
       });
     } else {
@@ -107,13 +78,8 @@ const AlbumActionsWrapper = memo((props) => {
         icon: <AddToLibrary style={{ height: 16, width: 16, marginInlineEnd: 0 }} />,
         onClick: () => {
           if (!handleUserValidation(true)) return;
-          albumsService.saveAlbums([album.id]).then(() => {
-            dispatch(yourLibraryActions.fetchMyAlbums());
-            message.open({
-              type: 'success',
-              content: t('Saved to Your Library'),
-            });
-          });
+          console.log(`Mock: added album ${album.id} to library`);
+          message.success(t('Saved to Your Library'));
         },
       });
     }
@@ -126,13 +92,8 @@ const AlbumActionsWrapper = memo((props) => {
         icon: <AddToQueueIcon />,
         onClick: () => {
           if (!handleUserValidation()) return;
-          playerService.addToQueue(album.uri).then(() => {
-            dispatch(fetchQueue());
-            message.open({
-              type: 'success',
-              content: t('Added to queue'),
-            });
-          });
+          console.log(`Mock: added album ${album.uri} to queue`);
+          message.success(t('Added to queue'));
         },
       },
       { type: 'divider' },
@@ -145,7 +106,7 @@ const AlbumActionsWrapper = memo((props) => {
     );
 
     return items;
-  }, [album.id, album.uri, dispatch, handleUserValidation, inLibrary, options, t]);
+  }, [album.id, album.uri, inLibrary, handleUserValidation, options, t]);
 
   return (
     <Dropdown menu={{ items }} trigger={props.trigger}>

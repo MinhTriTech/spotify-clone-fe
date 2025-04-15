@@ -1,9 +1,5 @@
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
-// Services
-import { userService } from '../../services/users';
-import { playerService } from '../../services/player';
-
 const initialState = {
   state: null,
   deviceId: null,
@@ -14,35 +10,9 @@ const initialState = {
   activeDeviceType: 'Computer',
 };
 
-export const setState = createAsyncThunk(
-  'spotify/setState',
-  async ({ state: spotifyState }, { getState, dispatch }) => {
-    if (!spotifyState) return null;
-    const state = getState();
-    const currentSong = spotifyState?.track_window.current_track;
-
-    if (currentSong?.id !== state.spotify.state?.track_window.current_track.id) {
-      const playing = !spotifyState.paused;
-      const song = spotifyState.track_window.current_track;
-      document.title =
-        song && playing ? `${song.name} • ${song.artists[0].name}` : 'Spotify Web Player';
-      if (currentSong) dispatch(fetchLikedSong(currentSong.id));
-    }
-    return spotifyState;
-  }
-);
-
-export const fetchLikedSong = createAsyncThunk(
-  'spotify/fetchLikedSong',
-  async (id) => {
-    const liked = await userService.checkSavedTracks([id]);
-    return liked.data[0];
-  }
-);
-
+// Placeholder thunk to simulate device fetching
 export const fetchDevices = createAsyncThunk('spotify/fetchDevices', async () => {
-  const response = await playerService.getAvailableDevices();
-  return response.devices;
+  return [];
 });
 
 const spotifySlice = createSlice({
@@ -62,14 +32,11 @@ const spotifySlice = createSlice({
       state.activeDevice = action.payload.activeDevice;
       state.activeDeviceType = action.payload.type || 'Computer';
     },
+    setState(state, action) {
+      state.state = action.payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(setState.fulfilled, (state, action) => {
-      state.state = action.payload;
-    });
-    builder.addCase(fetchLikedSong.fulfilled, (state, action) => {
-      state.liked = action.payload;
-    });
     builder.addCase(fetchDevices.fulfilled, (state, action) => {
       state.devices = action.payload;
     });
@@ -97,6 +64,6 @@ export const getOtherDevices = createSelector(
   }
 );
 
-export const spotifyActions = { ...spotifySlice.actions, setState, fetchDevices };
+export const spotifyActions = { ...spotifySlice.actions, fetchDevices };
 
 export default spotifySlice.reducer;

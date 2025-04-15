@@ -1,35 +1,12 @@
+// Cleaned DeviceItem component for frontend-only use
 import { memo, useCallback } from 'react';
 import { DeviceIcons } from '../../../../../../utils/spotify/getDeviceIcon';
 
-// Services
-import { playerService } from '../../../../../../services/player';
-
-// Utils
-import { message } from 'antd';
-import { useTranslation } from 'react-i18next';
-
-// Redux
-import { useAppDispatch } from '../../../../../../store/store';
-import { spotifyActions } from '../../../../../../store/slices/spotify';
-import { uiActions } from '../../../../../../store/slices/ui';
-
-
 export const DeviceItem = memo(({ device }) => {
-  const [t] = useTranslation(['playingBar']);
-  const dispatch = useAppDispatch();
-
-  const onClick = useCallback(async () => {
+  const onClick = useCallback(() => {
     if (device.is_restricted) return;
-
-    try {
-      await playerService.transferPlayback(device.id);
-      dispatch(uiActions.collapseDevices());
-      dispatch(spotifyActions.setActiveDevice({ activeDevice: device.id, type: device.type }));
-      dispatch(spotifyActions.fetchDevices());
-    } catch (error) {
-      message.error(t('Failed to transfer playback'));
-    }
-  }, [device.is_restricted, device.id, device.type, dispatch, t]);
+    console.log(`Mock transfer playback to device ${device.name}`);
+  }, [device]);
 
   return (
     <div

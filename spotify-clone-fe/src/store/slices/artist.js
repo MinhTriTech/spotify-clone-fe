@@ -1,9 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// Services
-import { userService } from '../../services/users';
-import { artistService } from '../../services/artist';
-
 const initialState = {
   topTracks: [],
   albums: [],
@@ -16,55 +12,43 @@ const initialState = {
   compilations: [],
 };
 
-export const fetchArtist = createAsyncThunk(
-  'artist/fetchArtist',
-  async (id, params) => {
-    const state = params.getState();
-    const user = state.auth.user;
+// 👉 Fake generator
+const mockTrack = (id) => ({
+  id: `track-${id}`,
+  name: `Track ${id}`,
+  saved: false,
+});
 
-    const promises = [
-      artistService.fetchArtist(id),
-      user ? userService.checkFollowingArtists([id]) : Promise.resolve({ data: [false] }),
-      artistService.fetchArtistTopTracks(id),
-      artistService.fetchArtistAlbums(id, { limit: 10, include_groups: 'album' }),
-      artistService.fetchArtistAlbums(id, { limit: 10, include_groups: 'single' }),
-      artistService.fetchArtistAlbums(id, { limit: 10, include_groups: 'appears_on' }),
-      artistService.fetchArtistAlbums(id, { limit: 10, include_groups: 'compilation' }),
-    ];
+const mockAlbum = (id, group = 'album') => ({
+  id: `album-${group}-${id}`,
+  name: `${group.toUpperCase()} ${id}`,
+  images: [{ url: 'https://via.placeholder.com/300' }],
+});
 
-    const responses = await Promise.all(promises);
+const mockArtist = (id) => ({
+  id,
+  name: `Artist ${id}`,
+  followers: { total: 100000 },
+  images: [{ url: 'https://via.placeholder.com/400' }],
+});
 
-    const artist = responses[0].data;
-    const [following] = responses[1].data;
+export const fetchArtist = createAsyncThunk('artist/fetchArtist', async (id, { getState }) => {
+  const user = getState().auth.user;
 
-    const tracks = responses[2].data.tracks;
-    const albums = responses[3].data.items;
-    const singles = responses[4].data.items;
+  const artist = mockArtist(id);
+  const following = !!user; // nếu có user thì coi như đang follow
+  const topTracks = Array.from({ length: 5 }, (_, i) => mockTrack(i + 1));
+  const albums = Array.from({ length: 4 }, (_, i) => mockAlbum(i + 1, 'album'));
+  const singles = Array.from({ length: 3 }, (_, i) => mockAlbum(i + 1, 'single'));
+  const appearsOn = Array.from({ length: 2 }, (_, i) => mockAlbum(i + 1, 'appears_on'));
+  const compilations = Array.from({ length: 1 }, (_, i) => mockAlbum(i + 1, 'compilation'));
 
-    const appearsOn = responses[5].data.items;
-    const compilations = responses[6].data.items;
+  return [artist, following, topTracks, [albums, singles, appearsOn, compilations]];
+});
 
-    const extraResponses = await Promise.all([
-      userService.checkSavedTracks(tracks.map((track) => track.id)).catch(() => ({ data: [] })),
-    ]);
-
-    const saved = extraResponses[0].data;
-    const itemsWithSave = tracks.map((item, index) => ({
-      ...item,
-      saved: saved[index],
-    }));
-
-    return [artist, following, itemsWithSave, [albums, singles, appearsOn, compilations]];
-  }
-);
-
-const fetchOtherArtists = createAsyncThunk(
-  'artist/fetchOtherArtists',
-  async (id) => {
-    const response = await artistService.fetchSimilarArtists(id);
-    return response.data.artists;
-  }
-);
+export const fetchOtherArtists = createAsyncThunk('artist/fetchOtherArtists', async (id) => {
+  return Array.from({ length: 4 }, (_, i) => mockArtist(`similar-${i + 1}`));
+});
 
 const artistSlice = createSlice({
   name: 'artist',
@@ -89,7 +73,9 @@ const artistSlice = createSlice({
     },
     setTopSongLikeState(state, action) {
       state.topTracks = state.topTracks.map((track) =>
-        track.id === action.payload.id ? { ...track, saved: action.payload.saved } : track
+        track.id === action.payload.id
+          ? { ...track, saved: action.payload.saved }
+          : track
       );
     },
   },

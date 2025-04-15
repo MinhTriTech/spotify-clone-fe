@@ -1,16 +1,43 @@
 import React, { useMemo } from 'react';
 import { GridItemList } from '../../../../components/Lists/list';
-
-import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../store/store';
 import { getPlaylistDescription } from '../../../../utils/getDescription';
 import { MADE_FOR_YOU_URI } from '../../../../constants/spotify';
+import { useTranslation } from 'react-i18next';
 
 export const MadeForYou = () => {
   const { t } = useTranslation(['home']);
 
-  const user = useAppSelector((state) => state.auth.user);
-  const madeForYou = useAppSelector((state) => state.home.madeForYou);
+  // ✅ Mock dữ liệu thay vì useAppSelector
+  const user = { display_name: 'Mock User' };
+  const madeForYou = [
+    {
+      id: 'mf1',
+      name: 'Chill Vibes',
+      type: 'playlist',
+      description: 'Relaxing tracks for your mood.',
+      uri: 'spotify:playlist:mf1',
+      images: [{ url: 'https://via.placeholder.com/300' }],
+      owner: { display_name: 'Spotify' },
+    },
+    {
+      id: 'mf2',
+      name: 'Study Mix',
+      type: 'playlist',
+      description: 'Focus-enhancing music.',
+      uri: 'spotify:playlist:mf2',
+      images: [{ url: 'https://via.placeholder.com/300' }],
+      owner: { display_name: 'Spotify' },
+    },
+    {
+      id: 'mf3',
+      name: 'Daily Boost',
+      type: 'playlist',
+      description: 'Your daily dose of energy.',
+      uri: 'spotify:playlist:mf3',
+      images: [{ url: 'https://via.placeholder.com/300' }],
+      owner: { display_name: 'Spotify' },
+    },
+  ];
 
   const items = useMemo(() => {
     const items = madeForYou.filter((p) => !p.name.toLowerCase().includes('mix'));

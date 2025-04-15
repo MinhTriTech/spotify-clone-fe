@@ -49,34 +49,45 @@ export const DeleteButton = (props) => {
   );
 };
 
+const t = (str) => str;
+
 export function GridItemList(props) {
-  const [t] = useTranslation(['artist']);
-  const user = useAppSelector((state) => !!state.auth.user);
-  const { onItemDelete, onItemClick, getDescription } = props;
-  const { items, chips, title, moreUrl, extra, subtitle } = props;
+  const {
+    onItemDelete,
+    onItemClick,
+    getDescription,
+    items,
+    chips,
+    title,
+    moreUrl,
+    extra,
+    subtitle
+  } = props;
+
+  const user = false; // ép mock
 
   return (
     <div className={`${!user ? 'guest' : ''}`}>
-      <Flex justify='space-between' align='center'>
+      <Flex justify="space-between" align="center">
         <div>
-          {title ? (
+          {title && (
             moreUrl ? (
               <Link to={moreUrl} style={{ textDecoration: 'none' }}>
-                <h1 className='playlist-header'>{title}</h1>
+                <h1 className="playlist-header">{title}</h1>
               </Link>
             ) : (
-              <h1 className='playlist-header'>{title}</h1>
+              <h1 className="playlist-header">{title}</h1>
             )
-          ) : null}
+          )}
 
-          {subtitle ? <h2 className='playlist-subheader'>{subtitle}</h2> : null}
+          {subtitle && <h2 className="playlist-subheader">{subtitle}</h2>}
         </div>
 
         {extra ? (
           extra
         ) : moreUrl ? (
           <Link to={moreUrl}>
-            <button className='showMore'>
+            <button className="showMore">
               <span>{t('Show more')}</span>
             </button>
           </Link>
@@ -84,30 +95,27 @@ export function GridItemList(props) {
       </Flex>
 
       {chips}
+
       <div
-        className={`playlist-grid`}
+        className="playlist-grid"
         style={
           props.multipleRows
-            ? {
-                gridTemplateRows: 'unset',
-              }
+            ? { gridTemplateRows: 'unset' }
             : undefined
         }
       >
         {(items || [])
-          .filter((i) => i)
-          .map((item) => {
-            return (
-              <div key={item.uri} style={{ position: 'relative' }}>
-                {onItemDelete ? <DeleteButton onClick={() => onItemDelete(item)} /> : null}
-                <GridItemComponent
-                  item={item}
-                  getDescription={getDescription}
-                  onClick={onItemClick ? () => onItemClick(item) : undefined}
-                />
-              </div>
-            );
-          })}
+          .filter(Boolean)
+          .map((item) => (
+            <div key={item.id || item.uri} style={{ position: 'relative' }}>
+              {onItemDelete && <DeleteButton onClick={() => onItemDelete(item)} />}
+              <GridItemComponent
+                item={item}
+                getDescription={getDescription}
+                onClick={onItemClick ? () => onItemClick(item) : undefined}
+              />
+            </div>
+          ))}
       </div>
     </div>
   );

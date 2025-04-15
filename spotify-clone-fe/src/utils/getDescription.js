@@ -22,11 +22,12 @@ export const removeHtmlTags = (html) => {
   };
   
   export const getAlbumDescription = (item) => {
-    if (item.type === 'album') {
-      const year = item.release_date.split('-')[0];
-      const type = item.album_type === 'album' ? 'Album' : 'Single';
-      return `${year} • ${type}`;
-    }
-    return '';
+    if (!item || item.type !== 'album') return '';
+  
+    const year = item.release_date?.split?.('-')?.[0] || 'Unknown';
+    const type = item.album_type === 'album' ? 'Album' : 'Single';
+  
+    return `${year} • ${type}`;
   };
+  
   

@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import tinycolor from 'tinycolor2';
 
-// Redux hooks
-import { useAppSelector } from '../../../../store/store';
-import { getLibraryCollapsed, isRightLayoutOpen } from '../../../../store/slices/ui';
-
 export const PageHeader = ({
   color,
   children,
@@ -17,11 +13,12 @@ export const PageHeader = ({
   const [headerWidth, setHeaderWidth] = useState(0);
   const [activeHeader, setActiveHeader] = useState(false);
 
-  const rightLayoutOpen = useAppSelector(isRightLayoutOpen);
-  const libraryCollapsed = useAppSelector(getLibraryCollapsed);
+  // ✅ MOCK thay thế Redux
+  const rightLayoutOpen = true;
+  const libraryCollapsed = false;
 
   useEffect(() => {
-    const ref = container.current;
+    const ref = container?.current;
     const handleScroll = () => {
       if (ref) {
         setActiveHeader(ref.scrollTop > activeHeider);
@@ -29,7 +26,6 @@ export const PageHeader = ({
     };
     ref?.addEventListener('scroll', handleScroll);
     return () => {
-      window.onresize = null;
       ref?.removeEventListener('scroll', handleScroll);
     };
   }, [container, activeHeider, activeContentHeight]);
@@ -60,7 +56,9 @@ export const PageHeader = ({
         style={{
           width: headerWidth,
           opacity: !headerWidth ? 0 : 1,
-          backgroundColor: !activeHeader ? 'transparent' : tinycolor(color).darken(2).toRgbString(),
+          backgroundColor: !activeHeader
+            ? 'transparent'
+            : tinycolor(color).darken(2).toRgbString(),
         }}
       >
         <div className="nav-header-content" style={{ minHeight: 36 }}>

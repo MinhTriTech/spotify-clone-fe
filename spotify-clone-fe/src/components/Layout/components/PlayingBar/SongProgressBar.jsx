@@ -1,52 +1,50 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// Components
+// Cleaned version of SongProgressBar (frontend-only)
+import { memo, useEffect, useState } from 'react';
 import { Slider } from '../../../Slider';
-
-// Utils
 import { msToTime } from '../../../../utils';
 
-// Redux
-import { useAppSelector } from '../../../../store/store';
-import { playerService } from '../../../../services/player';
-import { memo, useEffect, useState } from 'react';
-
 const SongProgressBar = memo(() => {
-  const loaded = useAppSelector((state) => !!state.spotify.state);
-  const position = useAppSelector((state) => state.spotify.state?.position);
-  const duration = useAppSelector((state) => state.spotify.state?.duration);
-
   const [value, setValue] = useState(0);
   const [selecting, setSelecting] = useState(false);
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(240000); // Mock duration: 4 minutes
 
   useEffect(() => {
-    if (position && duration && !selecting) {
+    let interval = setInterval(() => {
+      if (!selecting) {
+        setPosition((prev) => {
+          const next = prev + 1000;
+          if (next >= duration) return 0;
+          return next;
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [selecting, duration]);
+
+  useEffect(() => {
+    if (!selecting) {
       setValue(duration ? (position >= duration ? 0 : position / duration) : 0);
     }
   }, [position, duration, selecting]);
 
   return (
     <div className='flex items-center justify-between w-full'>
-      <div className='text-white mr-2 text-xs'>{position ? msToTime(position) : '0:00'}</div>
+      <div className='text-white mr-2 text-xs'>{msToTime(position)}</div>
       <div style={{ width: '100%' }}>
         <Slider
           isEnabled
           value={value}
-          onChangeStart={() => {
-            setSelecting(true);
-          }}
-          onChange={(value) => {
-            setValue(value);
-          }}
-          onChangeEnd={(value) => {
+          onChangeStart={() => setSelecting(true)}
+          onChange={(val) => setValue(val)}
+          onChangeEnd={(val) => {
             setSelecting(false);
-            if (!loaded) return;
-            setValue(value);
-            const newPosition = Math.round((duration || 0) * value);
-            playerService.seekToPosition(newPosition).then();
+            const newPosition = Math.round(duration * val);
+            setPosition(newPosition);
           }}
         />
       </div>
-      <div className='text-white ml-2 text-xs'>{duration ? msToTime(duration) : '0:00'}</div>
+      <div className='text-white ml-2 text-xs'>{msToTime(duration)}</div>
     </div>
   );
 });

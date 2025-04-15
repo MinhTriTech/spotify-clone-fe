@@ -7,56 +7,45 @@ import PlayingNow from './components/NowPlaying';
 import LanguageModal from '../Modals/LanguageModal';
 import LibraryDrawer from '../Drawers/LibraryDrawer';
 import { PlayingNowDrawer } from '../Drawers/PlayingNowDrawer';
-import { EditPlaylistModal } from '../Modals/EditPlaylistModal';
+import EditPlaylistModal from '../Modals/EditPlaylistModal';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { useAppDispatch, useAppSelector } from '../../store/store';
-import { isActiveOnOtherDevice, spotifyActions } from '../../store/slices/spotify';
-import { getLibraryCollapsed, isRightLayoutOpen, uiActions } from '../../store/slices/ui';
-import { LoginFooter } from './components/LoginFooter';
-import { LoginModal } from '../Modals/LoginModal';
 import useIsMobile from '../../utils/isMobile';
 
-export const AppLayout = memo(({ children }) => {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
-  const rightLayoutOpen = useAppSelector(isRightLayoutOpen);
-  const libraryCollapsed = useAppSelector(getLibraryCollapsed);
-  const hasState = useAppSelector((state) => !!state.spotify.state);
-  const activeOnOtherDevice = useAppSelector(isActiveOnOtherDevice);
+// Redux
+import { useAppSelector } from '../../store/store';
+import { getLibraryCollapsed, isRightLayoutOpen } from '../../store/slices/ui';
+
+const AppLayout = memo(({ children }) => {
+  const user = true;
   const isMobile = useIsMobile();
+
+  const libraryCollapsed = useAppSelector(getLibraryCollapsed);
+  const rightLayoutOpen = useAppSelector(isRightLayoutOpen);
+
+  const hasState = true;
+  const activeOnOtherDevice = false;
 
   const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      const vh = window.innerWidth;
-      if (vh < 950) {
-        dispatch(uiActions.collapseLibrary());
-        setIsTablet(true);
-      } else {
-        setIsTablet(false);
-      }
+      const vw = window.innerWidth;
+      setIsTablet(vw < 950);
     };
-    window.onresize = handleResize;
-    handleResize(); // init on mount
 
-    return () => {
-      window.onresize = null;
-    };
-  }, [dispatch]);
+    window.addEventListener('resize', handleResize);
+    handleResize(); // init
 
-  useEffect(() => {
-    if (user) dispatch(spotifyActions.fetchDevices());
-  }, [user, dispatch]);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <>
       {/* Modals & Drawers */}
-      <LanguageModal />
+      {/* <LanguageModal />
       <LibraryDrawer />
       <PlayingNowDrawer />
-      <EditPlaylistModal />
-      <LoginModal />
+      <EditPlaylistModal /> */}
 
       {/* Main Layout */}
       <div className="main-container">
@@ -81,7 +70,7 @@ export const AppLayout = memo(({ children }) => {
               maxHeight: activeOnOtherDevice ? `calc(100vh - 185px)` : undefined,
             }}
           >
-            <PanelGroup direction="horizontal" autoSaveId="persistence">
+            <PanelGroup direction="horizontal">
               <Panel
                 id="left"
                 order={1}
@@ -98,17 +87,17 @@ export const AppLayout = memo(({ children }) => {
                 <Library />
               </Panel>
 
-              {!isMobile ? <PanelResizeHandle className="resize-handler" /> : null}
+              {!isMobile && <PanelResizeHandle className="resize-handler" />}
 
               <Panel id="center" order={2} style={{ borderRadius: 5 }}>
                 {children}
               </Panel>
 
-              {!isTablet && rightLayoutOpen && hasState ? (
+              {!isTablet && rightLayoutOpen && hasState && (
                 <PanelResizeHandle className="resize-handler" />
-              ) : null}
+              )}
 
-              {rightLayoutOpen && hasState ? (
+              {rightLayoutOpen && hasState && (
                 <Panel
                   order={3}
                   minSize={23}
@@ -119,15 +108,15 @@ export const AppLayout = memo(({ children }) => {
                 >
                   <PlayingNow />
                 </Panel>
-              ) : null}
+              )}
             </PanelGroup>
           </Col>
         </Row>
       </div>
 
-      <footer>{user ? <PlayingBar /> : <LoginFooter />}</footer>
+      <footer>{user ? <PlayingBar /> : null}</footer>
     </>
   );
 });
 
-AppLayout.displayName = 'AppLayout';
+export default AppLayout;

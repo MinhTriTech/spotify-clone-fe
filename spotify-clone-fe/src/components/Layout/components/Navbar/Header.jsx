@@ -1,51 +1,18 @@
-import React, { useCallback } from 'react';
-import { Popconfirm, Space } from 'antd';
+import React from 'react';
+import { Space } from 'antd';
 import { Link } from 'react-router-dom';
-import { CloseIcon } from '../../../Icons';
-import WhiteButton from '../../../Button';
-
-import { useTranslation } from 'react-i18next';
-import { uiActions } from '../../../../store/slices/ui';
-import { loginToSpotify } from '../../../../store/slices/auth';
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
 import useIsMobile from '../../../../utils/isMobile';
 
-const LoginButton = () => {
-  const { t } = useTranslation(['home']);
-  const dispatch = useAppDispatch();
-  const tooltipOpen = useAppSelector((state) => state.ui.loginButtonOpen);
-
-  const onClose = useCallback(() => {
-    dispatch(uiActions.closeLoginButton());
-  }, [dispatch]);
-
-  return (
-    <Popconfirm
-      icon={null}
-      open={tooltipOpen}
-      onCancel={onClose}
-      placement="bottomLeft"
-      rootClassName="login-tooltip"
-      cancelText={<CloseIcon />}
-      title={t('You’re logged out')}
-      cancelButtonProps={{ type: 'text' }}
-      okButtonProps={{ className: 'white-button small' }}
-      description={t('Log in to add this to your Liked Songs.')}
-    >
-      <WhiteButton title={t('Log In')} onClick={() => dispatch(loginToSpotify(false))} />
-    </Popconfirm>
-  );
-};
-
 const Header = ({ opacity, title }) => {
   const isMobile = useIsMobile();
-  const { t } = useTranslation(['navbar']);
+  const t = (s) => s;
 
-  const user = useAppSelector(
-    (state) => state.auth.user,
-    (prev, next) => prev?.id === next?.id
-  );
+  // ✅ MOCK trạng thái đăng nhập
+  const user = {
+    id: 'mock-user-id',
+    images: [{ url: 'https://via.placeholder.com/50' }],
+  };
 
   return (
     <div
@@ -74,7 +41,7 @@ const Header = ({ opacity, title }) => {
                   alt="User Avatar"
                   style={{ marginTop: -1 }}
                   src={
-                    user?.images && user.images.length
+                    user?.images?.length
                       ? user.images[0].url
                       : ARTISTS_DEFAULT_IMAGE
                   }
@@ -82,7 +49,7 @@ const Header = ({ opacity, title }) => {
               </Link>
             </div>
           ) : (
-            <LoginButton />
+            <button className="white-button small">{t('Log In')}</button>
           )}
         </Space>
       </div>
