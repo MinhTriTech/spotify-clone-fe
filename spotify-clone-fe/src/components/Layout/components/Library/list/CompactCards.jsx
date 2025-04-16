@@ -1,22 +1,33 @@
-// Cleaned CardCompact and CompactItemComponent without service dependencies
-import React, { memo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { SpeakerIcon } from '../../../../Icons';
 import { CollapsedCard } from './ListCards';
+import AlbumActionsWrapper from '../../../../Actions/AlbumActions';
+import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
+import PlayistActionsWrapper from '../../../../Actions/PlaylistActions';
 
-import {
-  ARTISTS_DEFAULT_IMAGE,
-  PLAYLIST_DEFAULT_IMAGE,
-} from '../../../../../constants/spotify';
+// Utils
+import { useNavigate } from 'react-router-dom';
 
-const CardCompact = ({ title, subtitle, isCurrent, onClick, onDoubleClick }) => {
+// Redux
+import { useAppDispatch, useAppSelector } from '../../../../../store/store';
+import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
+
+// Services
+import { playerService } from '../../../../../services/player';
+
+// Constants
+import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../../constants/spotify';
+import { memo, useCallback } from 'react';
+import { getLibraryCollapsed, uiActions } from '../../../../../store/slices/ui';
+
+const CardCompact = (props) => {
+  const { title, subtitle, isCurrent, onClick, onDoubleClick } = props;
+
   return (
     <button
       onClick={onClick}
-      onDoubleClick={onDoubleClick}
-      className="library-card"
+      className='library-card'
       style={{ borderRadius: 10 }}
+      onDoubleClick={onDoubleClick}
     >
       <div
         style={{
@@ -29,7 +40,7 @@ const CardCompact = ({ title, subtitle, isCurrent, onClick, onDoubleClick }) => 
       >
         <div style={{ display: 'flex', gap: 5, width: '100%', alignItems: 'center' }}>
           <h3
-            className="text-md font-semibold text-white"
+            className='text-md font-semibold text-white'
             style={{
               fontSize: 15,
               fontWeight: 100,
@@ -42,7 +53,7 @@ const CardCompact = ({ title, subtitle, isCurrent, onClick, onDoubleClick }) => 
           </h3>
 
           <p
-            className="text-md font-semibold text-white"
+            className='text-md font-semibold text-white'
             style={{
               fontSize: 13,
               opacity: 0.7,
@@ -54,7 +65,7 @@ const CardCompact = ({ title, subtitle, isCurrent, onClick, onDoubleClick }) => 
         </div>
 
         <div style={{ padding: 8 }}>
-          {isCurrent && <SpeakerIcon fill="#1db954" height={13} width={13} />}
+          {isCurrent ? <SpeakerIcon fill='#1db954' height={13} width={13} /> : null}
         </div>
       </div>
     </button>
@@ -62,68 +73,104 @@ const CardCompact = ({ title, subtitle, isCurrent, onClick, onDoubleClick }) => 
 };
 
 const Card = memo((props) => {
-  const collapsed = false; // mock state
-  const onDoubleClick = () => console.log('Mock double-click playback');
+  const collapsed = useAppSelector(getLibraryCollapsed);
+
+  const onDoubleClick = () => {
+    playerService.startPlayback({ context_uri: props.uri });
+  };
 
   if (collapsed) {
     return <CollapsedCard {...props} onDoubleClick={onDoubleClick} />;
   }
-
   return <CardCompact {...props} onDoubleClick={onDoubleClick} />;
 });
 
 const ArtistCardShort = memo(({ artist }) => {
   const navigate = useNavigate();
+  const filter = useAppSelector((state) => state.yourLibrary.filter);
+  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
+
   const onClick = useCallback(() => {
     navigate(`/artist/${artist.id}`);
   }, [navigate, artist.id]);
 
   return (
-    <Card
-      rounded
-      uri={artist.uri}
-      onClick={onClick}
-      title={artist.name}
-      isCurrent={false}
-      subtitle={'• Artist'}
-      image={artist?.images?.[0]?.url || ARTISTS_DEFAULT_IMAGE}
-    />
+    <ArtistActionsWrapper artist={artist} trigger={['contextMenu']}>
+      <div>
+        <Card
+          rounded
+          uri={artist.uri}
+          onClick={onClick}
+          title={artist.name}
+          isCurrent={contextUri === artist.uri}
+          subtitle={filter === 'ALL' ? `• Artist` : ''}
+          image={artist?.images[0]?.url || ARTISTS_DEFAULT_IMAGE}
+        />
+      </div>
+    </ArtistActionsWrapper>
   );
 });
 
 const AlbumCardShort = memo(({ album }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector((state) => state.auth.user?.id);
+  const filter = useAppSelector((state) => state.yourLibrary.filter);
+  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
+
   const onClick = useCallback(() => {
+    if (!userId) {
+      return dispatch(uiActions.openLoginModal(album.images[0].url));
+    }
     navigate(`/album/${album.id}`);
-  }, [navigate, album.id]);
+  }, [userId, navigate, album.id, album.images, dispatch]);
 
   return (
-    <Card
-      uri={album.uri}
-      onClick={onClick}
-      title={album.name}
-      image={album.images[0].url}
-      isCurrent={false}
-      subtitle={`• ${album.artists[0].name}`}
-    />
+    <AlbumActionsWrapper album={album} trigger={['contextMenu']}>
+      <div>
+        <Card
+          uri={album.uri}
+          onClick={onClick}
+          title={album.name}
+          image={album.images[0].url}
+          isCurrent={contextUri === album.uri}
+          subtitle={filter === 'ALL' ? `• Album` : `• ${album.artists[0].name}`}
+        />
+      </div>
+    </AlbumActionsWrapper>
   );
 });
 
 const PlaylistCardShort = memo(({ playlist }) => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const filter = useAppSelector((state) => state.yourLibrary.filter);
+  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
+
   const onClick = useCallback(() => {
     navigate(`/playlist/${playlist.id}`);
   }, [navigate, playlist.id]);
 
   return (
-    <Card
-      onClick={onClick}
-      uri={playlist.uri}
-      title={playlist.name}
-      isCurrent={false}
-      subtitle={'• Playlist'}
-      image={playlist?.images?.[0]?.url || PLAYLIST_DEFAULT_IMAGE}
-    />
+    <PlayistActionsWrapper
+      playlist={playlist}
+      trigger={['contextMenu']}
+      onRefresh={() => {
+        dispatch(yourLibraryActions.fetchMyPlaylists());
+      }}
+    >
+      <div>
+        <Card
+          onClick={onClick}
+          uri={playlist.uri}
+          title={playlist.name}
+          isCurrent={contextUri === playlist.uri}
+          subtitle={filter === 'ALL' ? `• Playlist` : ''}
+          image={playlist?.images?.length ? playlist?.images[0].url : PLAYLIST_DEFAULT_IMAGE}
+        />
+      </div>
+    </PlayistActionsWrapper>
   );
 });
 

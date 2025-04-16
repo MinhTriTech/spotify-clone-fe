@@ -1,57 +1,70 @@
-import React, { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
+
+// Components
 import { Col, Row } from 'antd';
 import { Navbar } from './components/Navbar';
 import { Library } from './components/Library';
 import PlayingBar from './components/PlayingBar';
 import PlayingNow from './components/NowPlaying';
-import LanguageModal from '../Modals/LanguageModal';
-import LibraryDrawer from '../Drawers/LibraryDrawer';
+import {LanguageModal} from '../Modals/LanguageModal';
+import {LibraryDrawer} from '../Drawers/LibraryDrawer';
 import { PlayingNowDrawer } from '../Drawers/PlayingNowDrawer';
-import EditPlaylistModal from '../Modals/EditPlaylistModal';
+import {EditPlaylistModal} from '../Modals/EditPlaylistModal';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import useIsMobile from '../../utils/isMobile';
 
 // Redux
-import { useAppSelector } from '../../store/store';
-import { getLibraryCollapsed, isRightLayoutOpen } from '../../store/slices/ui';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import { isActiveOnOtherDevice, spotifyActions } from '../../store/slices/spotify';
+import { getLibraryCollapsed, isRightLayoutOpen, uiActions } from '../../store/slices/ui';
+import { LoginFooter } from './components/LoginFooter';
+import LoginModal from '../Modals/LoginModal';
+import useIsMobile from '../../utils/isMobile';
 
-const AppLayout = memo(({ children }) => {
-  const user = true;
-  const isMobile = useIsMobile();
-
-  const libraryCollapsed = useAppSelector(getLibraryCollapsed);
+const AppLayout = memo((props) => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => !!state.auth.user);
   const rightLayoutOpen = useAppSelector(isRightLayoutOpen);
-
-  const hasState = true;
-  const activeOnOtherDevice = false;
+  const libraryCollapsed = useAppSelector(getLibraryCollapsed);
+  const hasState = useAppSelector((state) => !!state.spotify.state);
+  const activeOnOtherDevice = useAppSelector(isActiveOnOtherDevice);
 
   const [isTablet, setIsTablet] = useState(false);
 
+  const isMobile = useIsMobile();
+
   useEffect(() => {
-    const handleResize = () => {
-      const vw = window.innerWidth;
-      setIsTablet(vw < 950);
+    window.onresize = () => {
+      const vh = window.innerWidth;
+      if (vh < 950) {
+        dispatch(uiActions.collapseLibrary());
+        setIsTablet(true);
+      } else {
+        setIsTablet(false);
+      }
     };
+    return () => {
+      window.onresize = null;
+    };
+  }, [dispatch]);
 
-    window.addEventListener('resize', handleResize);
-    handleResize(); // init
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  useEffect(() => {
+    if (user) dispatch(spotifyActions.fetchDevices());
+  }, [user, dispatch]);
 
   return (
     <>
       {/* Modals & Drawers */}
-      {/* <LanguageModal />
+      <LanguageModal />
       <LibraryDrawer />
       <PlayingNowDrawer />
-      <EditPlaylistModal /> */}
+      <EditPlaylistModal />
+      <LoginModal />
 
-      {/* Main Layout */}
-      <div className="main-container">
+      {/* Main Component */}
+      <div className='main-container'>
         <Row
           wrap
-          justify="end"
+          justify='end'
           gutter={[8, 8]}
           style={{
             overflow: 'hidden',
@@ -70,11 +83,11 @@ const AppLayout = memo(({ children }) => {
               maxHeight: activeOnOtherDevice ? `calc(100vh - 185px)` : undefined,
             }}
           >
-            <PanelGroup direction="horizontal">
+            <PanelGroup direction='horizontal' autoSaveId='persistence'>
               <Panel
-                id="left"
+                id='left'
                 order={1}
-                className="mobile-hidden"
+                className='mobile-hidden'
                 minSize={isTablet ? 10 : libraryCollapsed ? 7 : 22}
                 maxSize={isTablet ? 10 : libraryCollapsed ? 8 : 28}
                 defaultSize={isTablet ? 10 : libraryCollapsed ? 7 : 22}
@@ -87,36 +100,38 @@ const AppLayout = memo(({ children }) => {
                 <Library />
               </Panel>
 
-              {!isMobile && <PanelResizeHandle className="resize-handler" />}
-
-              <Panel id="center" order={2} style={{ borderRadius: 5 }}>
-                {children}
+              {!isMobile ? <PanelResizeHandle className='resize-handler' /> : null}
+              <Panel id='center' order={2} style={{ borderRadius: 5 }}>
+                {/* Home | Playlists */}
+                {props.children}
               </Panel>
 
-              {!isTablet && rightLayoutOpen && hasState && (
-                <PanelResizeHandle className="resize-handler" />
-              )}
+              {!isTablet && rightLayoutOpen && hasState ? (
+                <PanelResizeHandle className='resize-handler' />
+              ) : null}
 
-              {rightLayoutOpen && hasState && (
+              {rightLayoutOpen && hasState ? (
                 <Panel
                   order={3}
                   minSize={23}
                   maxSize={30}
                   defaultSize={25}
-                  id="details-section"
+                  id='details-section'
                   style={{ borderRadius: 5 }}
                 >
                   <PlayingNow />
                 </Panel>
-              )}
+              ) : null}
             </PanelGroup>
           </Col>
         </Row>
       </div>
 
-      <footer>{user ? <PlayingBar /> : null}</footer>
+      {<footer>{user ? <PlayingBar /> : <LoginFooter />}</footer>}
     </>
   );
 });
+
+AppLayout.displayName = 'AppLayout';
 
 export default AppLayout;

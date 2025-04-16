@@ -34,6 +34,7 @@ import artistDiscographyReducer from './slices/discography';
 import editPlaylistModalReducer from './slices/editPlaylistModal';
 import expireReducer from 'redux-persist-expire';
 
+// Combine reducers
 const appReducer = combineReducers({
   ui: uiReducer,
   auth: authReducer,
@@ -56,17 +57,18 @@ const appReducer = combineReducers({
   editPlaylistModal: editPlaylistModalReducer,
 });
 
-// Root reducer with a check to clear state if user is removed
+// Root reducer with action to reset state on logout
 const rootReducer = (state, action) => {
   if (action.type === 'auth/removeUser') {
-    return appReducer(undefined, action);
+    return appReducer(undefined, action); // Reset state on logout
   }
   return appReducer(state, action);
 };
 
-// White list of states to persist
+// Whitelist for redux-persist (which states to persist)
 const whitelist = ['language', 'ui', 'searchHistory'];
 
+// Create persisted reducer with transformations (e.g., expiry for searchHistory)
 const persistedReducer = persistReducer(
   {
     storage,
@@ -77,21 +79,21 @@ const persistedReducer = persistReducer(
   rootReducer
 );
 
-// Configure the store with persisted reducer and custom middleware for serializable check
+// Configure Redux store with persisted reducer
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredPaths: ['spotify.player'],
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredPaths: ['spotify.player'], // Ignore specific paths from serializable check
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions
       },
     }),
 });
 
-// Custom hooks for dispatch and selector
+// Exports for dispatch and selector hooks
 export const useAppDispatch = () => useDispatch();
 export const useAppSelector = useSelector;
 
-// Persist store setup
+// Persistor for redux-persist to manage state persistence
 export const persistor = persistStore(store);

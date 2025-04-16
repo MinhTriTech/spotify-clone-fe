@@ -7,7 +7,6 @@ import { DetailsCard } from '../../NowPlaying/Details/card';
 
 // Redux
 import { uiActions } from '../../../../../store/slices/ui';
-import { loginToSpotify } from '../../../../../store/slices/auth';
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 
 export const LibraryLoginInfo = memo(() => {
@@ -17,10 +16,6 @@ export const LibraryLoginInfo = memo(() => {
 
   const onClose = useCallback(() => {
     dispatch(uiActions.closeLoginTooltip());
-  }, [dispatch]);
-
-  const onConfirm = useCallback(() => {
-    return dispatch(loginToSpotify(false));
   }, [dispatch]);
 
   useEffect(() => {
@@ -36,7 +31,6 @@ export const LibraryLoginInfo = memo(() => {
       placement='left'
       onCancel={onClose}
       okText={t('Log In')}
-      onConfirm={onConfirm}
       cancelText={t('Not now')}
       title={t('Create a playlist')}
       cancelButtonProps={{ type: 'text' }}
@@ -52,7 +46,6 @@ export const LibraryLoginInfo = memo(() => {
             <WhiteButton
               size='small'
               title={t('Log In')}
-              onClick={() => dispatch(loginToSpotify(false))}
             />
           </div>
         </DetailsCard>

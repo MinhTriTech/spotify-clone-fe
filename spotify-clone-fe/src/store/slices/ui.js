@@ -1,5 +1,6 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
+// Initial state for the UI slice
 const initialState = {
   queueCollapsed: true,
   devicesCollapsed: true,
@@ -7,7 +8,7 @@ const initialState = {
   libraryCollapsed: true,
   loginTooltipOpen: false,
   loginButtonOpen: false,
-  loginModalItem: null,
+  loginModalItem: null, 
 };
 
 const uiSlice = createSlice({
@@ -77,6 +78,7 @@ const uiSlice = createSlice({
   },
 });
 
+// Selector to check if the right layout is open
 export const isRightLayoutOpen = createSelector(
   [
     (state) => state.ui.queueCollapsed,
@@ -88,10 +90,16 @@ export const isRightLayoutOpen = createSelector(
   }
 );
 
-export const getLibraryCollapsed = (state) => state.ui.libraryCollapsed;
+// Selector to get the state of the library collapsed based on user state
+export const getLibraryCollapsed = createSelector(
+  [(state) => state.ui.libraryCollapsed, (state) => state.auth.user],
+  (libraryCollapsed, user) => {
+    return !user ? false : libraryCollapsed;
+  }
+);
 
-export const uiActions = {
-  ...uiSlice.actions,
-};
+// Export actions from the slice
+export const uiActions = uiSlice.actions;
 
+// Default export of the reducer
 export default uiSlice.reducer;

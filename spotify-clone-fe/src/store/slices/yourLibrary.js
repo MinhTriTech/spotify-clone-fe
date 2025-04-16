@@ -5,17 +5,16 @@ import { userService } from '../../services/users';
 import { albumsService } from '../../services/albums';
 import { playlistService } from '../../services/playlists';
 
-// Constants
 import { LIKED_SONGS_IMAGE } from '../../constants/spotify';
 
 const initialState = {
-  search: '',
   myAlbums: [],
-  view: 'LIST',
-  filter: 'ALL',
   myArtists: [],
   myPlaylists: [],
+  search: '',
+  view: 'LIST',
   orderBy: 'default',
+  filter: 'ALL',
 };
 
 export const fetchMyPlaylists = createAsyncThunk('yourLibrary/fetchMyPlaylists', async () => {
@@ -76,7 +75,7 @@ export const getLibraryItems = createSelector(
     if (filter === 'ARTISTS') return myArtists;
     if (filter === 'PLAYLISTS') return myPlaylists;
 
-    // if (!user) return [];
+    if (!user) return [];
     if (!myAlbums.length && !myArtists.length && !myPlaylists.length) return [];
 
     const likedSongs = {

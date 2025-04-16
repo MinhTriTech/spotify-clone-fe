@@ -1,6 +1,6 @@
 // Cleaned version of SongProgressBar (frontend-only)
 import { memo, useEffect, useState } from 'react';
-import { Slider } from '../../../Slider';
+import Slider from '../../../Slider';
 import { msToTime } from '../../../../utils';
 
 const SongProgressBar = memo(() => {
@@ -37,7 +37,7 @@ const SongProgressBar = memo(() => {
           value={value}
           onChangeStart={() => setSelecting(true)}
           onChange={(val) => setValue(val)}
-          onChangeEnd={(val) => {
+          onChangeComplete={(val) => {
             setSelecting(false);
             const newPosition = Math.round(duration * val);
             setPosition(newPosition);

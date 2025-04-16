@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// Initial state with a default value for the playlist
 const initialState = {
   playlist: null,
 };
@@ -15,7 +14,6 @@ const editPlaylistModalSlice = createSlice({
   },
 });
 
-// Exporting actions and reducer for use in the store
 export const editPlaylistModalActions = editPlaylistModalSlice.actions;
 
 export default editPlaylistModalSlice.reducer;

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 import { Space } from 'antd';
-import { Slider } from '../../../Slider';
+import Slider from '../../../Slider';
 import { Tooltip } from '../../../Tooltip';
 import { VolumeIcon, VolumeMuteIcon, VolumeOneIcon, VolumeTwoIcon } from '../../../Icons';
 
@@ -35,7 +35,7 @@ const VolumeControls = () => {
             isEnabled
             value={muted ? 0 : volume}
             onChange={(val) => setVolume(val)}
-            onChangeEnd={(val) => setVolume(val)}
+            onChangeComplete={(val) => setVolume(val)}
           />
         </div>
       </Space>

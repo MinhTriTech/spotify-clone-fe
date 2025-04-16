@@ -1,56 +1,101 @@
-// Cleaned React component without external service dependencies
-import React, { memo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { Tooltip } from '../../../../Tooltip';
 import { SpeakerIcon } from '../../../../Icons';
+import AlbumActionsWrapper from '../../../../Actions/AlbumActions';
+import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
+import PlayistActionsWrapper from '../../../../Actions/PlaylistActions';
 
-import {
-  ARTISTS_DEFAULT_IMAGE,
-  PLAYLIST_DEFAULT_IMAGE,
-} from '../../../../../constants/spotify';
+// Utils
+import { useNavigate } from 'react-router-dom';
+
+// Services
+import { playerService } from '../../../../../services/player';
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../../../../store/store';
+import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
+
+// Constants
+import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../../constants/spotify';
+import { memo, useCallback } from 'react';
+import { uiActions } from '../../../../../store/slices/ui';
 
 const Play = (
-  <svg role="img" width={26} height={26} fill="white" viewBox="0 0 24 24">
-    <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path>
+  <svg
+    data-encore-id='icon'
+    role='img'
+    width={26}
+    height={26}
+    fill='white'
+    aria-hidden='true'
+    className='Svg-sc-ytk21e-0 bneLcE zOsKPnD_9x3KJqQCSmAq'
+    viewBox='0 0 24 24'
+  >
+    <path d='m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z'></path>
   </svg>
 );
 
 const Pause = (
-  <svg role="img" width={26} height={26} fill="white" viewBox="0 0 24 24">
-    <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
+  <svg
+    data-encore-id='icon'
+    role='img'
+    width={26}
+    height={26}
+    fill='white'
+    aria-hidden='true'
+    className='Svg-sc-ytk21e-0 bneLcE zOsKPnD_9x3KJqQCSmAq'
+    viewBox='0 0 24 24'
+  >
+    <path d='M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z'></path>
   </svg>
 );
 
-export const CollapsedCard = ({ image, title, subtitle, onClick, onDoubleClick, rounded }) => (
-  <Tooltip
-    placement="right"
-    title={
-      <div>
-        <p>{title}</p>
-        <p style={{ fontSize: 13, color: 'gray', fontWeight: 400 }}>{subtitle}</p>
-      </div>
-    }
-  >
-    <button
-      onClick={onClick}
-      onDoubleClick={onDoubleClick}
-      className="library-card collapsed"
-      style={{ borderRadius: 10, display: 'flex', justifyContent: 'center' }}
-    >
-      <div className={`image h-full items-center ${rounded ? 'rounded' : ''}`}>
-        <div className="image-container">
-          <img src={image} alt="" style={{ width: 52, height: 52 }} />
-        </div>
-      </div>
-    </button>
-  </Tooltip>
-);
+export const CollapsedCard = (props) => {
+  const { image, title, subtitle, onClick } = props;
 
-const CardList = ({ image, title, subtitle, onClick, onDoubleClick, isCurrent, disabled, rounded }) => {
-  const isPlaying = false; // mock state
+  return (
+    <Tooltip
+      placement='right'
+      title={
+        <div>
+          <p>{title}</p>
+          <p style={{ fontSize: 13, color: 'gray', fontWeight: 400 }}>{subtitle}</p>
+        </div>
+      }
+    >
+      <button
+        onClick={onClick}
+        className='library-card collapsed'
+        onDoubleClick={props.onDoubleClick}
+        style={{ borderRadius: 10, display: 'flex', justifyContent: 'center' }}
+      >
+        <div className={`image h-full items-center ${props.rounded ? 'rounded' : ''}`}>
+          <div className='image-container'>
+            <img src={image} alt='' style={{ width: 52, height: 52 }} />
+          </div>
+        </div>
+      </button>
+    </Tooltip>
+  );
+};
+
+const CardList = (props) => {
+  const { image, title, subtitle, isCurrent, onClick, disabled } = props;
+
+  const isPlaying = useAppSelector((state) => !state.spotify.state?.paused);
+
   const button = disabled ? null : (
-    <button className="image-button" onClick={(e) => e.stopPropagation()}>
+    <button
+      className='image-button'
+      onClick={async (e) => {
+        if (e && e.stopPropagation) {
+          e.stopPropagation();
+        }
+        if (isCurrent && isPlaying) {
+          return playerService.pausePlayback();
+        }
+        return playerService.startPlayback(!isCurrent ? { context_uri: props.uri } : undefined);
+      }}
+    >
       {isCurrent && isPlaying ? Pause : Play}
     </button>
   );
@@ -58,20 +103,35 @@ const CardList = ({ image, title, subtitle, onClick, onDoubleClick, isCurrent, d
   return (
     <button
       onClick={onClick}
-      onDoubleClick={onDoubleClick}
-      className="library-card"
+      className='library-card'
       style={{ borderRadius: 10 }}
+      onDoubleClick={props.onDoubleClick}
     >
-      <div className={`image p-2 h-full items-center ${rounded ? 'rounded' : ''}`}>
+      <div className={`image p-2 h-full items-center ${props.rounded ? 'rounded' : ''}`}>
         <div style={{ position: 'relative' }}>
-          <img src={image} alt="cover" className="rounded-md" style={{ width: 52, height: 52 }} />
+          <div>
+            <img
+              src={image}
+              alt='song cover'
+              className='rounded-md'
+              style={{ width: 52, height: 52 }}
+            />
+          </div>
           {button}
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-        <div>
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
+      >
+        <div id='playlist-song-and-artist-name'>
           <h3
-            className="text-md font-semibold"
+            className='text-md font-semibold text-white'
             style={{
               fontSize: 15,
               marginBottom: -5,
@@ -81,68 +141,127 @@ const CardList = ({ image, title, subtitle, onClick, onDoubleClick, isCurrent, d
           >
             {title}
           </h3>
-          <p style={{ fontSize: 13, opacity: 0.7, fontWeight: 400 }}>{subtitle}</p>
+
+          <p
+            className='text-md font-semibold text-white'
+            style={{
+              fontSize: 13,
+              opacity: 0.7,
+              fontWeight: 400,
+            }}
+          >
+            {subtitle}
+          </p>
         </div>
-        {isCurrent && <SpeakerIcon fill="#1db954" height={16} width={16} />}
+
+        <div style={{ padding: 8 }}>
+          {isCurrent ? <SpeakerIcon fill='#1db954' height={16} width={16} /> : null}
+        </div>
       </div>
     </button>
   );
 };
 
 const Card = memo((props) => {
-  const collapsed = false; // mock collapsed state
-  const onDoubleClick = () => console.log('Double click playback mock');
+  const collapsed = useAppSelector((state) => state.ui.libraryCollapsed);
 
-  return collapsed
-    ? <CollapsedCard {...props} onDoubleClick={onDoubleClick} />
-    : <CardList {...props} onDoubleClick={onDoubleClick} />;
+  const onDoubleClick = () => {
+    playerService.startPlayback({ context_uri: props.uri });
+  };
+
+  if (collapsed) {
+    return <CollapsedCard {...props} onDoubleClick={onDoubleClick} />;
+  }
+  return <CardList {...props} onDoubleClick={onDoubleClick} />;
 });
 
-export const ArtistCardShort = ({ artist }) => {
+const ArtistCardShort = ({ artist }) => {
   const navigate = useNavigate();
-  const onClick = () => navigate(`/artist/${artist.id}`);
+  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
+
+  const onClick = () => {
+    navigate(`/artist/${artist.id}`);
+  };
+
   return (
-    <Card
-      rounded
-      subtitle="Artist"
-      onClick={onClick}
-      title={artist.name}
-      isCurrent={false}
-      image={artist?.images[0]?.url || ARTISTS_DEFAULT_IMAGE}
-    />
+    <ArtistActionsWrapper artist={artist} trigger={['contextMenu']}>
+      <div>
+        <Card
+          rounded
+          uri={artist.uri}
+          subtitle='Artist'
+          onClick={onClick}
+          title={artist.name}
+          isCurrent={contextUri === artist.uri}
+          image={artist?.images[0]?.url || ARTISTS_DEFAULT_IMAGE}
+        />
+      </div>
+    </ArtistActionsWrapper>
   );
 };
 
-export const AlbumCardShort = memo(({ album }) => {
+const AlbumCardShort = memo(({ album }) => {
   const navigate = useNavigate();
-  const onClick = useCallback(() => navigate(`/album/${album.id}`), [album.id, navigate]);
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector((state) => state.auth.user?.id);
+  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
+
+  const onClick = useCallback(() => {
+    if (!userId) {
+      return dispatch(uiActions.openLoginModal(album.images[0].url));
+    }
+    navigate(`/album/${album.id}`);
+  }, [userId, navigate, album.id, album.images, dispatch]);
 
   return (
-    <Card
-      uri={album.uri}
-      onClick={onClick}
-      title={album.name}
-      image={album?.images?.[0]?.url ?? 'https://via.placeholder.com/300'}
-      subtitle={album?.artists?.[0]?.name ?? 'Unknown Artist'}
-      isCurrent={false}
-    />
+    <AlbumActionsWrapper album={album} trigger={['contextMenu']}>
+      <div>
+        <Card
+          uri={album.uri}
+          onClick={onClick}
+          title={album.name}
+          image={album.images[0].url}
+          subtitle={album.artists[0].name}
+          isCurrent={contextUri === album.uri}
+        />
+      </div>
+    </AlbumActionsWrapper>
   );
 });
 
 const PlaylistCardShort = memo(({ playlist }) => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const onClick = () => navigate(`/playlist/${playlist.id}`);
+  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
+
+  const onClick = () => {
+    if (playlist.id === 'liked-songs') {
+      navigate('/collection/tracks');
+      return;
+    }
+    navigate(`/playlist/${playlist.id}`);
+  };
 
   return (
-    <Card
-      onClick={onClick}
-      uri={playlist.uri}
-      title={playlist.name}
-      disabled={!playlist.tracks?.total}
-      isCurrent={false}
-      subtitle={`Playlist • ${playlist.owner?.display_name}`}
-      image={playlist?.images?.[0]?.url || PLAYLIST_DEFAULT_IMAGE}
-    />
+    <PlayistActionsWrapper
+      playlist={playlist}
+      trigger={['contextMenu']}
+      onRefresh={() => {
+        dispatch(yourLibraryActions.fetchMyPlaylists());
+      }}
+    >
+      <div>
+        <Card
+          onClick={onClick}
+          uri={playlist.uri}
+          title={playlist.name}
+          disabled={!playlist.tracks?.total}
+          isCurrent={contextUri === playlist.uri}
+          subtitle={`Playlist • ${playlist.owner?.display_name}`}
+          image={playlist?.images?.length ? playlist?.images[0]?.url : PLAYLIST_DEFAULT_IMAGE}
+        />
+      </div>
+    </PlayistActionsWrapper>
   );
 });
 

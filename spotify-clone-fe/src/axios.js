@@ -1,28 +1,36 @@
 import Axios from 'axios';
+// import { getRefreshToken } from './utils/spotify/login';  // Nếu bạn tự xây dựng API, bạn có thể thay đổi hoặc xóa đoạn này.
 import { getFromLocalStorageWithExpiry } from './utils/localstorage';
 
-const path = 'https://api.spotify.com/v1';
+const path = '';  
 
-const access_token = getFromLocalStorageWithExpiry('access_token');
+const access_token = getFromLocalStorageWithExpiry('access_token');  // Lấy access token từ localStorage (vẫn dùng token nếu cần).
 
 const axios = Axios.create({
-  baseURL: path,
+  baseURL: path,  // Thay đổi baseURL cho API tự xây dựng.
   headers: {},
 });
 
-// Nếu có sẵn token trong localStorage thì gắn vào
 if (access_token) {
   axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
 }
 
-// Bỏ auto-refresh token
+// Xử lý các phản hồi và lỗi từ API (Interceptor).
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      console.warn('[Spotify API] Token không hợp lệ – bỏ qua refresh');
-      // Tùy ý: bạn có thể redirect về home hoặc log thêm
-      return Promise.reject(error);
+    if (error.response.status === 401) {
+      return getRefreshToken()
+        .then((token) => {
+          if (!token) return Promise.reject(error);
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+          error.config.headers['Authorization'] = 'Bearer ' + token;
+          return axios(error.config);
+        })
+        .catch(() => {
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('access_token');
+        });
     }
     return Promise.reject(error);
   }

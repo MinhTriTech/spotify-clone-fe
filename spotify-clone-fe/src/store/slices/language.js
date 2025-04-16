@@ -17,7 +17,7 @@ const languageSlice = createSlice({
     },
     closeLanguageModal(state, action) {
       state.isModalOpen = false;
-      if (action.payload.language) {
+      if (action.payload && action.payload.language) {
         state.language = action.payload.language;
       }
     },

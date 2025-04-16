@@ -1,0 +1,21 @@
+.modern-slider-container {
+    padding: 8px 0; /* Thêm padding để dễ tương tác hơn */
+  }
+  
+  .rc-slider-handle:active {
+    box-shadow: 0 0 5px #1ed760 !important; /* Hiệu ứng khi handle được nhấn */
+    transform: scale(1.1); /* Phóng to nhẹ khi nhấn */
+  }
+  
+  .rc-slider-disabled {
+    opacity: 0.6;
+  }
+  
+  .rc-slider-disabled .rc-slider-track {
+    background-color: #888;
+  }
+  
+  .rc-slider-disabled .rc-slider-handle {
+    background-color: #888;
+    border-color: #888;
+  }

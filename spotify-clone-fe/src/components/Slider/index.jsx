@@ -1,81 +1,59 @@
-// @ts-ignore
-import { Direction, Slider as RPSlider } from 'react-player-controls';
+import React from 'react';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
-const SliderBar = ({
-  value,
-  style,
-  className,
-  direction
-}) => (
-  <div
-    className={className}
-    style={Object.assign(
-      {},
-      {
-        position: 'absolute',
-        borderRadius: 4,
-      },
-      {
-        top: 0,
-        bottom: 0,
-        left: 0,
-        width: `${value * 100}%`,
-      },
-      style
-    )}
-  />
-);
+const ModernSlider = ({ isEnabled, value, onChange, onChangeStart, onChangeComplete }) => {
+  const handleChange = (newValue) => {
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
 
-const SliderHandle = ({
-  value,
-  style,
-  className,
-  direction
-}) => (
-  <div
-    className={className}
-    style={Object.assign(
-      {},
-      {
-        position: 'absolute',
-        width: 10,
-        height: 10,
-        borderRadius: '100%',
-        transform: 'scale(1)',
-        transition: 'transform 0.2s',
-        '&:hover': {
-          transform: 'scale(1.3)',
-        },
-      },
-      {
-        top: 0,
-        left: `${value * 100}%`,
-        marginTop: -3,
-        marginLeft: -8,
-      },
-      style
-    )}
-  />
-);
+  const handleBeforeChange = () => {
+    if (onChangeStart) {
+      onChangeStart();
+    }
+  };
 
-export const Slider = ({
-  isEnabled,
-  direction = Direction.HORIZONTAL,
-  value,
-  ...props
-}) => {
+  const handleAfterChange = (newValue) => { // Đổi tên hàm này thành handleComplete
+    if (onChangeComplete) {           // Và gọi onChangeComplete
+      onChangeComplete(newValue);
+    }
+  };
+
   return (
-    <div className='volume-sider-container'>
-      <RPSlider
-        isEnabled={isEnabled}
-        direction={direction}
-        className='volume-sider'
-        style={{ cursor: 'pointer' }}
-        {...props}
-      >
-        <SliderBar className='position-sider' direction={direction} value={value} />
-        <SliderHandle className='handler-sider' direction={direction} value={value} />
-      </RPSlider>
+    <div className="modern-slider-container">
+      <Slider
+        disabled={!isEnabled}
+        value={value}
+        onChange={handleChange}
+        onBeforeChange={handleBeforeChange}
+        onChangeComplete={handleAfterChange} // Sử dụng onChangeComplete
+        railStyle={{
+          backgroundColor: '#535353',
+          height: 4,
+          borderRadius: 2,
+        }}
+        trackStyle={{
+          backgroundColor: '#1ed760',
+          height: 4,
+          borderRadius: 2,
+        }}
+        handleStyle={[
+          {
+            borderColor: '#1ed760',
+            backgroundColor: '#1ed760',
+            width: 12,
+            height: 12,
+            borderRadius: '50%',
+            marginTop: -4,
+            opacity: 1,
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+          },
+        ]}
+      />
     </div>
   );
 };
+
+export default ModernSlider;

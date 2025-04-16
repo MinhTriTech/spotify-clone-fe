@@ -1,16 +1,19 @@
-import React, { memo, useState } from 'react';
 import { Modal } from 'antd';
+import { memo } from 'react';
 
 // Constants
 import { AVAILABLE_LANGUAGES } from '../../constants/languages';
 
-const LanguageModal = memo(() => {
-  // MOCK trạng thái modal mở / đóng
-  const [open, setOpen] = useState(false); // bạn có thể đổi thành true để test
+// Redux
+import { languageActions } from '../../store/slices/language';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+
+export const LanguageModal = memo(() => {
+  const dispatch = useAppDispatch();
+  const open = useAppSelector((state) => state.language.isModalOpen);
 
   const onClose = (value) => {
-    console.log('Selected language:', value || 'No change');
-    setOpen(false); // Đóng modal
+    dispatch(languageActions.closeLanguageModal({ language: value }));
   };
 
   return (
@@ -20,7 +23,7 @@ const LanguageModal = memo(() => {
       open={open}
       footer={null}
       destroyOnClose
-      className="language-modal"
+      className='language-modal'
       onCancel={() => onClose()}
       title={
         <h1
@@ -36,11 +39,11 @@ const LanguageModal = memo(() => {
         </h1>
       }
     >
-      <div className="language-grid">
+      <div className='language-grid'>
         {AVAILABLE_LANGUAGES.map((language) => (
           <button key={language.value} onClick={() => onClose(language.value)}>
-            <span className="title">{language.label}</span>
-            <span className="subtitle">{language.englishLabel}</span>
+            <span className='title'>{language.label}</span>
+            <span className='subtitle'>{language.englishLabel}</span>
           </button>
         ))}
       </div>
@@ -49,5 +52,3 @@ const LanguageModal = memo(() => {
 });
 
 LanguageModal.displayName = 'LanguageModal';
-
-export default LanguageModal;

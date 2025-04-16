@@ -1,17 +1,20 @@
-import React, { useMemo } from 'react';
+// Components
 import { Col } from 'antd';
 import { LibraryTitle } from '../Title';
 import { ListItemComponent } from './ListCards';
 import { CompactItemComponent } from './CompactCards';
 import { LibraryFilters, SearchArea } from '../Filters';
-import { GridItemComponent } from '../../../../Lists/list';
-import useIsMobile from '../../../../../utils/isMobile';
-import { LanguageButton } from '../Language';
-import { LibraryLoginInfo } from './loginInfo';
 
 // Redux
-import { useAppSelector } from '../../../../../store/store';
-import { getLibraryCollapsed } from '../../../../../store/slices/ui';
+import { useAppDispatch, useAppSelector } from '../../../../../store/store';
+import { getLibraryItems } from '../../../../../store/slices/yourLibrary';
+import { GridItemComponent } from '../../../../Lists/list';
+import { memo, useMemo } from 'react';
+import { isActiveOnOtherDevice } from '../../../../../store/slices/spotify';
+import useIsMobile from '../../../../../utils/isMobile';
+import { getLibraryCollapsed, uiActions } from '../../../../../store/slices/ui';
+import { LanguageButton } from '../Language';
+import { LibraryLoginInfo } from './loginInfo';
 
 const COLLAPSED_STYLE = {
   overflowY: 'scroll',
@@ -20,32 +23,34 @@ const COLLAPSED_STYLE = {
 
 const YourLibrary = () => {
   const collapsed = useAppSelector(getLibraryCollapsed);
-  const user = true; // bạn có thể gắn useAppSelector nếu có auth store
-  const activeOnOtherDevice = false;
+  const user = useAppSelector((state) => !!state.auth.user);
+  const activeOnOtherDevice = useAppSelector(isActiveOnOtherDevice);
 
   const heightValue = useMemo(() => {
     let value = 310;
+    if (!user) value = 270;
     if (collapsed) value = 218;
     if (activeOnOtherDevice) value += 50;
     return value;
-  }, [collapsed, activeOnOtherDevice]);
+  }, [user, collapsed, activeOnOtherDevice]);
 
   return (
     <div className={`Navigation-section library ${!collapsed ? 'open' : ''}`}>
       <LibraryTitle />
+
       {!collapsed && user ? <LibraryFilters /> : null}
 
-      <div className="library-list-container">
+      <div className='library-list-container'>
         <Col style={collapsed ? {} : COLLAPSED_STYLE}>
           <div
-            className="library-list"
+            className='library-list'
             style={{
               overflowY: 'scroll',
               overflowX: 'hidden',
-              height: `calc(100vh - ${heightValue}px)`,
+              height: `calc(100vh - ${heightValue}px`,
             }}
           >
-            {!user ? <AnonymousContent /> : <LoggedContent collapsed={collapsed} />}
+            {!user ? <AnonymousContent /> : <LoggedContent />}
           </div>
 
           {!user ? (
@@ -59,32 +64,21 @@ const YourLibrary = () => {
   );
 };
 
-const AnonymousContent = () => <LibraryLoginInfo />;
+const AnonymousContent = () => {
+  return <LibraryLoginInfo />;
+};
 
-const LoggedContent = ({ collapsed }) => {
+const LoggedContent = memo(() => {
   const isMobile = useIsMobile();
-
-  // ✅ MOCK data thư viện
-  const items = [
-    {
-      id: '1',
-      type: 'playlist',
-      name: 'Mock Playlist',
-      images: [{ url: 'https://via.placeholder.com/300' }],
-    },
-    {
-      id: '2',
-      type: 'album',
-      name: 'Mock Album',
-      images: [{ url: 'https://via.placeholder.com/300' }],
-    },
-  ];
-
-  const view = 'GRID'; // hoặc 'LIST' / 'COMPACT'
+  const dispatch = useAppDispatch();
+  const items = useAppSelector(getLibraryItems);
+  const collapsed = useAppSelector(getLibraryCollapsed);
+  const view = useAppSelector((state) => state.yourLibrary.view);
 
   return (
     <>
-      {!collapsed && <SearchArea />}
+      {!collapsed ? <SearchArea /> : null}
+
       <div
         className={`${collapsed ? 'collapsed' : ''} ${
           !collapsed && view === 'GRID' ? 'grid-view' : ''
@@ -94,16 +88,19 @@ const LoggedContent = ({ collapsed }) => {
           if (collapsed) return <ListItemComponent key={item.id} item={item} />;
 
           return (
-            <div key={item.id} onClick={isMobile ? () => console.log('collapse') : undefined}>
-              {view === 'LIST' && <ListItemComponent item={item} />}
-              {view === 'COMPACT' && <CompactItemComponent item={item} />}
-              {view === 'GRID' && <GridItemComponent item={item} />}
+            <div
+              key={item.id}
+              onClick={isMobile ? () => dispatch(uiActions.collapseLibrary()) : undefined}
+            >
+              {view === 'LIST' ? <ListItemComponent item={item} /> : ''}
+              {view === 'COMPACT' ? <CompactItemComponent item={item} /> : ''}
+              {view === 'GRID' ? <GridItemComponent item={item} /> : ''}
             </div>
           );
         })}
       </div>
     </>
   );
-};
+});
 
 export default YourLibrary;
