@@ -2,12 +2,11 @@ import { ArtistsCard } from './card';
 import { useAppSelector } from '../../../../../store/store';
 import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
 import FollowArtistButton from '../../../../../pages/Artist/container/controls/followButton';
-import { useTranslation } from 'react-i18next';
+// ❌ Đã xoá useTranslation
 
 export const Artist = () => {
-  const [t] = useTranslation(['playingBar']);
   const artist = useAppSelector((state) => state.playingNow.artist);
-  
+
   if (!artist) return null;
 
   return (
@@ -17,9 +16,9 @@ export const Artist = () => {
           id={artist.id}
           title={artist?.name}
           image={artist.images[0].url}
-          imageTitle={t('About the artist')}
+          imageTitle="Về nghệ sĩ"
           extra={<FollowArtistButton id={artist.id} />}
-          subtitle={`${artist.followers.total} ${t('followers')}`}
+          subtitle={`${artist.followers.total} người theo dõi`}
         />
       </div>
     </ArtistActionsWrapper>

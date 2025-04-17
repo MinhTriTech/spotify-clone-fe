@@ -1,13 +1,9 @@
 import { memo } from 'react';
 import WhiteButton from '../../../Button';
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch } from '../../../../store/store';
 import useIsMobile from '../../../../utils/isMobile';
 
 export const LoginFooter = memo(() => {
   const isMobile = useIsMobile();
-  const [t] = useTranslation(['home']);
-  const dispatch = useAppDispatch();
 
   if (isMobile) return null;
 
@@ -15,11 +11,11 @@ export const LoginFooter = memo(() => {
     <div className='login-footer' style={{ margin: '0px 10px' }}>
       <div className='login-container'>
         <div>
-          <p className='title'>{t('Preview')}</p>
-          <p className='description'>{t('Log In to access all the features of the app')}.</p>
+          <p className='title' style={{ textAlign: 'start' }}>Xem trước</p>
+          <p className='description'>Đăng nhập để sử dụng đầy đủ tính năng của ứng dụng.</p>
         </div>
 
-        <WhiteButton title={t('Log In')} />
+        <WhiteButton title="Đăng nhập" />
       </div>
     </div>
   );

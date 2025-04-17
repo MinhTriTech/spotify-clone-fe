@@ -1,49 +1,18 @@
-import React, { memo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../store/store';
+import { memo } from 'react';
 
 import { GridItemList } from '../../../../components/Lists/list';
 import { getItemDescription } from '../../../../utils/getDescription';
 
 export const RecentlyPlayed = memo(() => {
-  const { t } = useTranslation(['home']);
+  const recentlyPlayed = useAppSelector((state) => state.home.recentlyPlayed);
 
-  // ✅ Dữ liệu mock
-  const recentlyPlayed = [
-    {
-      id: 'rp1',
-      type: 'playlist',
-      name: 'Morning Chill',
-      description: 'Calm music to start your day.',
-      uri: 'spotify:playlist:rp1',
-      images: [{ url: 'https://via.placeholder.com/300' }],
-      owner: { display_name: 'Spotify' },
-    },
-    {
-      id: 'rp2',
-      type: 'album',
-      name: 'Lo-fi Beats',
-      description: 'Relax and study with these tracks.',
-      uri: 'spotify:album:rp2',
-      images: [{ url: 'https://via.placeholder.com/300' }],
-      owner: { display_name: 'Spotify' },
-    },
-    {
-      id: 'rp3',
-      type: 'playlist',
-      name: 'Afternoon Vibes',
-      description: 'Groove through your midday.',
-      uri: 'spotify:playlist:rp3',
-      images: [{ url: 'https://via.placeholder.com/300' }],
-      owner: { display_name: 'Spotify' },
-    },
-  ];
-
-  if (!recentlyPlayed || recentlyPlayed.length === 0) return null;
+  if (!recentlyPlayed || !recentlyPlayed.length) return null;
 
   return (
-    <div className="home">
+    <div className='home'>
       <GridItemList
-        title={t('Recently played')}
+        title="Nghe gần đây"
         items={recentlyPlayed.slice(0, 10)}
         getDescription={getItemDescription}
       />

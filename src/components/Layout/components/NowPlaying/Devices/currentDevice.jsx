@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { MenuIcon } from '../../../../Icons';
-import { useTranslation } from 'react-i18next';
+// ❌ Đã gỡ useTranslation
 import { DeviceIcons } from '../../../../../utils/spotify/getDeviceIcon';
 
 // Redux
@@ -9,7 +9,6 @@ import { getCurrentDevice } from '../../../../../store/slices/spotify';
 import { EQUILISER_IMAGE } from '../../../../../constants/spotify';
 
 export const CurrentDevice = memo(() => {
-  const [t] = useTranslation(['playingBar']);
   const currentDevice = useAppSelector(getCurrentDevice);
   const isPlaying = useAppSelector((state) => !state.spotify.state?.paused);
 
@@ -30,7 +29,7 @@ export const CurrentDevice = memo(() => {
               )}
             </div>
             <p>
-              <span>{t('Current device')}</span>
+              <span>Thiết bị hiện tại</span>
             </p>
           </div>
           <div className="area-header-content-second">

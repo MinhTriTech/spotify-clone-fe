@@ -54,7 +54,7 @@ const AppLayout = memo((props) => {
   return (
     <>
       {/* Modals & Drawers */}
-      <LanguageModal />
+      {/* <LanguageModal /> */}
       <LibraryDrawer />
       <PlayingNowDrawer />
       <EditPlaylistModal />

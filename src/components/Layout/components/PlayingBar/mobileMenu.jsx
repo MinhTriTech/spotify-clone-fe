@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { HomeIcon, LibraryIcon, SearchIcon } from '../../../Icons';
 
-// I18n
-import { useTranslation } from 'react-i18next';
+// ❌ Đã xoá useTranslation
 
 // Redux
 import { useDispatch } from 'react-redux';
@@ -12,8 +11,6 @@ export const MobileMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [t] = useTranslation(['playingBar']);
-
   return (
     <footer className='mobile-menu'>
       <button
@@ -22,7 +19,7 @@ export const MobileMenu = () => {
         }}
       >
         <HomeIcon />
-        <p>{t('Home')}</p>
+        <p>Trang chủ</p>
       </button>
 
       <button
@@ -31,12 +28,12 @@ export const MobileMenu = () => {
         }}
       >
         <SearchIcon />
-        <p>{t('Search')}</p>
+        <p>Tìm kiếm</p>
       </button>
 
       <button onClick={() => dispatch(uiActions.toggleLibrary())}>
         <LibraryIcon />
-        <p>{t('Your Library')}</p>
+        <p>Thư viện</p>
       </button>
     </footer>
   );

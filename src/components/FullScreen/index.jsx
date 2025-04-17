@@ -5,17 +5,16 @@ import VolumeControls from '../Layout/components/PlayingBar/Volume';
 import ControlButtons from '../Layout/components/PlayingBar/ControlButtons';
 import SongProgressBar from '../Layout/components/PlayingBar/SongProgressBar';
 
-import { useTranslation } from 'react-i18next';
+// ❌ Đã gỡ useTranslation
 import { Tooltip } from '../Tooltip';
 import AddSongToLibraryButton from '../Actions/AddSongToLibrary';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { spotifyActions } from '../../store/slices/spotify';
 
 const ExpandOutButton = (props) => {
-  const [t] = useTranslation(['playingBar']);
   return (
-    <Tooltip title={t('Exit full screen')}>
-      <button title={t('Exit full screen')} style={{ marginLeft: 20 }} onClick={props.onExit}>
+    <Tooltip title="Thoát toàn màn hình">
+      <button title="Thoát toàn màn hình" style={{ marginLeft: 20 }} onClick={props.onExit}>
         <ExpandOutIcon />
       </button>
     </Tooltip>

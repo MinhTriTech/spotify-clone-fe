@@ -2,8 +2,7 @@ import { Input, Space } from 'antd';
 import NavigationButton from './NavigationButton';
 import { ActiveMessageIcon, ActiveHomeIcon, BrowseIcon, HomeIcon, MessageIcon, SearchIcon } from '../../../Icons';
 
-// Utils
-import { useTranslation } from 'react-i18next';
+// ❌ Đã xoá useTranslation
 import { useLocation, useNavigate } from 'react-router-dom';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useDebounce } from 'use-debounce';
@@ -23,7 +22,6 @@ function usePrevious(value) {
 export const Search = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation(['navbar']);
 
   const [inputValue, setInputValue] = useState('');
   const [debouncedValue] = useDebounce(inputValue, 600);
@@ -40,13 +38,13 @@ export const Search = memo(() => {
   return (
     <Space size={10} align="center">
       <NavigationButton
-        text={t('Home')}
+        text="Trang chủ"
         icon={isHome ? <ActiveHomeIcon /> : <HomeIcon />}
         onClick={() => navigate('/')}
       />
 
       <NavigationButton
-        text={t('Message')}
+        text="Tin nhắn"
         icon={isHome ? <ActiveMessageIcon /> : <MessageIcon />}
         onClick={() => navigate('/')}
       />
@@ -68,7 +66,7 @@ export const Search = memo(() => {
         onChange={(e) => {
           setInputValue(e.target.value);
         }}
-        placeholder={t('SearchPlaceholder')}
+        placeholder="Tìm kiếm bài hát, nghệ sĩ, playlist..."
       />
     </Space>
   );

@@ -4,8 +4,7 @@ import AlbumActionsWrapper from '../Actions/AlbumActions';
 import ArtistActionsWrapper from '../Actions/ArtistActions';
 import PlayistActionsWrapper from '../Actions/PlaylistActions';
 
-// Utils
-import { useTranslation } from 'react-i18next';
+// ❌ Đã xoá useTranslation
 import { useNavigate } from 'react-router-dom';
 
 // Redux
@@ -53,10 +52,8 @@ const Card = ({ uri, title, image, rounded, description, onClick, context }) => 
 
 export const ArtistCard = ({ item, onClick, getDescription }) => {
   const navigate = useNavigate();
-  const [t] = useTranslation(['artist']);
-
   const title = item.name;
-  const description = getDescription ? getDescription(item) : t('Artist');
+  const description = getDescription ? getDescription(item) : 'Nghệ sĩ';
 
   return (
     <ArtistActionsWrapper artist={item} trigger={['contextMenu']}>
@@ -88,7 +85,7 @@ export const AlbumCard = ({ item, onClick, getDescription }) => {
   }, [user, navigate, item.id, item.images, dispatch]);
 
   const title = item.name;
-  const description = item.artists?.slice(0, 3).map((artist) => artist.name).join(', ') || 'Unknown Artist';
+  const description = item.artists?.slice(0, 3).map((artist) => artist.name).join(', ') || 'Không rõ nghệ sĩ';
 
   return (
     <AlbumActionsWrapper album={item} trigger={['contextMenu']}>
@@ -108,12 +105,10 @@ export const AlbumCard = ({ item, onClick, getDescription }) => {
 
 export const PlaylistCard = ({ item, onClick, getDescription }) => {
   const navigate = useNavigate();
-  const [t] = useTranslation(['playlist']);
-
   const title = item.name;
   const description = getDescription
     ? getDescription(item)
-    : item.tracks?.total + ' ' + t(item.tracks?.total === 1 ? 'song' : 'songs');
+    : item.tracks?.total + (item.tracks?.total === 1 ? ' bài hát' : ' bài hát');
 
   return (
     <PlayistActionsWrapper playlist={item} trigger={['contextMenu']}>

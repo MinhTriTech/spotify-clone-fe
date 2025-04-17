@@ -9,7 +9,6 @@ import { memo, useMemo } from 'react';
 
 // Utils
 import { groupBy } from 'lodash';
-import { useTranslation } from 'react-i18next';
 
 // Redux
 import { useAppSelector } from '../../../../store/store';
@@ -18,7 +17,6 @@ import { useAppSelector } from '../../../../store/store';
 import { DEFAULT_PAGE_COLOR } from '../../../../constants/spotify';
 
 export const AlbumList = memo(({ color }) => {
-  const [t] = useTranslation(['playlist']);
   const tracks = useAppSelector((state) => state.album.tracks);
 
   const disks = useMemo(() => {
@@ -44,7 +42,7 @@ export const AlbumList = memo(({ color }) => {
           <div key={`disk-${diskIndex}`}>
             {disks.length > 1 ? (
               <div className='disk-section'>
-                <AlbumIcon /> {t('Disk')} {diskIndex + 1}
+                <AlbumIcon /> Đĩa {diskIndex + 1}
               </div>
             ) : null}
             {disk.map((song, index) => (

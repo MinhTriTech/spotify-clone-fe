@@ -4,17 +4,18 @@ import { LibraryTitle } from '../Title';
 import { ListItemComponent } from './ListCards';
 import { CompactItemComponent } from './CompactCards';
 import { LibraryFilters, SearchArea } from '../Filters';
+import { GridItemComponent } from '../../../../Lists/list';
+import { memo, useMemo } from 'react';
+import { LibraryLoginInfo } from './loginInfo';
 
 // Redux
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { getLibraryItems } from '../../../../../store/slices/yourLibrary';
-import { GridItemComponent } from '../../../../Lists/list';
-import { memo, useMemo } from 'react';
 import { isActiveOnOtherDevice } from '../../../../../store/slices/spotify';
-import useIsMobile from '../../../../../utils/isMobile';
 import { getLibraryCollapsed, uiActions } from '../../../../../store/slices/ui';
-import { LanguageButton } from '../Language';
-import { LibraryLoginInfo } from './loginInfo';
+
+// Utils
+import useIsMobile from '../../../../../utils/isMobile';
 
 const COLLAPSED_STYLE = {
   overflowY: 'scroll',
@@ -52,12 +53,6 @@ const YourLibrary = () => {
           >
             {!user ? <AnonymousContent /> : <LoggedContent />}
           </div>
-
-          {!user ? (
-            <div style={{ marginLeft: 10 }}>
-              <LanguageButton />
-            </div>
-          ) : null}
         </Col>
       </div>
     </div>
@@ -92,9 +87,9 @@ const LoggedContent = memo(() => {
               key={item.id}
               onClick={isMobile ? () => dispatch(uiActions.collapseLibrary()) : undefined}
             >
-              {view === 'LIST' ? <ListItemComponent item={item} /> : ''}
-              {view === 'COMPACT' ? <CompactItemComponent item={item} /> : ''}
-              {view === 'GRID' ? <GridItemComponent item={item} /> : ''}
+              {view === 'LIST' && <ListItemComponent item={item} />}
+              {view === 'COMPACT' && <CompactItemComponent item={item} />}
+              {view === 'GRID' && <GridItemComponent item={item} />}
             </div>
           );
         })}

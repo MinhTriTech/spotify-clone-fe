@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import './styles/App.scss';
 
 // Utils
@@ -21,6 +20,8 @@ import { persistor, store, useAppDispatch, useAppSelector } from './store/store'
 import SearchContainer from './pages/Search/Container';
 import { playerService } from './services/player';
 import { Spinner } from './components/spinner';
+
+const LoginPage = lazy(() => import('./pages/Login'));
 
 const Home = lazy(() => import('./pages/Home'));
 const Page404 = lazy(() => import('./pages/404'));
@@ -89,6 +90,7 @@ const RoutesComponent = memo(() => {
           { path: '', element: <SearchPage container={container} /> },
         ],
       },
+      { path: '/login', element: <LoginPage />, public: true },
       { path: '*', element: <Page404 /> },
     ].filter((r) => (user ? true : r.public));
   }, [user]);

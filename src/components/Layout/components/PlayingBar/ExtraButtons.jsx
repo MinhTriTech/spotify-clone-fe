@@ -15,8 +15,7 @@ import {
   PhoneIcon,
 } from '../../../Icons';
 
-// I18n
-import { useTranslation } from 'react-i18next';
+// ❌ Đã gỡ useTranslation
 
 // Redux
 import { uiActions } from '../../../../store/slices/ui';
@@ -25,10 +24,9 @@ import { useAppDispatch, useAppSelector } from '../../../../store/store';
 
 const LyricsButton = () => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation(['playingBar']);
 
   return (
-    <Tooltip title={t('Lyrics')}>
+    <Tooltip title="Lời bài hát">
       <button
         style={{ marginLeft: 5, marginRight: 5 }}
         onClick={() => dispatch(languageActions.openLanguageModal())}
@@ -41,35 +39,31 @@ const LyricsButton = () => {
 
 const DetailsButton = () => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation(['playingBar']);
-
   const active = useAppSelector((state) => !state.ui.detailsCollapsed);
 
   return (
-    <>
-      <Tooltip title={t('Now playing view')}>
-        <button
-          className={active ? 'active-icon-button tablet-hidden' : 'tablet-hidden'}
-          onClick={() => dispatch(uiActions.toggleDetails())}
-          style={{
-            marginLeft: 5,
-            marginRight: 10,
-            cursor: 'pointer',
-          }}
-        >
-          <DetailsIcon active={active} />
-        </button>
-      </Tooltip>
-    </>
+    <Tooltip title="Xem bài hát đang phát">
+      <button
+        className={active ? 'active-icon-button tablet-hidden' : 'tablet-hidden'}
+        onClick={() => dispatch(uiActions.toggleDetails())}
+        style={{
+          marginLeft: 5,
+          marginRight: 10,
+          cursor: 'pointer',
+        }}
+      >
+        <DetailsIcon active={active} />
+      </button>
+    </Tooltip>
   );
 };
 
 const QueueButton = () => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation(['playingBar']);
   const queueCollapsed = useAppSelector((state) => state.ui.queueCollapsed);
+
   return (
-    <Tooltip title={t('Queue')}>
+    <Tooltip title="Hàng đợi">
       <button
         onClick={() => dispatch(uiActions.toggleQueue())}
         className={!queueCollapsed ? 'active-icon-button' : ''}
@@ -86,8 +80,6 @@ const QueueButton = () => {
 };
 
 const ExpandButton = () => {
-  const { t } = useTranslation(['playingBar']);
-
   const handle = useFullScreenHandle();
   const isQueueOpen = useAppSelector((state) => !state.ui.queueCollapsed);
 
@@ -97,9 +89,9 @@ const ExpandButton = () => {
         <FullScreenPlayer onExit={handle.exit} />
       </FullScreen>
 
-      <Tooltip title={t('Full Screen')}>
+      <Tooltip title="Toàn màn hình">
         <button
-          className='tablet-hidden'
+          className="tablet-hidden"
           onClick={handle.enter}
           style={{
             marginRight: 5,
@@ -115,13 +107,11 @@ const ExpandButton = () => {
 
 const DeviceButton = () => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation(['playingBar']);
   const isDeviceOpen = useAppSelector((state) => !state.ui.devicesCollapsed);
-
   const currentDevice = useAppSelector((state) => state.spotify.activeDeviceType);
 
   return (
-    <Tooltip title={t('Connect to a device')}>
+    <Tooltip title="Kết nối với thiết bị">
       <button
         onClick={() => dispatch(uiActions.toggleDevices())}
         className={isDeviceOpen ? 'active-icon-button' : ''}
@@ -140,14 +130,12 @@ const DeviceButton = () => {
 const ExtraControlButtons = () => {
   return (
     <div>
-      <Row gutter={18} align='middle'>
+      <Row gutter={18} align="middle">
         <DetailsButton />
-
         <LyricsButton />
-
         <QueueButton />
 
-        <Col className='hiddable-icon'>
+        <Col className="hiddable-icon">
           <DeviceButton />
         </Col>
 

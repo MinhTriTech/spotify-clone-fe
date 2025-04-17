@@ -2,8 +2,7 @@ import { Flex } from 'antd';
 import { Link } from 'react-router-dom';
 import { AlbumCard, ArtistCard, PlaylistCard, TrackCard } from './GridCards';
 
-// Utils
-import { useTranslation } from 'react-i18next';
+// ❌ Đã xoá useTranslation
 
 // Redux
 import { useAppSelector } from '../../store/store';
@@ -35,7 +34,7 @@ export const DeleteButton = (props) => {
     <div style={{ position: 'absolute', right: 8, top: 8, zIndex: 10 }}>
       <button
         className='item-delete-button'
-        aria-label='Remove'
+        aria-label='Xoá'
         onClick={(e) => {
           e.stopPropagation();
           props.onClick();
@@ -50,7 +49,6 @@ export const DeleteButton = (props) => {
 };
 
 export function GridItemList(props) {
-  const [t] = useTranslation(['artist']);
   const user = useAppSelector((state) => !!state.auth.user);
   const { onItemDelete, onItemClick, getDescription } = props;
   const { items, chips, title, moreUrl, extra, subtitle } = props;
@@ -77,7 +75,7 @@ export function GridItemList(props) {
         ) : moreUrl ? (
           <Link to={moreUrl}>
             <button className='showMore'>
-              <span>{t('Show more')}</span>
+              <span>Xem thêm</span>
             </button>
           </Link>
         ) : null}
@@ -85,7 +83,7 @@ export function GridItemList(props) {
 
       {chips}
       <div
-        className={`playlist-grid`}
+        className='playlist-grid'
         style={
           props.multipleRows
             ? {

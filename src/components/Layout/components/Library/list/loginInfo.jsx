@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { Popconfirm } from 'antd';
 import WhiteButton from '../../../../Button';
@@ -10,13 +10,17 @@ import { uiActions } from '../../../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 
 export const LibraryLoginInfo = memo(() => {
-  const [t] = useTranslation(['home']);
   const dispatch = useAppDispatch();
   const tooltipOpen = useAppSelector((state) => state.ui.loginTooltipOpen);
+  const navigate = useNavigate();
 
   const onClose = useCallback(() => {
     dispatch(uiActions.closeLoginTooltip());
   }, [dispatch]);
+
+  const handleLogin = useCallback(() => {
+    navigate('/login');
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     return () => {
@@ -30,22 +34,23 @@ export const LibraryLoginInfo = memo(() => {
       open={tooltipOpen}
       placement='left'
       onCancel={onClose}
-      okText={t('Log In')}
-      cancelText={t('Not now')}
-      title={t('Create a playlist')}
+      okText="Đăng nhập"
+      cancelText="Để sau"
+      title="Tạo playlist"
       cancelButtonProps={{ type: 'text' }}
       okButtonProps={{ className: 'white-button small' }}
-      description={t('Log in to create and share playlists.')}
+      description="Đăng nhập để tạo và chia sẻ playlist."
     >
       <div style={{ marginRight: -5 }}>
-        <DetailsCard title={t("Let's access your library")}>
+        <DetailsCard title="Truy cập thư viện của bạn">
           <p style={{ fontWeight: 400, color: '#fff' }}>
-            {t('Log In to access all the features of the app')}
+            Đăng nhập để sử dụng đầy đủ tính năng của ứng dụng
           </p>
           <div style={{ marginTop: 20, marginBottom: 30, position: 'relative' }}>
             <WhiteButton
               size='small'
-              title={t('Log In')}
+              title="Đăng nhập"
+              onClick={handleLogin}
             />
           </div>
         </DetailsCard>

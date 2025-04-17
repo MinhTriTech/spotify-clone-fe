@@ -1,39 +1,18 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../store/store';
 
 import { GridItemList } from '../../../../components/Lists/list';
 import { getPlaylistDescription } from '../../../../utils/getDescription';
 
 export const FeaturePlaylists = () => {
-  const { t } = useTranslation(['home']);
+  const featurePlaylists = useAppSelector((state) => state.home.featurePlaylists);
 
-  // ✅ MOCK dữ liệu
-  const featurePlaylists = [
-    {
-      id: '1',
-      type: 'playlist',
-      name: 'Summer Chill',
-      description: 'Feel the breeze with these relaxed tunes.',
-      images: [{ url: 'https://via.placeholder.com/300' }],
-      owner: { display_name: 'Spotify' },
-      uri: 'spotify:playlist:1'
-    },
-    {
-      id: '2',
-      type: 'playlist',
-      name: 'Focus Flow',
-      description: 'Stay productive with smooth instrumental beats.',
-      images: [{ url: 'https://via.placeholder.com/300' }],
-      owner: { display_name: 'Spotify' },
-      uri: 'spotify:playlist:2'
-    }
-  ];
+  if (!featurePlaylists || !featurePlaylists.length) return null;
 
   return (
-    <div className="home">
+    <div className='home'>
       <GridItemList
         items={featurePlaylists}
-        title={t('Featured playlists')}
+        title="Playlist nổi bật"
         getDescription={getPlaylistDescription}
       />
     </div>

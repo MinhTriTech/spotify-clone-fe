@@ -3,22 +3,21 @@ import { Space } from 'antd';
 import Chip from '../../../../components/Chip';
 import { PageHeader } from '../../../../components/Layout/components/Header';
 
-// i18n
-import { useTranslation } from 'react-i18next';
-
-const SECTIONS = ['ALL', 'MUSIC', 'PODCASTS'];
+const SECTIONS = [
+  { key: 'ALL', label: 'Tất cả' },
+  { key: 'MUSIC', label: 'Nhạc' },
+  { key: 'PODCASTS', label: 'Podcast' },
+];
 
 const ChipsSection = memo(({ section, setSection }) => {
-  const [t] = useTranslation(['home']);
-
   return (
     <Space style={{ marginLeft: 10, marginTop: 5, marginBottom: 5 }}>
       {SECTIONS.map((item) => (
         <Chip
-          key={item}
-          text={t(item)}
-          active={section === item}
-          onClick={() => setSection(item)}
+          key={item.key}
+          text={item.label}
+          active={section === item.key}
+          onClick={() => setSection(item.key)}
         />
       ))}
     </Space>
@@ -28,8 +27,6 @@ const ChipsSection = memo(({ section, setSection }) => {
 export const HomeHeader = ({ color, container, sectionContainer }) => {
   const [section, setSection] = useState('ALL'); // ✅ mock trạng thái lọc
   const user = true; // ✅ giả lập có user
-
-  // if (!user) return null;
 
   return (
     <PageHeader

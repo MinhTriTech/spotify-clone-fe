@@ -11,17 +11,15 @@ import { DEFAULT_PAGE_COLOR } from '../../constants/spotify';
 
 // Utils
 import tinycolor from 'tinycolor2';
-import { useTranslation } from 'react-i18next';
 import { getImageAnalysis2 } from '../../utils/imageAnyliser';
 import useIsMobile from '../../utils/isMobile';
 
 const LoginModal = memo(() => {
   const dispatch = useAppDispatch();
-  const [t] = useTranslation(['home']);
   const isMobile = useIsMobile();
 
-  const [open, setOpen] = useState(false);  // Sử dụng false thay vì <boolean>
-  const [color, setColor] = useState(DEFAULT_PAGE_COLOR);  // Sử dụng mặc định không cần kiểu string
+  const [open, setOpen] = useState(false);
+  const [color, setColor] = useState(DEFAULT_PAGE_COLOR);
 
   const imgUrl = useAppSelector((state) => state.ui.loginModalItem);
 
@@ -48,43 +46,40 @@ const LoginModal = memo(() => {
   if (!imgUrl) return null;
 
   return (
-    <>
-      <Modal
-        centered
-        width={780}
-        open={open}
-        footer={null}
-        destroyOnClose
-        onCancel={onClose}
-        className='login-modal'
-        wrapClassName='overlay-modal'
+    <Modal
+      centered
+      width={780}
+      open={open}
+      footer={null}
+      destroyOnClose
+      onCancel={onClose}
+      className='login-modal'
+      wrapClassName='overlay-modal'
+      style={{
+        ['--background-color']: color,
+      }}
+    >
+      <div
         style={{
-          // @ts-ignore (Nếu không còn cần thiết, bạn có thể xóa hoặc thay bằng cách khác)
-          ['--background-color']: color,
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: isMobile ? 'column' : 'row',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            flexDirection: isMobile ? 'column' : 'row',
-          }}
-        >
-          <div className='img-container'>
-            <img alt='' loading='lazy' src={imgUrl} />
-          </div>
-          <div className='content-container'>
-            <h2 style={{ lineHeight: 1.4 }}>{t('Start listening with a free Spotify account')}</h2>
+        <div className='img-container'>
+          <img alt='' loading='lazy' src={imgUrl} />
+        </div>
+        <div className='content-container'>
+          <h2 style={{ lineHeight: 1.4 }}>
+            Bắt đầu nghe với tài khoản Spotify miễn phí
+          </h2>
 
-            <div style={{ marginTop: 25 }}>
-              <WhiteButton
-                title={t('Log In')}
-              ></WhiteButton>
-            </div>
+          <div style={{ marginTop: 25 }}>
+            <WhiteButton title="Đăng nhập" />
           </div>
         </div>
-      </Modal>
-    </>
+      </div>
+    </Modal>
   );
 });
 

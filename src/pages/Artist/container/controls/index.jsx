@@ -5,14 +5,10 @@ import { FollowArtistButton } from './followButton';
 import { MenuDots } from '../../../../components/Icons';
 import { ArtistActionsWrapper } from '../../../../components/Actions/ArtistActions';
 
-// Utils
-import { useTranslation } from 'react-i18next';
-
-// Interfaces
+// Redux
 import { useAppSelector } from '../../../../store/store';
 
 const ArtistControls = () => {
-  const [tor] = useTranslation(['order']);
   const artist = useAppSelector((state) => state.artist.artist);
 
   return (
@@ -27,7 +23,7 @@ const ArtistControls = () => {
             </div>
 
             <ArtistActionsWrapper artist={artist} trigger={['click']}>
-              <Tooltip title={`${tor('More options for')} ${artist?.name}`}>
+              <Tooltip title={`Tùy chọn khác cho ${artist?.name}`}>
                 <div className="scale">
                   <MenuDots />
                 </div>

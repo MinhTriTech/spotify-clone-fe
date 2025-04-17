@@ -1,8 +1,5 @@
 import { memo, useEffect, useState } from 'react';
 
-// Utils
-import { useTranslation } from 'react-i18next';
-
 // Redux
 import { useAppSelector } from '../../../store/store';
 
@@ -19,7 +16,6 @@ const VerifiedIcon = () => (
 );
 
 const ArtistHeader = ({ color, container }) => {
-  const [t] = useTranslation(['artist']);
   const [scroll, setScroll] = useState(0);
   const artist = useAppSelector((state) => state.artist.artist);
 
@@ -70,14 +66,14 @@ const ArtistHeader = ({ color, container }) => {
             <span className="verifyContainer">
               <div className="verifyDiv"></div>
               <VerifiedIcon />
-              <span>{t('Verified Artist')}</span>
+              <span>Nghệ sĩ đã xác thực</span>
             </span>
 
             <span className="artistName">
               <h1>{artist?.name}</h1>
             </span>
             <span className="listeners">
-              {artist?.followers.total} {t('followers')}
+              {artist?.followers.total} người theo dõi
             </span>
           </div>
         </div>

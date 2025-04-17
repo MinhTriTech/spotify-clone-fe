@@ -1,44 +1,21 @@
-import React, { memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../store/store';
+import { memo, useMemo } from 'react';
+
 import { GridItemList } from '../../../../components/Lists/list';
 
 export const YourPlaylists = memo(() => {
-  const { t } = useTranslation(['home']);
-
-  // ✅ Mock user ID
-  const userId = 'mock-user-id';
-
-  // ✅ Mock danh sách playlist
-  const playlists = [
-    {
-      id: '1',
-      uri: 'spotify:playlist:1',
-      type: 'playlist',
-      name: 'My Chill Vibes',
-      description: 'Relaxing and calm',
-      owner: { id: 'mock-user-id' },
-      images: [{ url: 'https://via.placeholder.com/300' }]
-    },
-    {
-      id: '2',
-      uri: 'spotify:playlist:2',
-      type: 'playlist',
-      name: 'Workout Beats',
-      description: 'Pump it up',
-      owner: { id: 'mock-user-id' },
-      images: [{ url: 'https://via.placeholder.com/300' }]
-    }
-  ];
+  const user = useAppSelector((state) => state.auth.user?.id);
+  const playlists = useAppSelector((state) => state.yourLibrary.myPlaylists);
 
   const items = useMemo(() => {
-    return playlists.filter((p) => p.owner?.id === userId).slice(0, 12);
-  }, [playlists, userId]);
+    return playlists.filter((p) => p.owner?.id === user).slice(0, 12);
+  }, [playlists, user]);
 
-  if (!items || items.length === 0) return null;
+  if (!items || !items.length) return null;
 
   return (
-    <div className="home">
-      <GridItemList items={items} title={t('Your playlists')} />
+    <div className='home'>
+      <GridItemList items={items} title="Playlist của bạn" />
     </div>
   );
 });
