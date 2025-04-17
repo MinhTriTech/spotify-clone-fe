@@ -11,9 +11,3 @@ export const login = async (userData) => {
 };
 
 
-// Xóa sau khi test
-export const getUser = async () => {
-  const response = await axios.get('api/auth/userInfo/');
-  return response.data;
-};
-

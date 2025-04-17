@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { handleLogin, handleRegister, handleGetUser } from '../../store/slices/auth';
+import { handleLogin, handleRegister } from '../../store/slices/auth';
 import { GoogleIcon } from '../../components/Icons';
 import { uiActions } from '../../store/slices/ui';
 
@@ -27,8 +27,7 @@ function LoginPage() {
     e.preventDefault();
     try {
       await dispatch(handleLogin({ username, password })).unwrap();
-      console.log('Đăng nhập thành công');
-      // dispatch(uiActions.toggleLoginModalMain());
+      dispatch(uiActions.toggleLoginModalMain());
     } catch (err) {
       console.error('Đăng nhập thất bại:', err);
       setErrorMessage('Đăng nhập thất bại. Kiểm tra username và password.');
@@ -52,15 +51,8 @@ function LoginPage() {
     }
   };
 
-  // Xóa sau khi test
   const handleGoogleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await dispatch(handleGetUser()).unwrap();
-      console.log('Thông tin người dùng đã được tải');
-    } catch (err) {
-      console.log('Thất bại');
-    }
+
   };
 
   const toggleRegister = () => {
