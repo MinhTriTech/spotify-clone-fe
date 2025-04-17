@@ -9,12 +9,16 @@ const initialState = {
   loginTooltipOpen: false,
   loginButtonOpen: false,
   loginModalItem: null, 
+  loginModalMain: true,
 };
 
 const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
+    toggleLoginModalMain(state) {
+      state.loginModalMain = !state.loginModalMain;
+    },
     openLoginButton(state) {
       state.loginButtonOpen = true;
       state.loginModalItem = null;

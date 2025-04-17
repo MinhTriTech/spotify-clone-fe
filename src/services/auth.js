@@ -10,3 +10,10 @@ export const login = async (userData) => {
   return response.data;
 };
 
+
+// Xóa sau khi test
+export const getUser = async () => {
+  const response = await axios.get('api/auth/userInfo/');
+  return response.data;
+};
+

@@ -16,20 +16,20 @@ axios.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url.includes('/api/auth/refresh')) {
+      if (originalRequest.url.includes('/api/auth/refresh/')) {
         console.error('Refresh token failed.');
-        window.location.href = '/login'; 
+        // window.location.href = '/'; 
         return Promise.reject(error);
       }
 
       originalRequest._retry = true; 
 
       try {
-        await axios.post('/api/auth/refresh'); 
+        await axios.post('/api/auth/refresh/'); 
         return axios(originalRequest);
       } catch (refreshError) {
         console.error('Refresh token failed:', refreshError);
-        window.location.href = '/login';
+        // window.location.href = '/';
         return Promise.reject(refreshError);
       }
     }

@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 // Utils
 import axios from '../../axios';
-// import login from '../../utils/spotify/login'; // ❌ Không cần nữa
 
 // Services
 import { authService } from '../../services/auth';

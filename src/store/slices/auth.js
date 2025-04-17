@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { register, login } from '../../services/auth';
+import { register, login, getUser } from '../../services/auth';
 
 const initialState = {
   user: null,
@@ -15,6 +15,14 @@ export const handleRegister = createAsyncThunk('auth/register', async (userData)
 
 export const handleLogin = createAsyncThunk('auth/login', async (userData) => {
   const response = await login(userData);
+
+  return response;
+});
+
+
+// Xóa sau khi test
+export const handleGetUser = createAsyncThunk('auth/getUser', async () => {
+  const response = await getUser();
 
   return response;
 });
@@ -50,6 +58,20 @@ const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(handleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      // Xóa sau khi test
+      .addCase(handleGetUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(handleGetUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;  // Cập nhật thông tin người dùng từ getUser
+      })
+      .addCase(handleGetUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

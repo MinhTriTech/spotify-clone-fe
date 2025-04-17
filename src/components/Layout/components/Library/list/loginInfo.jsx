@@ -19,7 +19,7 @@ export const LibraryLoginInfo = memo(() => {
   }, [dispatch]);
 
   const handleLogin = useCallback(() => {
-    navigate('/login');
+    dispatch(uiActions.toggleLoginModalMain());
   }, [dispatch, navigate]);
 
   useEffect(() => {

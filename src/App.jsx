@@ -89,7 +89,6 @@ const RoutesComponent = memo(() => {
           { path: '', element: <SearchPage container={container} /> },
         ],
       },
-      { path: '/login', element: <LoginPage />, public: true },
       { path: '*', element: <Page404 /> },
     ].filter((r) => (user ? true : r.public));
   }, [user]);
@@ -134,10 +133,9 @@ const RoutesComponent = memo(() => {
 const RootComponent = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
-  const token = useAppSelector((state) => state.auth.token);
   const language = useAppSelector((state) => state.language.language);
   const playing = useAppSelector((state) => !state.spotify.state?.paused);
-  const requesting = useAppSelector((state) => state.auth.requesting);
+  const loginModalMain = useAppSelector((state) => !!state.ui.loginModalMain);
 
   useEffect(() => {
     document.documentElement.setAttribute('lang', language);
@@ -179,6 +177,10 @@ const RootComponent = () => {
   // if (!user) {
   //   return <Spinner loading={requesting} />;
   // }
+
+  if (!loginModalMain) {
+    return <LoginPage />;
+  }
 
   return (
     <Router>
