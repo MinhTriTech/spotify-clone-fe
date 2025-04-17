@@ -1,39 +1,41 @@
 import Axios from 'axios';
-// import { getRefreshToken } from './utils/spotify/login';  // Nếu bạn tự xây dựng API, bạn có thể thay đổi hoặc xóa đoạn này.
-import { getFromLocalStorageWithExpiry } from './utils/localstorage';
 
-const path = '';  
-
-const access_token = getFromLocalStorageWithExpiry('access_token');  // Lấy access token từ localStorage (vẫn dùng token nếu cần).
+const path = 'http://127.0.0.1:8000/';  
 
 const axios = Axios.create({
-  baseURL: path,  // Thay đổi baseURL cho API tự xây dựng.
-  headers: {},
+  baseURL: path,  
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
 });
 
-if (access_token) {
-  axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
-}
-
-// Xử lý các phản hồi và lỗi từ API (Interceptor).
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response.status === 401) {
-      return getRefreshToken()
-        .then((token) => {
-          if (!token) return Promise.reject(error);
-          axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-          error.config.headers['Authorization'] = 'Bearer ' + token;
-          return axios(error.config);
-        })
-        .catch(() => {
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('access_token');
-        });
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      if (originalRequest.url.includes('/api/auth/refresh')) {
+        console.error('Refresh token failed.');
+        window.location.href = '/login'; 
+        return Promise.reject(error);
+      }
+
+      originalRequest._retry = true; 
+
+      try {
+        await axios.post('/api/auth/refresh'); 
+        return axios(originalRequest);
+      } catch (refreshError) {
+        console.error('Refresh token failed:', refreshError);
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
     }
     return Promise.reject(error);
   }
 );
+
 
 export default axios;

@@ -22,21 +22,6 @@ import { uiActions } from '../../../../store/slices/ui';
 import { languageActions } from '../../../../store/slices/language';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 
-const LyricsButton = () => {
-  const dispatch = useAppDispatch();
-
-  return (
-    <Tooltip title="Lời bài hát">
-      <button
-        style={{ marginLeft: 5, marginRight: 5 }}
-        onClick={() => dispatch(languageActions.openLanguageModal())}
-      >
-        <MicrophoneIcon />
-      </button>
-    </Tooltip>
-  );
-};
-
 const DetailsButton = () => {
   const dispatch = useAppDispatch();
   const active = useAppSelector((state) => !state.ui.detailsCollapsed);
@@ -105,39 +90,12 @@ const ExpandButton = () => {
   );
 };
 
-const DeviceButton = () => {
-  const dispatch = useAppDispatch();
-  const isDeviceOpen = useAppSelector((state) => !state.ui.devicesCollapsed);
-  const currentDevice = useAppSelector((state) => state.spotify.activeDeviceType);
-
-  return (
-    <Tooltip title="Kết nối với thiết bị">
-      <button
-        onClick={() => dispatch(uiActions.toggleDevices())}
-        className={isDeviceOpen ? 'active-icon-button' : ''}
-        style={{ marginTop: 4, cursor: isDeviceOpen ? 'pointer' : 'not-allowed' }}
-      >
-        {currentDevice === 'Smartphone' ? (
-          <PhoneIcon active={isDeviceOpen} />
-        ) : (
-          <DeviceIcon active={isDeviceOpen} />
-        )}
-      </button>
-    </Tooltip>
-  );
-};
-
 const ExtraControlButtons = () => {
   return (
     <div>
       <Row gutter={18} align="middle">
         <DetailsButton />
-        <LyricsButton />
         <QueueButton />
-
-        <Col className="hiddable-icon">
-          <DeviceButton />
-        </Col>
 
         <Col>
           <VolumeControls />

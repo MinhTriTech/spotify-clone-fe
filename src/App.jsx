@@ -13,7 +13,6 @@ import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-route
 import { Provider } from 'react-redux';
 import { uiActions } from './store/slices/ui';
 import { PersistGate } from 'redux-persist/integration/react';
-import { authActions } from './store/slices/auth';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 
 // Pages
@@ -139,15 +138,6 @@ const RootComponent = () => {
   const language = useAppSelector((state) => state.language.language);
   const playing = useAppSelector((state) => !state.spotify.state?.paused);
   const requesting = useAppSelector((state) => state.auth.requesting);
-
-  useEffect(() => {
-    const tokenInLocalStorage = getFromLocalStorageWithExpiry('access_token');
-    dispatch(authActions.setToken({ token: tokenInLocalStorage }));
-
-    if (tokenInLocalStorage) {
-      dispatch(authActions.fetchUser());
-    }
-  }, [dispatch]);
 
   useEffect(() => {
     document.documentElement.setAttribute('lang', language);

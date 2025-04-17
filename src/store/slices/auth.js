@@ -1,54 +1,63 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { authService } from '../../services/auth'; // Dịch vụ liên quan đến auth
-
-// Lấy token từ localStorage với hạn sử dụng (nếu có)
-const getFromLocalStorageWithExpiry = (key) => {
-  const item = localStorage.getItem(key);
-  if (!item) return null;
-  const parsedItem = JSON.parse(item);
-  const now = new Date();
-  if (now.getTime() > parsedItem.expiry) {
-    localStorage.removeItem(key);
-    return null;
-  }
-  return parsedItem.value;
-};
+import { register, login } from '../../services/auth';
 
 const initialState = {
-  user: undefined,
-  requesting: true,
-  playerLoaded: false,
-  token: getFromLocalStorageWithExpiry('access_token') || undefined,
+  user: null,
+  loading: false,
+  error: null,
 };
 
-export const fetchUser = createAsyncThunk('auth/fetchUser', async () => {
-  const response = await authService.fetchUser();
-  return response.data;
+export const handleRegister = createAsyncThunk('auth/register', async (userData) => {
+  const response = await register(userData);
+  return response;
 });
+
+export const handleLogin = createAsyncThunk('auth/login', async (userData) => {
+  const response = await login(userData);
+
+  return response;
+});
+
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setRequesting(state, action) {
-      state.requesting = action.payload.requesting;
-    },
-    setToken(state, action) {
-      state.token = action.payload.token;
-    },
-    setPlayerLoaded(state, action) {
-      state.playerLoaded = action.payload.playerLoaded;
-    },
+    
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchUser.fulfilled, (state, action) => {
-      state.user = action.payload;
-      state.requesting = false;
-    });
+    builder
+      .addCase(handleRegister.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(handleRegister.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(handleRegister.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      .addCase(handleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(handleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(handleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
-export const authActions = { ...authSlice.actions, fetchUser };
-
 export default authSlice.reducer;
+
+
+
+

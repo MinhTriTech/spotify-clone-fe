@@ -1,7 +1,5 @@
-import React, { memo, useRef, useState } from 'react';
-import { Col, Row } from 'antd';
-
 // Components
+import { Col, Row } from 'antd';
 import { HomeHeader } from './header';
 import { TopTracks } from '../components/topTracks';
 import { MadeForYou } from '../components/madeForYou';
@@ -15,25 +13,23 @@ import { FavouriteArtists } from '../components/favouriteArtists';
 import { YourPlaylists } from '../components/yourPlaylists';
 
 // Utils
+import { memo, useRef, useState } from 'react';
+import { useAppSelector } from '../../../store/store';
 import useIsMobile from '../../../utils/isMobile';
 
-const HomePageContainer = memo(({ container }) => {
+const HomePageContainer = memo((props) => {
+  const { container } = props;
   const [color, setColor] = useState('rgb(66, 32, 35)');
-  const sectionContainerRef = useRef(null);
 
   const isMobile = useIsMobile();
-
-  // MOCK cứng
+  const sectionContainerRef = useRef(null);
+  // const user = useAppSelector((state) => !!state.auth.user);
   const user = true;
-  const section = 'ALL';
+  const section = useAppSelector((state) => state.home.section);
 
   return (
     <div ref={sectionContainerRef}>
-      <HomeHeader
-        color={color}
-        container={container}
-        sectionContainer={sectionContainerRef}
-      />
+      <HomeHeader color={color} container={container} sectionContainer={sectionContainerRef} />
       <div
         className="Home-seccion"
         style={{
@@ -44,17 +40,21 @@ const HomePageContainer = memo(({ container }) => {
       >
         <Row gutter={user ? [16, 16] : undefined}>
           {user && (
-            <>
-              <Col span={24}>
-                <TopTracks setColor={setColor} />
-              </Col>
-              <Col span={24}>
-                <MadeForYou />
-              </Col>
-              <Col span={24}>
-                <TopMixes />
-              </Col>
-            </>
+            <Col span={24}>
+              <TopTracks setColor={setColor} />
+            </Col>
+          )}
+
+          {user && (
+            <Col span={24}>
+              <MadeForYou />
+            </Col>
+          )}
+
+          {user && (
+            <Col span={24}>
+              <TopMixes />
+            </Col>
           )}
 
           {user && section === 'ALL' && (
@@ -78,14 +78,15 @@ const HomePageContainer = memo(({ container }) => {
           </Col>
 
           {(!user || section === 'MUSIC') && (
-            <>
-              <Col span={24}>
-                <Rankings />
-              </Col>
-              <Col span={24}>
-                <Trending />
-              </Col>
-            </>
+            <Col span={24}>
+              <Rankings />
+            </Col>
+          )}
+
+          {(!user || section === 'MUSIC') && (
+            <Col span={24}>
+              <Trending />
+            </Col>
           )}
 
           {user && section === 'ALL' && (

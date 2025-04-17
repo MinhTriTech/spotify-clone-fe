@@ -1,7 +1,12 @@
-// /src/services/auth.js
 import axios from '../axios';
 
-const fetchUser = () => axios.get('/me');  
-export const authService = {
-  fetchUser,
+export const register = async (userData) => {
+  const response = await axios.post('api/auth/register/', userData);
+  return response.data;
 };
+
+export const login = async (userData) => {
+  const response = await axios.post('api/auth/login/', userData);
+  return response.data;
+};
+
