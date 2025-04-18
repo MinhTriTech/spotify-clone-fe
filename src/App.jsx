@@ -94,34 +94,14 @@ const RoutesComponent = memo(() => {
   }, [user]);
 
   return (
-    <div
-      className='Main-section'
-      ref={container}
-      style={{
-        height: user ? undefined : `calc(100vh - 50px)`,
-      }}
-    >
-      <div
-        style={{
-          minHeight: user ? 'calc(100vh - 230px)' : 'calc(100vh - 100px)',
-          width: '100%',
-        }}
-      >
+    <div className="Main-section" ref={container} style={{ height: user ? undefined : 'calc(100vh - 50px)' }}>
+      <div style={{ minHeight: user ? 'calc(100vh - 230px)' : 'calc(100vh - 100px)', width: '100%' }}>
         <Routes>
-          {routes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={<Suspense>{route.element}</Suspense>}
-            >
-              {route?.children &&
-                route.children.map((child) => (
-                  <Route
-                    key={child.path}
-                    path={child.path}
-                    element={<Suspense>{child.element}</Suspense>}
-                  />
-                ))}
+          {routes.map(route => (
+            <Route key={route.path} path={route.path} element={<Suspense>{route.element}</Suspense>}>
+              {route.children?.map(child => (
+                <Route key={child.path} path={child.path} element={<Suspense>{child.element}</Suspense>} />
+              ))}
             </Route>
           ))}
         </Routes>
@@ -131,37 +111,10 @@ const RoutesComponent = memo(() => {
 });
 
 const RootComponent = () => {
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
-  const language = useAppSelector((state) => state.language.language);
-  const playing = useAppSelector((state) => !state.spotify.state?.paused);
   const loginModalMain = useAppSelector((state) => !!state.ui.loginModalMain);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('lang', language);
-  }, [language]);
-
-  const handleSpaceBar = useCallback(
-    (e) => {
-      if (e.target?.tagName?.toUpperCase() === 'INPUT') return;
-      if (playing === undefined) return;
-      e.stopPropagation();
-      if (e.key === ' ' || e.code === 'Space' || e.keyCode === 32) {
-        e.preventDefault();
-        const request = !playing ? playerService.startPlayback() : playerService.pausePlayback();
-        request.then().catch(() => {});
-      }
-    },
-    [playing]
-  );
-
-  useEffect(() => {
-    if (!user) return;
-    document.addEventListener('keydown', handleSpaceBar);
-    return () => {
-      document.removeEventListener('keydown', handleSpaceBar);
-    };
-  }, [user, handleSpaceBar]);
+  const loginModalMainFirst = useAppSelector((state) => state.ui.loginModalMain);
+  
 
   useEffect(() => {
     if (!user) return;
@@ -170,17 +123,11 @@ const RootComponent = () => {
     };
     document.addEventListener('contextmenu', handleContextMenu);
     return () => {
-      document.removeEventListener('keydown', handleContextMenu);
+      document.removeEventListener('contextmenu', handleContextMenu);
     };
   }, [user]);
 
-  // if (!user) {
-  //   return <Spinner loading={requesting} />;
-  // }
-
-  if (!loginModalMain) {
-    return <LoginPage />;
-  }
+  if (!loginModalMain && !user) return <LoginPage />;
 
   return (
     <Router>

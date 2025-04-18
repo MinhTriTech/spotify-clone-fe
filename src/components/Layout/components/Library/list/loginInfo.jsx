@@ -1,5 +1,4 @@
 import { memo, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Popconfirm } from 'antd';
 import WhiteButton from '../../../../Button';
@@ -12,7 +11,6 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 export const LibraryLoginInfo = memo(() => {
   const dispatch = useAppDispatch();
   const tooltipOpen = useAppSelector((state) => state.ui.loginTooltipOpen);
-  const navigate = useNavigate();
 
   const onClose = useCallback(() => {
     dispatch(uiActions.closeLoginTooltip());
@@ -20,7 +18,7 @@ export const LibraryLoginInfo = memo(() => {
 
   const handleLogin = useCallback(() => {
     dispatch(uiActions.toggleLoginModalMain());
-  }, [dispatch, navigate]);
+  }, [dispatch]);
 
   useEffect(() => {
     return () => {

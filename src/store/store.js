@@ -9,8 +9,9 @@ import {
   persistReducer,
 } from 'redux-persist';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage
+import storage from 'redux-persist/lib/storage';
 import { useDispatch, useSelector } from 'react-redux';
+import { createTransform } from 'redux-persist';
 
 // Reducers
 import uiReducer from './slices/ui';
@@ -65,6 +66,17 @@ const rootReducer = (state, action) => {
   return appReducer(state, action);
 };
 
+const uiTransform = createTransform(
+  (inboundState, key) => {
+    const { loginModalMain, ...rest } = inboundState;
+    return rest; 
+  },
+  (outboundState, key) => {
+    return outboundState;
+  },
+  { whitelist: ['ui'] }
+);
+
 // Whitelist for redux-persist (which states to persist)
 const whitelist = ['language', 'ui', 'searchHistory'];
 
@@ -74,7 +86,9 @@ const persistedReducer = persistReducer(
     storage,
     whitelist,
     key: 'root',
-    transforms: [expireReducer('searchHistory', { expireSeconds: 60 * 60 * 24 })],
+    transforms: [
+      uiTransform,
+      expireReducer('searchHistory', { expireSeconds: 60 * 60 * 24 })],
   },
   rootReducer
 );

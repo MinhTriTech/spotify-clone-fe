@@ -9,7 +9,7 @@ const initialState = {
   loginTooltipOpen: false,
   loginButtonOpen: false,
   loginModalItem: null, 
-  loginModalMain: true,
+  loginModalMain: false,
 };
 
 const uiSlice = createSlice({
