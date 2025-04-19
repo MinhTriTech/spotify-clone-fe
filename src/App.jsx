@@ -2,7 +2,6 @@ import './styles/App.scss';
 
 // Utils
 import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { getFromLocalStorageWithExpiry } from './utils/localstorage';
 
 // Components
 import { ConfigProvider } from 'antd';
@@ -14,10 +13,10 @@ import { Provider } from 'react-redux';
 import { uiActions } from './store/slices/ui';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
+import { fetchUser } from './store/slices/auth';
 
 // Pages
 import SearchContainer from './pages/Search/Container';
-import { playerService } from './services/player';
 import { Spinner } from './components/spinner';
 
 const LoginPage = lazy(() => import('./pages/Login'));
@@ -111,9 +110,16 @@ const RoutesComponent = memo(() => {
 });
 
 const RootComponent = () => {
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
+  const loading = useAppSelector((state) => state.auth.loading);
   const loginModalMain = useAppSelector((state) => !!state.ui.loginModalMain);
-  const loginModalMainFirst = useAppSelector((state) => state.ui.loginModalMain);
+
+  useEffect(() => {
+    if (!user) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch, user]);
   
 
   useEffect(() => {
@@ -126,6 +132,8 @@ const RootComponent = () => {
       document.removeEventListener('contextmenu', handleContextMenu);
     };
   }, [user]);
+
+  if (loading) return <Spinner loading={loading}/>;
 
   if (!loginModalMain && !user) return <LoginPage />;
 
