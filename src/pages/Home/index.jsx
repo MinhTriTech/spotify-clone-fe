@@ -12,8 +12,7 @@ const Home = memo((props) => {
   const { container } = props;
 
   const dispatch = useAppDispatch();
-  // const user = useAppSelector((state) => !!state.auth.user);
-  const user = true;
+  const user = useAppSelector((state) => !!state.auth.user);
   useEffect(() => {
     if (user) {
       dispatch(homeActions.fetchTopTracks());

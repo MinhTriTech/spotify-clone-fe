@@ -1,83 +1,69 @@
-// import { Col, Row } from 'antd';
-// import { HorizontalCard } from './horizontalCard';
-
-// // Redux
-// import { useSelector } from 'react-redux';
-
-// export const TopTracks = ({ setColor }) => {
-//   const topTracks = useSelector((state) => state.home.topTracks);
-//   const isMobile = window.innerWidth < 768;
-
-//   if (!topTracks || !topTracks.length) return null;
-
-//   return (
-//     <Row
-//       gutter={[16, 16]}
-//       style={{ margin: '20px 0px', marginTop: isMobile ? 20 : 70 }}
-//       justify='space-between'
-//     >
-//       {topTracks.slice(0, isMobile ? 4 : undefined).map((item) => (
-//         <Col key={item.name} xs={24} md={12} lg={6}>
-//           <HorizontalCard item={item} setColor={setColor} />
-//         </Col>
-//       ))}
-//     </Row>
-//   );
-// };
-
-
 import { Col, Row } from 'antd';
+import { HorizontalCard } from './horizontalCard';
 
-// Tạm thời không dùng Redux
-// import { useSelector } from 'react-redux';
+// Redux
+import { useAppSelector } from '../../../../store/store';
 
-// Component con tạm mock
-const HorizontalCard = ({ item, setColor }) => (
-  <div
-    style={{
-      backgroundColor: '#333',
-      padding: '10px',
-      borderRadius: '8px',
-      cursor: 'pointer',
-    }}
-    onMouseEnter={() => setColor('rgb(66, 32, 35)')} // Mock change color
-  >
-    <img src={item.thumbnail} alt={item.title} style={{ width: '100%', borderRadius: '8px' }} />
-    <h4 style={{ color: 'white', marginTop: '10px' }}>{item.title}</h4>
-    <p style={{ color: 'gray', fontSize: '12px' }}>{item.artist}</p>
-  </div>
-);
+const isMobile = window.innerWidth < 768;
 
-export const TopTracks = ({ setColor }) => {
-  // Mock dữ liệu
+export const TopTracks = (props) => {
+  // const topTracks = useAppSelector((state) => state.home.topTracks);
+
   const topTracks = [
     {
       id: '1',
-      title: 'Mock Song 1',
-      artist: 'Mock Artist A',
-      thumbnail: 'https://i.scdn.co/image/ab6761610000e5eb5a79a6ca8c60e4ec1440be53',
+      name: 'Bài hát số 1',
+      uri: 'spotify:track:1',
+      album: {
+        id: 'album1',
+        images: [
+          {
+            url: 'https://via.placeholder.com/300x300?text=Album+1',
+          },
+        ],
+      },
     },
     {
       id: '2',
-      title: 'Mock Song 2',
-      artist: 'Mock Artist B',
-      thumbnail: 'https://i.scdn.co/image/ab6761610000e5eb5a79a6ca8c60e4ec1440be53',
+      name: 'Bài hát số 2',
+      uri: 'spotify:track:2',
+      album: {
+        id: 'album2',
+        images: [
+          {
+            url: 'https://via.placeholder.com/300x300?text=Album+2',
+          },
+        ],
+      },
     },
     {
       id: '3',
-      title: 'Mock Song 3',
-      artist: 'Mock Artist C',
-      thumbnail: 'https://i.scdn.co/image/ab6761610000e5eb5a79a6ca8c60e4ec1440be53',
+      name: 'Bài hát số 3',
+      uri: 'spotify:track:3',
+      album: {
+        id: 'album3',
+        images: [
+          {
+            url: 'https://via.placeholder.com/300x300?text=Album+3',
+          },
+        ],
+      },
     },
     {
       id: '4',
-      title: 'Mock Song 4',
-      artist: 'Mock Artist D',
-      thumbnail: 'https://i.scdn.co/image/ab6761610000e5eb5a79a6ca8c60e4ec1440be53',
+      name: 'Bài hát số 4',
+      uri: 'spotify:track:4',
+      album: {
+        id: 'album4',
+        images: [
+          {
+            url: 'https://via.placeholder.com/300x300?text=Album+4',
+          },
+        ],
+      },
     },
   ];
-
-  const isMobile = window.innerWidth < 768;
+  
 
   if (!topTracks || !topTracks.length) return null;
 
@@ -88,8 +74,8 @@ export const TopTracks = ({ setColor }) => {
       justify="space-between"
     >
       {topTracks.slice(0, isMobile ? 4 : undefined).map((item) => (
-        <Col key={item.id} xs={24} md={12} lg={6}>
-          <HorizontalCard item={item} setColor={setColor} />
+        <Col key={item.name} xs={24} md={12} lg={6}>
+          <HorizontalCard item={item} setColor={props.setColor} />
         </Col>
       ))}
     </Row>

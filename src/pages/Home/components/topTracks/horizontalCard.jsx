@@ -1,28 +1,37 @@
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
-import TrackActionsWrapper from '../../../../components/Actions/TrackActions';
+import {TrackActionsWrapper} from '../../../../components/Actions/TrackActions';
 
+// Redux
+import { useAppSelector } from '../../../../store/store';
+
+// Utils
 import tinycolor from 'tinycolor2';
 import useIsMobile from '../../../../utils/isMobile';
+import { getImageAnalysis2 } from '../../../../utils/imageAnyliser';
+
+// Services
+import { playerService } from '../../../../services/player';
+
+// Constants
+import { EQUILISER_IMAGE } from '../../../../constants/spotify';
 
 export const HorizontalCard = memo(({ item, setColor }) => {
+  const currentSong = useAppSelector((state) => state.spotify.state?.track_window.current_track.id);
+  const isPlaying = useAppSelector((state) => !state.spotify.state?.paused);
+  const isCurrent = currentSong === item.id;
+
   const isMobile = useIsMobile();
 
-  // MOCK: giả định không cần kiểm tra bài hát đang phát
-  const isCurrent = false;
-  const isPlaying = false;
-
-  // MOCK player service
   const onClick = useCallback(() => {
-    console.log('Mock play:', item.uri);
-  }, [item.uri]);
+    if (isCurrent) return;
+    playerService.startPlayback({ uris: [item.uri] });
+  }, [isCurrent, item.uri]);
 
-  // MOCK màu ảnh
-  const handleMouseEnter = () => {
-    const randomColor = tinycolor.random().darken(10).toHexString();
-    setColor?.(randomColor);
-  };
+  useEffect(() => {
+    if (item) getImageAnalysis2(item.album.images[0].url).then();
+  }, [item]);
 
   return (
     <TrackActionsWrapper track={item} trigger={['contextMenu']}>
@@ -30,7 +39,19 @@ export const HorizontalCard = memo(({ item, setColor }) => {
         className="horizontal-playlist"
         onClick={isMobile ? onClick : undefined}
         onDoubleClick={isMobile ? undefined : onClick}
-        onMouseEnter={!isMobile ? handleMouseEnter : undefined}
+        onMouseEnter={
+          !isMobile
+            ? () => {
+                getImageAnalysis2(item.album.images[0].url).then((r) => {
+                  let color = tinycolor(r);
+                  while (color.isLight()) {
+                    color = color.darken(10);
+                  }
+                  setColor(color.toHexString());
+                });
+              }
+            : undefined
+        }
       >
         <div style={{ display: 'flex' }}>
           <div className="img-container">
@@ -54,9 +75,9 @@ export const HorizontalCard = memo(({ item, setColor }) => {
           </div>
 
           <div className="button-container">
-            {isCurrent && isPlaying && (
-              <img height={20} alt={item.name} src="/mock/equaliser.gif" />
-            )}
+            {isCurrent && isPlaying ? (
+              <img height={20} alt={item.name} src={EQUILISER_IMAGE} />
+            ) : null}
             <PlayCircle size={15} isCurrent={isCurrent} context={{ uris: [item.uri] }} />
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { PlayCircle } from './PlayCircle';
-import TrackActionsWrapper from '../Actions/TrackActions';
+import {TrackActionsWrapper} from '../Actions/TrackActions';
 import AlbumActionsWrapper from '../Actions/AlbumActions';
 import ArtistActionsWrapper from '../Actions/ArtistActions';
 import PlayistActionsWrapper from '../Actions/PlaylistActions';

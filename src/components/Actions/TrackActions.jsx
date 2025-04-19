@@ -1,83 +1,100 @@
 import { memo, useCallback, useMemo } from 'react';
 import { Dropdown, message } from 'antd';
-import { AddToPlaylist, AddToQueueIcon, AddToLibrary, AddedToLibrary, DeleteIcon, AlbumIcon, ArtistIcon } from '../Icons';
-
-// Services
-import { playerService } from '../../services/player';
-import { playlistService } from '../../services/playlists';
-
-// ❌ Đã xoá useTranslation
 import { useNavigate } from 'react-router-dom';
 
+import {
+  AlbumIcon,
+  ArtistIcon,
+  DeleteIcon,
+  AddToPlaylist,
+  AddToQueueIcon,
+  AddToLibrary,
+  AddedToLibrary,
+} from '../Icons';
+
 // Redux
-import { useAppDispatch, useAppSelector } from '../../store/store';
+import { fetchQueue } from '../../store/slices/queue';
 import { playlistActions } from '../../store/slices/playlist';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import {
+  fetchMyPlaylists,
+  getUserPlaylists,
+  yourLibraryActions,
+} from '../../store/slices/yourLibrary';
 import { likedSongsActions } from '../../store/slices/likedSongs';
 import { spotifyActions } from '../../store/slices/spotify';
 import { albumActions } from '../../store/slices/album';
 import { artistActions } from '../../store/slices/artist';
 import { uiActions } from '../../store/slices/ui';
-import { userService } from '../../services/users';
-import { fetchQueue } from '../../store/slices/queue';
-import { yourLibraryActions } from '../../store/slices/yourLibrary';
 
-const TrackActionsWrapper = memo((props) => {
+// Services
+import { playerService } from '../../services/player';
+import { playlistService } from '../../services/playlists';
+import { userService } from '../../services/users';
+
+export const TrackActionsWrapper = memo((props) => {
   const { children, artist, track, playlist, canEdit, album, saved, onSavedToggle } = props;
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const myPlaylists = useAppSelector((state) => state.yourLibrary.playlists);
+  const myPlaylists = useAppSelector(getUserPlaylists);
   const userId = useAppSelector((state) => state.auth.user?.id);
-  const currentSong = useAppSelector((state) => state.spotify.state?.track_window?.current_track?.id);
-
-  const handleUserValidation = useCallback(
-    (button) => {
-      if (!userId) {
-        dispatch(button ? uiActions.openLoginButton() : uiActions.openLoginTooltip());
-        return false;
-      }
-      return true;
-    },
-    [dispatch, userId]
+  const currentSong = useAppSelector(
+    (state) => state.spotify.state?.track_window?.current_track?.id
   );
 
+  const handleUserValidation = useCallback((button) => {
+    if (!userId) {
+      dispatch(button ? uiActions.openLoginButton() : uiActions.openLoginTooltip());
+      return false;
+    }
+    return true;
+  }, [dispatch, userId]);
+
   const options = useMemo(() => {
-    return (myPlaylists || [])
+    return myPlaylists
       .filter((p) => p.id !== playlist?.id)
-      .map((p) => ({
-        key: p.id,
-        label: p.name,
-        onClick: () => {
-          if (!handleUserValidation()) return;
-          playlistService.addPlaylistItems(p.id, [track.uri], p.snapshot_id).then(() => {
-            dispatch(playlistActions.refreshTracks(playlist.id));
-            message.success('Đã thêm vào playlist');
-          });
-        },
-      }));
+      .map((p) => {
+        return {
+          key: p.id,
+          label: p.name,
+          onClick: () => {
+            if (!handleUserValidation()) return;
+            playlistService.addPlaylistItems(p.id, [track.uri], p.snapshot_id).then(() => {
+              dispatch(playlistActions.refreshTracks(playlist.id));
+              message.open({
+                type: 'success',
+                content: 'Added to playlist',
+              });
+            });
+          },
+        };
+      });
   }, [myPlaylists, playlist, handleUserValidation, track.uri, dispatch]);
 
   const getItems = () => {
     const items = [
       {
-        label: 'Thêm vào playlist',
+        label: 'Add to playlist',
         icon: <AddToPlaylist />,
         key: '1',
         children: [
           {
-            label: 'Playlist mới',
+            label: 'New playlist',
             key: 'new',
             onClick: () => {
               if (!handleUserValidation()) return;
-              return playlistService.createPlaylist(userId, { name: track.name }).then((response) => {
-                const playlist = response.data;
-                playlistService
-                  .addPlaylistItems(playlist.id, [track.uri], playlist.snapshot_id)
-                  .then(() => {
-                    dispatch(fetchMyPlaylists());
-                    message.success('Đã thêm vào playlist');
-                  });
-              });
+              return playlistService
+                .createPlaylist(userId, { name: track.name })
+                .then((response) => {
+                  const playlist = response.data;
+                  playlistService
+                    .addPlaylistItems(playlist.id, [track.uri], playlist.snapshot_id)
+                    .then(() => {
+                      dispatch(fetchMyPlaylists());
+                      message.success('Added to playlist');
+                    });
+                });
             },
           },
           { type: 'divider' },
@@ -88,11 +105,13 @@ const TrackActionsWrapper = memo((props) => {
 
     if (saved !== undefined) {
       items.push({
-        label: saved ? 'Xoá khỏi Bài hát đã thích' : 'Lưu vào Bài hát đã thích',
+        label: saved ? 'Remove from Liked Songs' : 'Save to Liked Songs',
         key: '4',
-        icon: saved
-          ? <AddedToLibrary style={{ height: 18, width: 18, marginInlineEnd: 0 }} />
-          : <AddToLibrary style={{ height: 18, width: 18, marginInlineEnd: 0 }} />,
+        icon: saved ? (
+          <AddedToLibrary style={{ height: 18, width: 18, marginInlineEnd: 0 }} />
+        ) : (
+          <AddToLibrary style={{ height: 18, width: 18, marginInlineEnd: 0 }} />
+        ),
         onClick: () => {
           if (!handleUserValidation(true)) return;
           if (saved) {
@@ -107,7 +126,10 @@ const TrackActionsWrapper = memo((props) => {
               }
 
               if (onSavedToggle) onSavedToggle();
-              message.success('Đã xoá khỏi Bài hát đã thích');
+              message.open({
+                type: 'success',
+                content: 'Removed from Liked Songs',
+              });
             });
           } else {
             userService.saveTracks([track.id]).then(() => {
@@ -123,7 +145,10 @@ const TrackActionsWrapper = memo((props) => {
                 dispatch(spotifyActions.setLiked({ liked: true }));
               }
 
-              message.success('Đã lưu vào Bài hát đã thích');
+              message.open({
+                type: 'success',
+                content: 'Saved to Liked Songs',
+              });
             });
           }
         },
@@ -132,7 +157,7 @@ const TrackActionsWrapper = memo((props) => {
 
     if (canEdit && playlist) {
       items.push({
-        label: 'Xoá khỏi playlist này',
+        label: 'Remove from this playlist',
         key: '2',
         icon: <DeleteIcon />,
         onClick: () => {
@@ -143,7 +168,10 @@ const TrackActionsWrapper = memo((props) => {
               dispatch(playlistActions.refreshPlaylist(playlist.id));
               dispatch(playlistActions.removeTrack({ id: track.uri }));
               dispatch(yourLibraryActions.fetchMyPlaylists());
-              message.success('Đã xoá khỏi playlist');
+              message.open({
+                type: 'success',
+                content: 'Removed from playlist',
+              });
             });
         },
       });
@@ -151,14 +179,17 @@ const TrackActionsWrapper = memo((props) => {
 
     items.push(
       {
-        label: 'Thêm vào hàng chờ',
+        label: 'Add to queue',
         key: '3',
         icon: <AddToQueueIcon />,
         onClick: () => {
           if (!handleUserValidation(true)) return;
           return playerService.addToQueue(track.uri).then(() => {
             dispatch(fetchQueue());
-            message.success('Đã thêm vào hàng chờ');
+            message.open({
+              type: 'success',
+              content: 'Added to queue',
+            });
           });
         },
       },
@@ -167,25 +198,25 @@ const TrackActionsWrapper = memo((props) => {
 
     if (!artist) {
       items.push({
-        label: 'Đi tới nghệ sĩ',
+        label: 'Go to artist',
         key: '5',
         icon: <ArtistIcon />,
         onClick: () => {
-          navigate(`/artist/${track.artists[0]?.id || track.artists[0].uri.split(':').reverse()[0]}`);
+          navigate(`/artist/${track.artists?.[0]?.id || track.artists?.[0]?.uri?.split(':').reverse()[0]}`);
         },
       });
     }
 
     if (!album) {
       items.push({
-        label: 'Đi tới album',
+        label: 'Go to album',
         key: '6',
         icon: <AlbumIcon />,
         onClick: () => {
           if (!userId) {
             return dispatch(uiActions.openLoginModal(track.album.images[0].url));
           }
-          navigate(`/album/${track.album?.id || track.album.uri.split(':').reverse()[0]}`);
+          navigate(`/album/${track.album?.id || track.album?.uri?.split(':').reverse()[0]}`);
         },
       });
     }
@@ -201,5 +232,3 @@ const TrackActionsWrapper = memo((props) => {
     </Dropdown>
   );
 });
-
-export default TrackActionsWrapper;

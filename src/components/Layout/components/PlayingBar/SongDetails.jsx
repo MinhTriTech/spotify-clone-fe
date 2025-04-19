@@ -4,7 +4,7 @@ import { spotifyActions } from '../../../../store/slices/spotify';
 import AddSongToLibraryButton from '../../../Actions/AddSongToLibrary';
 import { uiActions } from '../../../../store/slices/ui';
 import { Link } from 'react-router-dom';
-import TrackActionsWrapper from '../../../Actions/TrackActions';
+import {TrackActionsWrapper} from '../../../Actions/TrackActions';
 import ArtistActionsWrapper from '../../../Actions/ArtistActions';
 
 const ArrowDown = (
