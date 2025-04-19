@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Nền đen mờ hơn để nhìn rõ background */
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,183 +13,278 @@
 }
 
 .modalContent {
-  background-color: #121212; /* Màu nền tối tương tự Spotify */
+  background-color: #121212;
   border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Bóng đổ đậm hơn */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   position: relative;
-  padding: 30px;
-  width: 400px;
+  padding: 24px;
+  width: 100%;
+  max-width: 700px;
+  min-height: 400px;
+  max-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
-  color: #b3b3b3; /* Màu chữ xám nhạt hơn */
+  color: #b3b3b3;
+  box-sizing: border-box;
+  overflow-y: hidden;
 }
 
 .closeButton {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 24px;
+  right: 24px;
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #b3b3b3; /* Màu nút đóng xám nhạt */
+  color: #b3b3b3;
   padding: 0;
 
   &:hover {
-    color: #fff; /* Trắng khi hover */
+    color: #fff;
   }
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 25px;
-  color: #fff; /* Tiêu đề màu trắng */
-  text-align: center;
+.contentWrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  align-items: stretch;
+}
+
+.leftColumn {
+  flex: 1;
+  padding-right: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.verticalSeparator {
+  width: 1px;
+  background-color: #282828;
+  margin: 0 12px;
+  align-self: stretch;
+}
+
+.separator {
+  display: none; /* Ẩn trên desktop */
+}
+
+.rightColumn {
+  flex: 1;
+  padding-left: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.tabContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.tabButton {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 17orepx;
+  color: #b3b3b3;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &.active {
+    color: #1db954;
+    border-bottom: 2px solid #1db954;
+  }
+
+  &:hover {
+    color: #1ed760;
+  }
 }
 
 .form {
   width: 100%;
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .inputGroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 
   label {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-weight: bold;
     color: #b3b3b3;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   input {
-    padding: 12px;
-    border: 1px solid #282828; /* Viền input tối hơn */
+    padding: 10px;
+    border: 1px solid #282828;
     border-radius: 4px;
-    font-size: 16px;
-    background-color: #282828; /* Nền input tối hơn */
-    color: #fff; /* Chữ trong input màu trắng */
+    font-size: 14px;
+    background-color: #282828;
+    color: #fff;
 
     &:focus {
-      border-color: #1db954; /* Viền khi focus màu xanh lá Spotify */
+      border-color: #1db954;
       outline: none;
     }
   }
 }
 
 .submitButton {
-  background-color: #1db954; /* Màu xanh lá Spotify */
+  background-color: #1db954;
   color: white;
   padding: 14px 20px;
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 17px;
   transition: background-color 0.3s ease;
   width: 100%;
-  margin-bottom: 15px;
-
-  &:hover {
-    background-color: #1ed760; /* Màu xanh lá đậm hơn khi hover */
-  }
-}
-
-.separator {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  color: #535353; /* Màu "Hoặc" tối hơn */
-  width: 100%;
-  text-align: center;
-  position: relative;
-  font-size: 14px;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 40%;
-    height: 1px;
-    background-color: #282828; /* Đường kẻ tối hơn */
-  }
-
-  &::before {
-    left: 0;
-  }
-
-  &::after {
-    right: 0;
-  }
+  margin-top: 12px;
 }
 
 .googleButton {
-  background-color: #fff; 
-  color: #000; 
-  padding: 12px 20px; 
-  border: 1px solid #ccc; 
+  background-color: #fff;
+  color: #000;
+  padding: 12px 20px;
+  border: 1px solid #ccc;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; 
+  gap: 8px;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   width: 100%;
-  margin-bottom: 15px;
+  max-width: 250px;
+  white-space: nowrap;
 
   &:hover {
-    background-color: #f0f0f0; 
+    background-color: #f0f0f0;
     color: #333;
     border-color: #bbb;
   }
 }
 
 .viewWithoutLoginButton {
-  background-color: transparent; 
+  background-color: transparent;
   border: 1px solid #535353;
   color: #b3b3b3;
   padding: 12px 20px;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 16px;
-  margin-top: 15px;
+  font-size: 15px;
   width: 100%;
+  max-width: 250px;
+  white-space: nowrap;
   transition: border-color 0.3s ease, color 0.3s ease;
 
   &:hover {
-    border-color: #fff; /* Viền trắng khi hover */
-    color: #fff; /* Chữ trắng khi hover */
-  }
-}
-
-.toggleText {
-  margin-top: 20px;
-  color: #b3b3b3;
-  font-size: 14px;
-  text-align: center;
-}
-
-.toggleButton {
-  background: none;
-  border: none;
-  color: #1db954; /* Màu xanh lá Spotify */
-  cursor: pointer;
-  font-weight: bold;
-  padding: 0 5px;
-  font-size: 14px;
-
-  &:hover {
-    text-decoration: underline;
-    color: #1ed760; /* Màu xanh lá đậm hơn khi hover */
+    border-color: #fff;
+    color: #fff;
   }
 }
 
 .error {
-  color: #ff6b6b; /* Màu đỏ nhạt hơn cho lỗi */
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
+  color: #ff6b6b;
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 480px) {
+  .modalContent {
+    max-width: 90%;
+    padding: 16px;
+  }
+
+  .contentWrapper {
+    flex-direction: column;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    padding: 0;
+    flex: none;
+  }
+
+  .verticalSeparator {
+    display: none; /* Ẩn đường phân tách dọc */
+  }
+
+  .separator {
+    display: block; /* Hiển thị phân tách ngang "Hoặc" */
+    margin: 24px 0;
+    color: #535353;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    font-size: 14px;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background-color: #282828;
+    }
+
+    &::before {
+      left: 0;
+    }
+
+    &::after {
+      right: 0;
+    }
+  }
+
+  .rightColumn {
+    margin-top: 0; /* Bỏ margin-top để "Hoặc" là phân tách chính */
+    gap: 12px;
+  }
+
+  .rightColumnTitle {
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .closeButton {
+    top: 16px;
+    right: 16px;
+    font-size: 18px;
+  }
+
+  .tabButton {
+    font-size: 16px;
+  }
+
+  .inputGroup label,
+  .inputGroup input {
+    font-size: 13px;
+  }
+
+  .submitButton {
+    font-size: 16px;
+  }
+
+  .googleButton,
+  .viewWithoutLoginButton {
+    font-size: 14px;
+    max-width: 100%; /* Chiếm toàn bộ chiều rộng trên mobile */
+  }
+
+  .error {
+    font-size: 14px;
+  }
 }

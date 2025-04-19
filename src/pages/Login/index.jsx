@@ -6,8 +6,7 @@ import { uiActions } from '../../store/slices/ui';
 
 function LoginPage() {
   const dispatch = useDispatch();
-
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [activeTab, setActiveTab] = useState('login');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +28,6 @@ function LoginPage() {
       await dispatch(handleLogin({ username, password })).unwrap();
       dispatch(uiActions.toggleLoginModalMain());
     } catch (err) {
-      console.error('Đăng nhập thất bại:', err);
       setErrorMessage('Đăng nhập thất bại. Kiểm tra username và password.');
     }
   };
@@ -42,22 +40,15 @@ function LoginPage() {
     }
     try {
       await dispatch(handleRegister({ username, email, password })).unwrap();
-      console.log('Đăng ký thành công');
       alert('Đăng ký thành công! Vui lòng đăng nhập.');
-      setIsRegistering(false);
+      setActiveTab('login');
     } catch (err) {
-      console.error('Đăng ký thất bại:', err);
       setErrorMessage('Đăng ký thất bại. Username hoặc Email đã tồn tại.');
     }
   };
 
-  const handleGoogleLogin = async (e) => {
-
-  };
-
-  const toggleRegister = () => {
-    setIsRegistering(!isRegistering);
-    setErrorMessage('');
+  const handleGoogleLogin = async () => {
+    // Logic cho đăng nhập bằng Google
   };
 
   const handleViewWithoutLogin = () => {
@@ -71,86 +62,125 @@ function LoginPage() {
   return (
     <div className="modalOverlay">
       <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-        <button onClick={handleClosePage} className="closeButton">&times;</button>
-        <h2 className="title">{isRegistering ? 'Đăng ký' : 'Đăng nhập'}</h2>
-        
-        <form onSubmit={isRegistering ? handleRegisterForm : handleLoginForm} className="form">
-          <div className="inputGroup">
-            <label htmlFor="username">Tên đăng nhập:</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={username}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          {isRegistering && (
-            <div className="inputGroup">
-              <label htmlFor="email">Email:</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={email}
-                onChange={handleInputChange}
-                required
-              />
+        <button onClick={handleClosePage} className="closeButton">×</button>
+        <div className="contentWrapper">
+          {/* Cột trái: Tabs và Form */}
+          <div className="leftColumn">
+            <div className="tabContainer">
+              <button
+                className={`tabButton ${activeTab === 'login' ? 'active' : ''}`}
+                onClick={() => setActiveTab('login')}
+              >
+                Đăng nhập
+              </button>
+              <button
+                className={`tabButton ${activeTab === 'register' ? 'active' : ''}`}
+                onClick={() => setActiveTab('register')}
+              >
+                Đăng ký
+              </button>
             </div>
-          )}
-          <div className="inputGroup">
-            <label htmlFor="password">Mật khẩu:</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={handleInputChange}
-              required
-            />
+
+            {activeTab === 'login' ? (
+              <form onSubmit={handleLoginForm} className="form">
+                <div className="inputGroup">
+                  <label htmlFor="username">Tên đăng nhập:</label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={username}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="inputGroup">
+                  <label htmlFor="password">Mật khẩu:</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={password}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                {errorMessage && <p className="error">{errorMessage}</p>}
+                <button type="submit" className="submitButton">Đăng nhập</button>
+              </form>
+            ) : (
+              <form onSubmit={handleRegisterForm} className="form">
+                <div className="inputGroup">
+                  <label htmlFor="username">Tên đăng nhập:</label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={username}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="inputGroup">
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="inputGroup">
+                  <label htmlFor="password">Mật khẩu:</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={password}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="inputGroup">
+                  <label htmlFor="confirmPassword">Xác nhận mật khẩu:</label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                {errorMessage && <p className="error">{errorMessage}</p>}
+                <button type="submit" className="submitButton">Đăng ký</button>
+              </form>
+            )}
           </div>
-          {isRegistering && (
-            <div className="inputGroup">
-              <label htmlFor="confirmPassword">Xác nhận mật khẩu:</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={confirmPassword}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-          )}
-          {errorMessage && <p className="error">{errorMessage}</p>}
-          <button type="submit" className="submitButton">
-            {isRegistering ? 'Đăng ký' : 'Đăng nhập'}
-          </button>
-        </form>
 
-        <div className="separator">Hoặc</div>
+          {/* Đường phân tách dọc */}
+          <div className="verticalSeparator"></div>
 
-        <button className="googleButton" onClick={handleGoogleLogin}>
-          <GoogleIcon />
-          Đăng nhập bằng Google
-        </button>
+          {/* Phân tách ngang "Hoặc" cho mobile */}
+          <div className="separator">Hoặc</div>
 
-        <button type="button" className="viewWithoutLoginButton" onClick={handleViewWithoutLogin}>
-          Xem mà không cần đăng nhập
-        </button>
-
-        <p className="toggleText">
-          {isRegistering ? (
-            <>
-              Đã có tài khoản? <button type="button" onClick={toggleRegister} className="toggleButton">Đăng nhập</button>
-            </>
-          ) : (
-            <>
-              Chưa có tài khoản? <button type="button" onClick={toggleRegister} className="toggleButton">Đăng ký</button>
-            </>
-          )}
-        </p>
+          {/* Cột phải: Nút Google và Xem mà không đăng nhập */}
+          <div className="rightColumn">
+            <button className="googleButton" onClick={handleGoogleLogin}>
+              <GoogleIcon />
+              Đăng nhập bằng Google
+            </button>
+            <button
+              type="button"
+              className="viewWithoutLoginButton"
+              onClick={handleViewWithoutLogin}
+            >
+              Xem mà không cần đăng nhập
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
