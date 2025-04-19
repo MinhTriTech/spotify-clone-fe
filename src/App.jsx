@@ -20,7 +20,7 @@ import SearchContainer from './pages/Search/Container';
 import { Spinner } from './components/spinner';
 
 const LoginPage = lazy(() => import('./pages/Login'));
-
+const AdminLayout = lazy(() => import('./pages/Admin'));
 const Home = lazy(() => import('./pages/Home'));
 const Page404 = lazy(() => import('./pages/404'));
 const AlbumView = lazy(() => import('./pages/Album'));
@@ -112,6 +112,7 @@ const RoutesComponent = memo(() => {
 const RootComponent = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
+  const role = useAppSelector((state) => state.auth.role);
   const loading = useAppSelector((state) => state.auth.loading);
   const loginModalMain = useAppSelector((state) => !!state.ui.loginModalMain);
 
@@ -136,6 +137,14 @@ const RootComponent = () => {
   if (loading) return <Spinner loading={loading}/>;
 
   if (!loginModalMain && !user) return <LoginPage />;
+
+  if (role === true) {
+    return (
+      <Router>
+        <AdminLayout />
+      </Router>
+    );
+  }
 
   return (
     <Router>

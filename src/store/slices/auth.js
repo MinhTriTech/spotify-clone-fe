@@ -5,7 +5,7 @@ import { register, login, fetchUserApi } from '../../services/auth';
 const initialState = {
   user: undefined,
   error: null,
-  role: null,
+  role: true,
   loading: false,
 };
 
@@ -48,7 +48,7 @@ const authSlice = createSlice({
       })
       .addCase(handleLogin.fulfilled, (state, action) => {
         state.user = action.payload;
-        state.role = action.payload.is_staff;
+        // state.role = action.payload.is_staff;
         state.loading = false; 
       })
       .addCase(handleLogin.rejected, (state, action) => {
@@ -60,7 +60,7 @@ const authSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.user = action.payload;
-        state.role = action.payload.is_staff;
+        // state.role = action.payload.is_staff;
         state.loading = false; 
       })
       .addCase(fetchUser.rejected, (state, action) => {
