@@ -3,8 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { register, login } from '../../services/auth';
 
 const initialState = {
-  user: null,
-  requesting: false,
+  user: undefined,
   error: null,
   role: null,
 };
@@ -16,7 +15,6 @@ export const handleRegister = createAsyncThunk('auth/register', async (userData)
 
 export const handleLogin = createAsyncThunk('auth/login', async (userData) => {
   const response = await login(userData);
-
   return response;
 });
 
@@ -43,7 +41,8 @@ const authSlice = createSlice({
         
       })
       .addCase(handleLogin.fulfilled, (state, action) => {
-        
+        state.user = action.payload;
+        state.role = action.payload.is_staff;
       })
       .addCase(handleLogin.rejected, (state, action) => {
         
