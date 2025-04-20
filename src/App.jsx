@@ -15,6 +15,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 import { fetchUser } from './store/slices/auth';
 
+// Context
+import { AudioProvider } from './contexts/AudioContext';
+
 // Pages
 import SearchContainer from './pages/Search/Container';
 import { Spinner } from './components/spinner';
@@ -160,7 +163,9 @@ function App() {
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <RootComponent />
+          <AudioProvider>
+            <RootComponent />
+          </AudioProvider>
         </PersistGate>
       </Provider>
     </ConfigProvider>

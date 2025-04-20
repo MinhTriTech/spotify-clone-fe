@@ -1,50 +1,107 @@
-// Cleaned version of SongProgressBar (frontend-only)
-import { memo, useEffect, useState } from 'react';
-import Slider from '../../../Slider';
+import { memo, useEffect, useState, useCallback, useRef } from 'react';
+import ModernSlider from '../../../Slider';
 import { msToTime } from '../../../../utils';
+import { useAudio } from '../../../../contexts/AudioContext';
 
 const SongProgressBar = memo(() => {
-  const [value, setValue] = useState(0);
-  const [selecting, setSelecting] = useState(false);
-  const [position, setPosition] = useState(0);
-  const [duration, setDuration] = useState(240000); // Mock duration: 4 minutes
+  const { audioRef } = useAudio();
+  const [progress, setProgress] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const [displayTime, setDisplayTime] = useState(0);
+  const progressRef = useRef(0);
 
+  const duration = audioRef.current?.duration || 0;
+
+  // Cập nhật progress dựa trên sự kiện timeupdate
   useEffect(() => {
-    let interval = setInterval(() => {
-      if (!selecting) {
-        setPosition((prev) => {
-          const next = prev + 1000;
-          if (next >= duration) return 0;
-          return next;
-        });
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateProgress = () => {
+      if (!dragging && duration) {
+        const currentTime = audio.currentTime;
+        setDisplayTime(currentTime);
+        progressRef.current = currentTime / duration;
+        setProgress(progressRef.current);
       }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [selecting, duration]);
+    };
 
-  useEffect(() => {
-    if (!selecting) {
-      setValue(duration ? (position >= duration ? 0 : position / duration) : 0);
+    audio.addEventListener('timeupdate', updateProgress);
+    
+    // Cần lắng nghe sự kiện loadedmetadata để có duration chính xác
+    const handleMetadata = () => {
+      updateProgress();
+    };
+    
+    audio.addEventListener('loadedmetadata', handleMetadata);
+    
+    // Sự kiện seeking và seeked cũng rất quan trọng
+    const handleSeeked = () => {
+      updateProgress();
+    };
+    
+    audio.addEventListener('seeked', handleSeeked);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('loadedmetadata', handleMetadata);
+      audio.removeEventListener('seeked', handleSeeked);
+    };
+  }, [audioRef, dragging, duration]);
+
+  const handleSliderChange = useCallback((val) => {
+    setDragging(true);
+    // Cập nhật hiển thị ngay lập tức để UI phản hồi
+    setProgress(val);
+    if (duration) {
+      setDisplayTime(val * duration);
     }
-  }, [position, duration, selecting]);
+  }, [duration]);
+
+  const handleSliderChangeComplete = useCallback(
+    (val) => {
+      if (!audioRef.current || !duration) return;
+
+      // Trực tiếp sử dụng tham chiếu đến audio element
+      try {
+        const audio = audioRef.current;
+        const newTime = Math.max(0, Math.min(val * duration, duration));
+        
+        // Đặt currentTime, đảm bảo giá trị nằm trong phạm vi hợp lệ
+        audio.currentTime = newTime;
+        
+        // Cập nhật state
+        setDisplayTime(newTime);
+        progressRef.current = val;
+        
+        // Đặt timeout ngắn để đảm bảo UI được cập nhật 
+        // trước khi cho phép timeupdate event tiếp tục cập nhật
+        setTimeout(() => {
+          setDragging(false);
+        }, 100);
+        
+        console.log(`Seeking to: ${newTime}s (${val * 100}%)`);
+      } catch (err) {
+        console.error('Error during seek:', err);
+        setDragging(false);
+      }
+    },
+    [audioRef, duration]
+  );
 
   return (
-    <div className='flex items-center justify-between w-full'>
-      <div className='text-white mr-2 text-xs'>{msToTime(position)}</div>
+    <div className="flex items-center justify-between w-full">
+      <div className="text-white mr-2 text-xs">{msToTime(displayTime * 1000)}</div>
       <div style={{ width: '100%' }}>
-        <Slider
+        <ModernSlider
           isEnabled
-          value={value}
-          onChangeStart={() => setSelecting(true)}
-          onChange={(val) => setValue(val)}
-          onChangeComplete={(val) => {
-            setSelecting(false);
-            const newPosition = Math.round(duration * val);
-            setPosition(newPosition);
-          }}
+          value={progress}
+          onChange={handleSliderChange}
+          onChangeComplete={handleSliderChangeComplete}
+          controlType="progress"
         />
       </div>
-      <div className='text-white ml-2 text-xs'>{msToTime(duration)}</div>
+      <div className="text-white ml-2 text-xs">{msToTime(duration * 1000)}</div>
     </div>
   );
 });

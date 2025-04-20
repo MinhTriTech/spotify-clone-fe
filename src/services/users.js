@@ -11,8 +11,8 @@ const initialState = {
   view: 'LIST',
 };
 
-export const fetchTopTracks = async (params) => {
-  return await axios.get('/me/top/tracks', { params });
+export const fetchTopTracks = async () => {
+  return await axios.get('api/music/songs/');
 };
 
 export const fetchTopArtists = async (params) => {

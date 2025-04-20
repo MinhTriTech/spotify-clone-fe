@@ -1,8 +1,7 @@
-// Cleaned VolumeControls for frontend-only testing
-import { useState } from 'react';
-
+import { useState, useEffect, useRef } from 'react';
+import { useAudio } from '../../../../contexts/AudioContext'; 
 import { Space } from 'antd';
-import Slider from '../../../Slider';
+import ModernSlider from '../../../Slider';
 import { Tooltip } from '../../../Tooltip';
 import { VolumeIcon, VolumeMuteIcon, VolumeOneIcon, VolumeTwoIcon } from '../../../Icons';
 
@@ -14,28 +13,75 @@ const getIcon = (volume) => {
 };
 
 const VolumeControls = () => {
-  const [volume, setVolume] = useState(1);
+  const { audioRef, volume, setVolume } = useAudio();
+  const [isDragging, setIsDragging] = useState(false);
+  const [localVolume, setLocalVolume] = useState(volume);
+  const prevVolumeRef = useRef(volume > 0 ? volume : 0.5);
+  
+  // Theo dõi thay đổi volume từ context
+  useEffect(() => {
+    if (!isDragging) {
+      setLocalVolume(volume);
+      if (volume > 0) {
+        prevVolumeRef.current = volume;
+      }
+    }
+  }, [volume, isDragging]);
+
   const muted = volume === 0;
 
+  const handleMuteToggle = () => {
+    if (!audioRef.current) return;
+    
+    const newVolume = muted ? prevVolumeRef.current : 0;
+    audioRef.current.volume = newVolume;
+    setVolume(newVolume);
+    setLocalVolume(newVolume);
+  };
+
+  const handleVolumeChange = (val) => {
+    setIsDragging(true);
+    setLocalVolume(val);
+  };
+
+  const handleVolumeChangeComplete = (val) => {
+    if (!audioRef.current) return;
+    
+    if (val > 0) {
+      prevVolumeRef.current = val;
+    }
+    
+    audioRef.current.volume = val;
+    setVolume(val);
+    
+    // Sử dụng setTimeout để đảm bảo state được cập nhật sau event
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 50);
+  };
+
   return (
-    <div className='volume-control-container'>
-      <Space style={{ display: 'flex' }}>
+    <div className="volume-control-container" onClick={(e) => e.stopPropagation()}>
+      <Space size={6} style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={muted ? 'Unmute' : 'Mute'}>
-          <div
-            onClick={() => {
-              setVolume(muted ? 1 : 0);
-            }}
+          <div 
+            onClick={handleMuteToggle}
+            className="cursor-pointer"
           >
-            {getIcon(muted ? 0 : volume)}
+            {getIcon(isDragging ? localVolume : volume)}
           </div>
         </Tooltip>
 
-        <div className='flex items-center justify-between w-full' style={{ width: 90 }}>
-          <Slider
-            isEnabled
-            value={muted ? 0 : volume}
-            onChange={(val) => setVolume(val)}
-            onChangeComplete={(val) => setVolume(val)}
+        <div style={{ width: 90 }} onClick={(e) => e.stopPropagation()}>
+          <ModernSlider
+            isEnabled={true}
+            value={isDragging ? localVolume : volume}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={handleVolumeChange}
+            onChangeComplete={handleVolumeChangeComplete}
+            controlType="volume"
           />
         </div>
       </Space>

@@ -5,7 +5,7 @@ import { register, login, fetchUserApi } from '../../services/auth';
 const initialState = {
   user: undefined,
   error: null,
-  role: true,
+  role: false,
   loading: false,
 };
 

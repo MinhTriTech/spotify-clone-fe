@@ -1,7 +1,7 @@
-// Mocked version of ControlButtons (cleaned for frontend-only usage)
 import { Col, Row } from 'antd';
 import { Pause, Play, Replay, ReplayOne, ShuffleIcon, SkipBack, SkipNext } from '../../../Icons';
-import { memo, useState } from 'react';
+import { memo, useState, useCallback } from 'react';
+import { useAudio } from '../../../../contexts/AudioContext';
 
 const ShuffleButton = memo(() => {
   const [shuffle, setShuffle] = useState(false);
@@ -22,17 +22,20 @@ const SkipBackButton = memo(() => {
 });
 
 const PlayButton = memo(() => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const disabled = false;
+  const { isPlaying, play, pause, currentSrc } = useAudio(); // 🆕 lấy thêm currentSrc
+
+  const disabled = !currentSrc; // 🆕 Nếu chưa có bài nào thì disable luôn
+
+  const togglePlay = useCallback(() => {
+    if (disabled) return; // 🛑 Không làm gì nếu disabled
+    isPlaying ? pause() : play();
+  }, [disabled, isPlaying, play, pause]);
 
   return (
     <button
-      className={`player-pause-button ${disabled ? 'disabled' : ''}`}
-      onClick={() => {
-        if (!disabled) {
-          setIsPlaying((prev) => !prev);
-        }
-      }}
+      className={`player-pause-button ${disabled ? 'disabled' : ''} ${isPlaying ? 'active' : ''}`}
+      onClick={togglePlay}
+      disabled={disabled} // 🆕 thực sự disabled button HTML
     >
       {!isPlaying ? <Play /> : <Pause />}
     </button>

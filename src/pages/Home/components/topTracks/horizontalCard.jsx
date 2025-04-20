@@ -1,36 +1,33 @@
 import { memo, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
-import {TrackActionsWrapper} from '../../../../components/Actions/TrackActions';
-
-// Redux
-import { useAppSelector } from '../../../../store/store';
+import { TrackActionsWrapper } from '../../../../components/Actions/TrackActions';
 
 // Utils
 import tinycolor from 'tinycolor2';
 import useIsMobile from '../../../../utils/isMobile';
 import { getImageAnalysis2 } from '../../../../utils/imageAnyliser';
 
-// Services
-import { playerService } from '../../../../services/player';
+// Contexts
+import { useAudio } from '../../../../contexts/AudioContext';
 
 // Constants
 import { EQUILISER_IMAGE } from '../../../../constants/spotify';
 
 export const HorizontalCard = memo(({ item, setColor }) => {
-  const currentSong = useAppSelector((state) => state.spotify.state?.track_window.current_track.id);
-  const isPlaying = useAppSelector((state) => !state.spotify.state?.paused);
-  const isCurrent = currentSong === item.id;
-
   const isMobile = useIsMobile();
+  const { currentSrc, isPlaying } = useAudio(); // Không lấy setSrc, pause ở đây nữa
+
+  const isCurrent = currentSrc.includes(item.file_path);
 
   const onClick = useCallback(() => {
-    if (isCurrent) return;
-    playerService.startPlayback({ uris: [item.uri] });
-  }, [isCurrent, item.uri]);
+    console.log("Log tạm"); 
+  }, [item]);
 
   useEffect(() => {
-    if (item) getImageAnalysis2(item.album.images[0].url).then();
+    if (item) {
+      getImageAnalysis2('https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg').then();
+    }
   }, [item]);
 
   return (
@@ -42,7 +39,7 @@ export const HorizontalCard = memo(({ item, setColor }) => {
         onMouseEnter={
           !isMobile
             ? () => {
-                getImageAnalysis2(item.album.images[0].url).then((r) => {
+                getImageAnalysis2('https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg').then((r) => {
                   let color = tinycolor(r);
                   while (color.isLight()) {
                     color = color.darken(10);
@@ -56,7 +53,10 @@ export const HorizontalCard = memo(({ item, setColor }) => {
         <div style={{ display: 'flex' }}>
           <div className="img-container">
             <div className="img-section">
-              <img src={item.album.images[0].url} alt={item.name} />
+              <img
+                src={'https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg'}
+                alt={item.title}
+              />
             </div>
           </div>
         </div>
@@ -65,10 +65,10 @@ export const HorizontalCard = memo(({ item, setColor }) => {
           <div className="text-section">
             <div>
               {isMobile ? (
-                <p>{item.name}</p>
+                <p>{item.title}</p>
               ) : (
-                <Link title={item.name} to={`/album/${item.album.id}`}>
-                  <p>{item.name}</p>
+                <Link title={item.title}>
+                  <p>{item.title}</p>
                 </Link>
               )}
             </div>
@@ -76,9 +76,10 @@ export const HorizontalCard = memo(({ item, setColor }) => {
 
           <div className="button-container">
             {isCurrent && isPlaying ? (
-              <img height={20} alt={item.name} src={EQUILISER_IMAGE} />
+              <img height={20} alt={item.title} src={EQUILISER_IMAGE} />
             ) : null}
-            <PlayCircle size={15} isCurrent={isCurrent} context={{ uris: [item.uri] }} />
+            {/* 🆕 Truyền item đầy đủ vào PlayCircle */}
+            <PlayCircle size={15} isCurrent={isCurrent} context={item} />
           </div>
         </div>
       </div>

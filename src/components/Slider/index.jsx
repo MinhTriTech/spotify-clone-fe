@@ -1,56 +1,59 @@
-import React from 'react';
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
+import { Slider } from '@mui/material';
 
-const ModernSlider = ({ isEnabled, value, onChange, onChangeStart, onChangeComplete }) => {
-  const handleChange = (newValue) => {
-    if (onChange) {
-      onChange(newValue);
+const ModernSlider = ({
+  isEnabled = true,
+  value = 0,
+  min = 0,
+  max = 1,
+  step = 0.01,
+  onChange,
+  onChangeComplete,
+  controlType = 'default', // Thêm prop này để phân biệt loại control
+  ...otherProps
+}) => {
+  const handleChange = (event, newValue) => {
+    if (typeof newValue === 'number') {
+      if (onChange) onChange(newValue, controlType);
     }
   };
 
-  const handleBeforeChange = () => {
-    if (onChangeStart) {
-      onChangeStart();
-    }
-  };
-
-  const handleAfterChange = (newValue) => { // Đổi tên hàm này thành handleComplete
-    if (onChangeComplete) {           // Và gọi onChangeComplete
-      onChangeComplete(newValue);
+  const handleChangeCommitted = (event, newValue) => {
+    if (typeof newValue === 'number') {
+      if (onChangeComplete) onChangeComplete(newValue, controlType);
     }
   };
 
   return (
-    <div className="modern-slider-container">
+    <div className="modern-slider-container" data-control-type={controlType}>
       <Slider
         disabled={!isEnabled}
         value={value}
+        min={min}
+        max={max}
+        step={step}
         onChange={handleChange}
-        onBeforeChange={handleBeforeChange}
-        onChangeComplete={handleAfterChange} // Sử dụng onChangeComplete
-        railStyle={{
-          backgroundColor: '#535353',
+        onChangeCommitted={handleChangeCommitted}
+        {...otherProps}
+        sx={{
+          color: '#1ed760',
           height: 4,
-          borderRadius: 2,
-        }}
-        trackStyle={{
-          backgroundColor: '#1ed760',
-          height: 4,
-          borderRadius: 2,
-        }}
-        handleStyle={[
-          {
-            borderColor: '#1ed760',
-            backgroundColor: '#1ed760',
+          '& .MuiSlider-thumb': {
             width: 12,
             height: 12,
-            borderRadius: '50%',
-            marginTop: -4,
-            opacity: 1,
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+            backgroundColor: '#1ed760',
+            border: '2px solid white',
+            transition: 'transform 0.2s ease-in-out',
+            '&:hover': {
+              transform: 'scale(1.2)',
+            },
           },
-        ]}
+          '& .MuiSlider-rail': {
+            backgroundColor: '#535353',
+          },
+          '& .MuiSlider-track': {
+            backgroundColor: '#1ed760',
+          },
+        }}
       />
     </div>
   );

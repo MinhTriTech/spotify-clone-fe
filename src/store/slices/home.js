@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 // // Services
-// import { userService } from '../../services/users';
+import { userService } from '../../services/users';
 // import { albumsService } from '../../services/albums';
 // import { artistService } from '../../services/artist';
 // import { playerService } from '../../services/player';
@@ -46,8 +46,8 @@ export const fetchNewReleases = createAsyncThunk('home/fetchNewReleases', async 
 });
 
 export const fetchTopTracks = createAsyncThunk('home/fetchTopTracks', async () => {
-  // const response = await userService.fetchTopTracks({ limit: 8, timeRange: 'short_term' });
-  // return response.data.items;
+  const response = await userService.fetchTopTracks();
+  return response.data;
 });
 
 export const fetchRecentlyPlayed = createAsyncThunk('home/fetchRecentlyPlayed', async () => {
