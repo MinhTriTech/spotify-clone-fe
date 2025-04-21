@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { register, login, fetchUserApi } from '../../services/auth';
+import { register, login, logout, fetchUserApi } from '../../services/auth';
 
 const initialState = {
   user: undefined,
@@ -21,6 +21,11 @@ export const handleLogin = createAsyncThunk('auth/login', async (userData) => {
 
 export const fetchUser = createAsyncThunk('auth/fetchUser', async (userData) => {
   const response = await fetchUserApi(userData);
+  return response;
+});
+
+export const handleLogout = createAsyncThunk('auth/logout', async () => {
+  const response = await logout();
   return response;
 });
 
@@ -48,7 +53,7 @@ const authSlice = createSlice({
       })
       .addCase(handleLogin.fulfilled, (state, action) => {
         state.user = action.payload;
-        // state.role = action.payload.is_staff;
+        state.role = action.payload.user_info.is_staff;
         state.loading = false; 
       })
       .addCase(handleLogin.rejected, (state, action) => {
@@ -60,10 +65,22 @@ const authSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.user = action.payload;
-        // state.role = action.payload.is_staff;
+        state.role = action.payload.user_info.is_staff;
         state.loading = false; 
       })
       .addCase(fetchUser.rejected, (state, action) => {
+        state.loading = false; 
+      })
+
+      .addCase(handleLogout.pending, (state) => {
+        state.loading = true; 
+      })
+      .addCase(handleLogout.fulfilled, (state, action) => {
+        state.user = undefined;
+        state.role = false;
+        state.loading = false; 
+      })
+      .addCase(handleLogout.rejected, (state, action) => {
         state.loading = false; 
       })
   },
