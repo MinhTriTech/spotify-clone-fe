@@ -23,9 +23,9 @@ const HomePageContainer = memo((props) => {
 
   const isMobile = useIsMobile();
   const sectionContainerRef = useRef(null);
-  // const user = useAppSelector((state) => !!state.auth.user);
-  const user = true;
+  const user = useAppSelector((state) => !!state.auth.user);
   const section = useAppSelector((state) => state.home.section);
+  
 
   return (
     <div ref={sectionContainerRef}>

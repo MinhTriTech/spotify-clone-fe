@@ -1,15 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
-import { TrackWithSave } from '../../../../../interfaces/track';
 import SongView, { SongViewComponents } from '../../../../../components/SongsTable/songView';
 import { profileActions } from '../../../../../store/slices/profile';
 
-interface SongProps {
-  index: number;
-  song: TrackWithSave;
-}
-
-export const Song = (props: SongProps) => {
+export const Song = (props) => {
   const { song, index } = props;
 
   const dispatch = useAppDispatch();
@@ -26,7 +20,7 @@ export const Song = (props: SongProps) => {
   return (
     <SongView
       activable
-      view='LIST'
+      view="LIST"
       song={song}
       index={index}
       context={{ uris }}

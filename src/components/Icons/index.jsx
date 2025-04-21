@@ -14,6 +14,20 @@ const SongExtraControlStyle = {
   maxWidth: 17,
 };
 
+export const LogoutIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg"
+      data-encore-id='icon'
+      role='img'
+      aria-hidden='true'
+      viewBox='0 -960 960 960'
+      className='hoverable-icon expand-icon'
+      style={{ ...SongExtraControlStyle, height: '2em', maxWidth: 30, }}
+      {...props}
+      >
+    <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"></path>
+  </svg>
+);
+
 export const GoogleIcon = (props) => (
   <svg
     data-encore-id="icon"
@@ -34,8 +48,6 @@ export const GoogleIcon = (props) => (
   </svg>
 );
 
-
-
 export const AlbumIcon = (props) => (
     <svg
       data-encore-id='icon'
@@ -43,7 +55,7 @@ export const AlbumIcon = (props) => (
       aria-hidden='true'
       viewBox='0 0 16 16'
       className='hoverable-icon expand-icon'
-      style={SongExtraControlStyle} // Đảm bảo SongExtraControlStyle được định nghĩa trước
+      style={SongExtraControlStyle} 
     >
       <path d='M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z'></path>
       <path d='M8 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM5 8a3 3 0 1 1 6 0 3 3 0 0 1-6 0z'></path>

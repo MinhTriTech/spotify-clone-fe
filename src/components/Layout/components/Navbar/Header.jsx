@@ -1,18 +1,64 @@
-import React from 'react';
-import { Space } from 'antd';
+import { useCallback } from 'react';
+import { Popconfirm, Space } from 'antd';
 import { Link } from 'react-router-dom';
+import { CloseIcon, LogoutIcon } from '../../../Icons';
+import WhiteButton from '../../../Button';
+import { useDispatch } from 'react-redux';
+import { handleLogout } from '../../../../store/slices/auth';
+
+// Redux
+import { uiActions } from '../../../../store/slices/ui';
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+
+// Constants
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
 import useIsMobile from '../../../../utils/isMobile';
 
-const Header = ({ opacity, title }) => {
-  const isMobile = useIsMobile();
-  const t = (s) => s;
+const LoginButton = () => {
+  const dispatch = useAppDispatch();
+  const tooltipOpen = useAppSelector((state) => state.ui.loginButtonOpen);
 
-  // ✅ MOCK trạng thái đăng nhập
-  const user = {
-    id: 'mock-user-id',
-    images: [{ url: 'https://via.placeholder.com/50' }],
-  };
+  const handleLogin = useCallback(() => {
+    dispatch(uiActions.toggleLoginModalMain());
+  }, [dispatch]);
+
+  const onClose = useCallback(() => {
+    dispatch(uiActions.closeLoginButton());
+  }, [dispatch]);
+
+  return (
+    <Popconfirm
+      icon={null}
+      open={tooltipOpen}
+      onCancel={onClose}
+      placement="bottomLeft"
+      rootClassName="login-tooltip"
+      cancelText={<CloseIcon />}
+      title="Bạn đã đăng xuất"
+      cancelButtonProps={{ type: 'text' }}
+      okButtonProps={{ className: 'white-button small' }}
+      description="Đăng nhập để thêm vào bài hát yêu thích của bạn."
+    >
+      <WhiteButton title="Đăng nhập" onClick={handleLogin} />
+    </Popconfirm>
+  );
+};
+
+const Header = ({ opacity }) => {
+  const dispatch = useDispatch();
+
+  const handleLogoutActive = useCallback(async (e) => {
+    try {
+      await dispatch(handleLogout()).unwrap();
+    } catch (error) {
+      console.error('Lỗi khi đăng xuất', error);
+    }
+  }, [dispatch]);
+
+  const user = useAppSelector(
+    (state) => state.auth.user,
+    (prev, next) => prev?.id === next?.id
+  );
 
   return (
     <div
@@ -21,16 +67,9 @@ const Header = ({ opacity, title }) => {
     >
       <div className="flex flex-row items-center">
         <Space>
-          {!isMobile && (
-            <a
-              target="_blank"
-              rel="noreferrer"
-              className="contact-me"
-              href="https://github.com/francoborrelli/spotify-react-web-client"
-            >
-              <span>{t('Source code')}</span>
-            </a>
-          )}
+          {user ? (
+              <LogoutIcon onClick={handleLogoutActive}/>
+          ) : null}
 
           {user ? (
             <div className="avatar-container">
@@ -38,18 +77,16 @@ const Header = ({ opacity, title }) => {
                 <img
                   className="avatar"
                   id="user-avatar"
-                  alt="User Avatar"
+                  alt="Ảnh đại diện người dùng"
                   style={{ marginTop: -1 }}
                   src={
-                    user?.images?.length
-                      ? user.images[0].url
-                      : ARTISTS_DEFAULT_IMAGE
+                    user?.images && user.images.length ? user.images[0].url : ARTISTS_DEFAULT_IMAGE
                   }
                 />
               </Link>
             </div>
           ) : (
-            <button className="white-button small">{t('Log In')}</button>
+            <LoginButton />
           )}
         </Space>
       </div>
