@@ -22,20 +22,28 @@ const SkipBackButton = memo(() => {
 });
 
 const PlayButton = memo(() => {
-  const { isPlaying, play, pause, currentSrc } = useAudio(); // 🆕 lấy thêm currentSrc
-
-  const disabled = !currentSrc; // 🆕 Nếu chưa có bài nào thì disable luôn
+  const { isPlaying, play, pause, currentSrc, videoRef } = useAudio();
+  const disabled = !currentSrc;
 
   const togglePlay = useCallback(() => {
-    if (disabled) return; // 🛑 Không làm gì nếu disabled
-    isPlaying ? pause() : play();
-  }, [disabled, isPlaying, play, pause]);
+    if (disabled) return;
+
+    const video = videoRef?.current;
+
+    if (isPlaying) {
+      pause();
+      video?.pause(); 
+    } else {
+      play();
+      video?.play().catch(() => {}); 
+    }
+  }, [disabled, isPlaying, play, pause, videoRef]);
 
   return (
     <button
       className={`player-pause-button ${disabled ? 'disabled' : ''} ${isPlaying ? 'active' : ''}`}
       onClick={togglePlay}
-      disabled={disabled} // 🆕 thực sự disabled button HTML
+      disabled={disabled}
     >
       {!isPlaying ? <Play /> : <Pause />}
     </button>
@@ -52,7 +60,7 @@ const SkipNextButton = memo(() => {
 });
 
 const ReplayButton = memo(() => {
-  const [repeatMode, setRepeatMode] = useState(0); // 0 = off, 1 = context, 2 = track
+  const [repeatMode, setRepeatMode] = useState(0);
   const looping = repeatMode === 1 || repeatMode === 2;
   return (
     <button

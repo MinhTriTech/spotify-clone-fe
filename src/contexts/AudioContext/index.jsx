@@ -4,14 +4,13 @@ const AudioContext = createContext(null);
 
 export const AudioProvider = ({ children }) => {
   const audioRef = useRef(new Audio());
+  const videoRef = useRef(null); 
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSrc, setCurrentSrc] = useState('');
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [volume, setVolumeState] = useState(1); // Đổi tên để tránh nhầm lẫn
+  const [volume, setVolumeState] = useState(1);
   const [loop, setLoop] = useState(false);
-  
-  // Thêm volumeRef để theo dõi volume thực tế
   const volumeRef = useRef(1);
 
   useEffect(() => {
@@ -21,16 +20,12 @@ export const AudioProvider = ({ children }) => {
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
     const handleEnded = () => setIsPlaying(false);
-    
-    // Chỉ cập nhật volume state nếu khác với giá trị ref
     const handleVolumeChange = () => {
       if (Math.abs(audio.volume - volumeRef.current) > 0.01) {
         volumeRef.current = audio.volume;
         setVolumeState(audio.volume);
-        console.log("Volume changed to:", audio.volume);
       }
     };
-    
     const handleLoadedMetadata = () => setCurrentSrc(audio.src);
 
     audio.addEventListener('play', handlePlay);
@@ -48,40 +43,39 @@ export const AudioProvider = ({ children }) => {
     };
   }, []);
 
-  // Thêm hàm setVolume an toàn
   const setVolume = useCallback((newVolume) => {
-    if (audioRef.current) {
-      const safeVolume = Math.max(0, Math.min(1, newVolume));
-      audioRef.current.volume = safeVolume;
-      volumeRef.current = safeVolume;
-      setVolumeState(safeVolume);
-      console.log("Setting volume to:", safeVolume);
-    }
+    const safeVolume = Math.max(0, Math.min(1, newVolume));
+    if (audioRef.current) audioRef.current.volume = safeVolume;
+    if (videoRef.current) videoRef.current.volume = safeVolume;
+    volumeRef.current = safeVolume;
+    setVolumeState(safeVolume);
   }, []);
 
   const play = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.play();
-    }
+    audioRef.current?.play();
+    videoRef.current?.play();
+    setIsPlaying(true);
   }, []);
 
   const pause = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
+    audioRef.current?.pause();
+    videoRef.current?.pause();
+    setIsPlaying(false);
   }, []);
 
   const setSrc = useCallback((src, trackInfo = null) => {
     if (audioRef.current) {
       audioRef.current.src = src;
       audioRef.current.play();
-      
-      if (trackInfo) {
-        setCurrentTrack(trackInfo);
-      } else {
-        setCurrentTrack(null);
-      }
     }
+
+    if (trackInfo?.video && videoRef.current) {
+      videoRef.current.src = trackInfo.video;
+      videoRef.current.currentTime = 0; 
+      videoRef.current.play().catch(() => {}); 
+    }
+
+    setCurrentTrack(trackInfo ?? null);
   }, []);
 
   const toggleLoop = useCallback(() => {
@@ -96,9 +90,10 @@ export const AudioProvider = ({ children }) => {
     <AudioContext.Provider
       value={{
         audioRef,
+        videoRef, 
         isPlaying,
         currentSrc,
-        currentTrack, 
+        currentTrack,
         volume,
         loop,
         play,
@@ -106,11 +101,12 @@ export const AudioProvider = ({ children }) => {
         setSrc,
         toggleLoop,
         setCurrentTrack,
-        setVolume, // Thêm hàm setVolume vào context
+        setVolume,
       }}
     >
       {children}
       <audio ref={audioRef} style={{ display: 'none' }} />
+      <video ref={videoRef} style={{ display: 'none' }} muted />
     </AudioContext.Provider>
   );
 };
