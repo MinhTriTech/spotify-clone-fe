@@ -1,6 +1,5 @@
 // Components
 import { Col, Row } from 'antd';
-import { HomeHeader } from './header';
 import { TopTracks } from '../components/topTracks';
 import { MadeForYou } from '../components/madeForYou';
 import { NewReleases } from '../components/newReleases';
@@ -18,7 +17,6 @@ import { useAppSelector } from '../../../store/store';
 import useIsMobile from '../../../utils/isMobile';
 
 const HomePageContainer = memo((props) => {
-  const { container } = props;
   const [color, setColor] = useState('rgb(66, 32, 35)');
 
   const isMobile = useIsMobile();
@@ -29,7 +27,6 @@ const HomePageContainer = memo((props) => {
 
   return (
     <div ref={sectionContainerRef}>
-      <HomeHeader color={color} container={container} sectionContainer={sectionContainerRef} />
       <div
         className="Home-seccion"
         style={{
