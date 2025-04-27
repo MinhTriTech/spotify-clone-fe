@@ -33,23 +33,13 @@ const SongDetail = () => {
                     <div className="w-[78%]">
                         <InputCombo type="text" placeholder="Nhập tên bài hát" label="Tên bài hát" name="name" />
 
-                        <div className="w-full px-6 mb-2">
-                            <label for="file_path">Đường dẫn bài hát</label>
-                            <div class="relative bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm overflow-hidden flex items-center justify-start transition-all duration-300 ">
-                                <input type="file" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer" />
-                                <span class=" text-spotifyGray pointer-events-none">Chọn đường dẫn</span>
-                            </div>
-                        </div>
+                        <InputCombo type="text" label="Đường dẫn bài hát" name="file_path" value="https://abc.com/baidem.mp3" />
 
-                        <div className="w-full px-6 mb-2">
-                            <label for="file_path">Đường dẫn video</label>
-                            <div class="relative bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm overflow-hidden flex items-center justify-start transition-all duration-300 ">
-                                <input type="file" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer" />
-                                <span class=" text-spotifyGray pointer-events-none">Chọn đường dẫn</span>
-                            </div>
-                        </div>
+                        <InputCombo type="text" label="Đường dẫn video" name="file_path" value="https://abc.com" />
 
-                        <InputCombo type="text" placeholder="Nhập loại nội dung bài hát" label="Loại nội dung bài hát" name="content_type" />
+                        <InputCombo type="text" label="Loại nội dung bài hát" name="content_type" value="mp3" />
+
+                        <InputCombo type="text" label="Thuộc album" name="content_type" value="abc" />
                     </div>
                 </div>
             </form>
