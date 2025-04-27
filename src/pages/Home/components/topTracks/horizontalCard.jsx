@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
-import { TrackActionsWrapper } from '../../../../components/Actions/TrackActions';
+import TrackActionsWrapper from '../../../../components/Actions/TrackActions';
 
 // Utils
 import tinycolor from 'tinycolor2';

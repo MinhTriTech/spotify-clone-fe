@@ -26,7 +26,7 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
         setSrc(context.file_path, {
           id: context.song_id,
           title: context.title,
-          // artists: context.artist, //Chưa có
+          artists: context.artists,
           image: context.image,
           video: context.video_url,
         });

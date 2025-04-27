@@ -2,7 +2,7 @@ import { Tooltip } from 'antd';
 import ReactTimeAgo from 'react-time-ago';
 import { useCallback, useMemo } from 'react';
 import { MenuIcon, Pause, Play } from '../Icons';
-import { TrackActionsWrapper } from '../Actions/TrackActions';
+import TrackActionsWrapper from '../Actions/TrackActions';
 
 // Utils
 import { msToTime } from '../../utils';

@@ -9,7 +9,7 @@ import AddSongToLibraryButton from '../Actions/AddSongToLibrary';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { spotifyActions } from '../../store/slices/spotify';
 import { useAudio } from '../../contexts/AudioContext';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const ExpandOutButton = ({ onExit }) => (
   <Tooltip title="Thoát toàn màn hình">
@@ -37,20 +37,48 @@ const AddToLibrary = () => {
 };
 
 export const FullScreenPlayer = ({ onExit }) => {
-  const { currentTrack, audioRef, videoRef } = useAudio(); 
+  const { currentTrack, audioRef } = useAudio();
+  const localVideoRef = useRef(null);
   const videoUrl = currentTrack?.video;
   const imageUrl = currentTrack?.image;
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = localVideoRef.current;
     const audio = audioRef.current;
 
-    if (!video || !audio) return;
+    if (!video || !audio || !videoUrl) return;
 
-    const syncVideoBehavior = () => {
-      if (!video.duration || !audio.duration) return;
+    const needReload = video.src !== videoUrl;
 
-      video.loop = video.duration < audio.duration;
+    if (needReload) {
+      video.src = videoUrl;
+      video.load();
+    }
+
+    const handleCanPlay = () => {
+      try {
+        video.currentTime = audio.currentTime;
+        if (!audio.paused) {
+          video.play().catch(e => console.error('Video play error:', e));
+        }
+        video.loop = video.duration < audio.duration;
+      } catch (e) {
+        console.error('Sync error:', e);
+      }
+    };
+
+    const syncTimeWithAudio = () => {
+      if (Math.abs(video.currentTime - audio.currentTime) > 0.3) {
+        video.currentTime = audio.currentTime;
+      }
+    };
+
+    const handlePlayPause = () => {
+      if (audio.paused) {
+        video.pause();
+      } else {
+        video.play().catch(e => console.error('Video play error:', e));
+      }
     };
 
     const handleAudioEnded = () => {
@@ -59,16 +87,24 @@ export const FullScreenPlayer = ({ onExit }) => {
       }
     };
 
-    video.addEventListener('loadedmetadata', syncVideoBehavior);
-    audio.addEventListener('loadedmetadata', syncVideoBehavior);
+    video.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('timeupdate', syncTimeWithAudio);
+    audio.addEventListener('play', handlePlayPause);
+    audio.addEventListener('pause', handlePlayPause);
     audio.addEventListener('ended', handleAudioEnded);
 
+    if (video.readyState >= 3) {
+      handleCanPlay();
+    }
+
     return () => {
-      video.removeEventListener('loadedmetadata', syncVideoBehavior);
-      audio.removeEventListener('loadedmetadata', syncVideoBehavior);
+      video.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('timeupdate', syncTimeWithAudio);
+      audio.removeEventListener('play', handlePlayPause);
+      audio.removeEventListener('pause', handlePlayPause);
       audio.removeEventListener('ended', handleAudioEnded);
     };
-  }, [videoRef, audioRef]);
+  }, [videoUrl, audioRef]);
 
   return (
     <div className="Full-screen-page">
@@ -77,8 +113,7 @@ export const FullScreenPlayer = ({ onExit }) => {
           <Col span={24} style={{ textAlign: 'center' }}>
             {videoUrl ? (
               <video
-                ref={videoRef}
-                src={videoUrl}
+                ref={localVideoRef}
                 style={{
                   width: '80%',
                   maxHeight: '400px',
@@ -88,7 +123,6 @@ export const FullScreenPlayer = ({ onExit }) => {
                 }}
                 muted
                 controls={false}
-                autoPlay
               />
             ) : imageUrl ? (
               <img
