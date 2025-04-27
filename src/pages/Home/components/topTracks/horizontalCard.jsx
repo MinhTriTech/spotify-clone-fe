@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
-import { TrackActionsWrapper } from '../../../../components/Actions/TrackActions';
+import TrackActionsWrapper from '../../../../components/Actions/TrackActions';
 
 // Utils
 import tinycolor from 'tinycolor2';
@@ -16,17 +16,17 @@ import { EQUILISER_IMAGE } from '../../../../constants/spotify';
 
 export const HorizontalCard = memo(({ item, setColor }) => {
   const isMobile = useIsMobile();
-  const { currentSrc, isPlaying } = useAudio(); // Không lấy setSrc, pause ở đây nữa
+  const { currentSrc, isPlaying } = useAudio(); 
 
   const isCurrent = currentSrc.includes(item.file_path);
 
   const onClick = useCallback(() => {
-    console.log("Log tạm"); 
+    console.log(item); 
   }, [item]);
 
   useEffect(() => {
     if (item) {
-      getImageAnalysis2('https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg').then();
+      getImageAnalysis2(item.image).then();
     }
   }, [item]);
 
@@ -39,7 +39,7 @@ export const HorizontalCard = memo(({ item, setColor }) => {
         onMouseEnter={
           !isMobile
             ? () => {
-                getImageAnalysis2('https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg').then((r) => {
+                getImageAnalysis2(item.image).then((r) => {
                   let color = tinycolor(r);
                   while (color.isLight()) {
                     color = color.darken(10);
@@ -54,7 +54,7 @@ export const HorizontalCard = memo(({ item, setColor }) => {
           <div className="img-container">
             <div className="img-section">
               <img
-                src={'https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg'}
+                src={item.image}
                 alt={item.title}
               />
             </div>
@@ -78,7 +78,6 @@ export const HorizontalCard = memo(({ item, setColor }) => {
             {isCurrent && isPlaying ? (
               <img height={20} alt={item.title} src={EQUILISER_IMAGE} />
             ) : null}
-            {/* 🆕 Truyền item đầy đủ vào PlayCircle */}
             <PlayCircle size={15} isCurrent={isCurrent} context={item} />
           </div>
         </div>

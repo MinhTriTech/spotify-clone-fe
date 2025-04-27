@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../store/store';
 import { uiActions } from '../../store/slices/ui';
 import { useAudio } from '../../contexts/AudioContext';
 
-export const PlayCircle = ({ size = 20, big, isCurrent, context, image }) => {
+export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
   const { isPlaying, play, pause, setSrc } = useAudio();
@@ -16,24 +16,25 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context, image }) => {
         e.stopPropagation();
       }
 
-      if (!context?.file_path) return; // 🆕 lấy từ context.file_path
+      if (!context?.file_path) return; 
 
-      if (!user && image) {
-        return dispatch(uiActions.openLoginModal(image));
+      if (!user && context.image) {
+        return dispatch(uiActions.openLoginModal(context.image));
       }
 
       if (!isCurrent) {
         setSrc(context.file_path, {
           id: context.song_id,
           title: context.title,
-          artists: context.artist, 
-          // albumCoverUrl: context.album_cover || context.image,
+          artists: context.artists,
+          image: context.image,
+          video: context.video_url,
         });
       } else {
         isThisTrackPlaying ? pause() : play();
       }
     },
-    [isCurrent, isThisTrackPlaying, context, setSrc, play, pause, user, image, dispatch]
+    [isCurrent, isThisTrackPlaying, context, setSrc, play, pause, user, dispatch]
   );
 
   return (

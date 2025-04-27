@@ -16,7 +16,7 @@ import { persistor, store, useAppDispatch, useAppSelector } from './store/store'
 import { fetchUser } from './store/slices/auth';
 
 // Context
-import { AudioProvider } from './contexts/AudioContext';
+import { AudioProvider, useAudio } from './contexts/AudioContext';
 
 // Pages
 import SearchContainer from './pages/Search/Container';
@@ -52,6 +52,24 @@ window.addEventListener('resize', () => {
     store.dispatch(uiActions.collapseLibrary());
   }
 });
+
+const GlobalMedia = () => {
+  const { audioRef, videoRef, currentTrack } = useAudio();
+
+  return (
+    <>
+      <audio ref={audioRef} style={{ display: 'none' }} />
+      {currentTrack?.video && (
+        <video
+          ref={videoRef}
+          style={{ display: 'none' }}
+          muted
+          preload="auto"
+        />
+      )}
+    </>
+  );
+};
 
 const RoutesComponent = memo(() => {
   const location = useLocation();
@@ -164,6 +182,7 @@ function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <AudioProvider>
+            <GlobalMedia />
             <RootComponent />
           </AudioProvider>
         </PersistGate>

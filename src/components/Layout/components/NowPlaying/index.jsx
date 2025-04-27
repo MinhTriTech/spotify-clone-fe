@@ -1,9 +1,8 @@
-import React, { memo, useEffect } from 'react';
 import { Queue } from './Queue';
-import { Devices } from './Devices';
 import { Details } from './Details';
 
 // Redux
+import { memo, useEffect } from 'react';
 import { fetchQueue } from '../../../../store/slices/queue';
 import { fetchDevices } from '../../../../store/slices/spotify';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
@@ -18,7 +17,6 @@ const PlayingNow = memo(() => {
 
   const queue = useAppSelector((state) => !state.ui.queueCollapsed);
   const details = useAppSelector((state) => !state.ui.detailsCollapsed);
-  const devices = useAppSelector((state) => !state.ui.devicesCollapsed);
 
   useEffect(() => {
     const interval = setTimeout(() => {

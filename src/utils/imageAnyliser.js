@@ -10,7 +10,7 @@ function loadImage(src) {
       resolve(img);
     });
     img.addEventListener('error', reject);
-    img.src = src;
+    img.src = `${src}?cache_buster=${Date.now()}`;
   });
 }
 

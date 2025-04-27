@@ -4,7 +4,7 @@ import { NowPlayingCard } from './data';
 import { Link } from 'react-router-dom';
 import { NowPlayingLayout } from '../layout';
 import { MenuIcon } from '../../../../Icons';
-import {TrackActionsWrapper} from '../../../../Actions/TrackActions';
+import TrackActionsWrapper from '../../../../Actions/TrackActions';
 import AddSongToLibraryButton from '../../../../Actions/AddSongToLibrary';
 
 // Redux
