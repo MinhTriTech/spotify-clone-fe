@@ -160,6 +160,22 @@ export const AudioProvider = ({ children }) => {
     }
   }, []);
 
+  const resetAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = ''; 
+    }
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.src = '';
+    }
+    setIsPlaying(false);
+    setCurrentSrc('');
+    setCurrentTrack(null);
+    setCurrentTime(0);
+    setDuration(0);
+  }, []);
+
   return (
     <AudioContext.Provider
       value={{
@@ -179,6 +195,7 @@ export const AudioProvider = ({ children }) => {
         toggleLoop,
         setCurrentTrack,
         setVolume,
+        resetAudio,
       }}
     >
       {children}

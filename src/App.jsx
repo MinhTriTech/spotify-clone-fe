@@ -131,18 +131,22 @@ const RoutesComponent = memo(() => {
 });
 
 const RootComponent = () => {
+  const { resetAudio } = useAudio();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
-  const role = useAppSelector((state) => state.auth.role);
-  const loading = useAppSelector((state) => state.auth.loading);
-  const loginModalMain = useAppSelector((state) => !!state.ui.loginModalMain);
+  const { user, role, loading, loginModalMain } = useAppSelector((state) => ({
+    user: state.auth.user,
+    role: state.auth.role,
+    loading: state.auth.loading,
+    loginModalMain: state.ui.loginModalMain,
+  }));
+  
 
   useEffect(() => {
     if (!user) {
       dispatch(fetchUser());
+      resetAudio();
     }
-  }, [dispatch, user]);
-  
+  }, [dispatch, user, resetAudio]);
 
   useEffect(() => {
     if (!user) return;
@@ -159,21 +163,15 @@ const RootComponent = () => {
 
   if (!loginModalMain && !user) return <LoginPage />;
 
-  if (role === true) {
-    return (
-      <Router>
-        <AdminLayout />
-      </Router>
-    );
-  }
+  const Layout = role ? AdminLayout : AppLayout;
 
   return (
     <Router>
-      <AppLayout>
-        <RoutesComponent />
-      </AppLayout>
+      <Layout>
+        {!role && <RoutesComponent />}
+      </Layout>
     </Router>
-  );
+  )
 };
 
 function App() {
