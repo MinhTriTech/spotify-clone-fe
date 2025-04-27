@@ -72,73 +72,20 @@ export const ArtistCard = ({ item, onClick, getDescription }) => {
   );
 };
 
-export const AlbumCard = ({ item, onClick, getDescription }) => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
-
-  const onNavigate = useCallback(() => {
-    if (!user) {
-      return dispatch(uiActions.openLoginModal(item.images[0].url));
-    }
-    navigate(`/album/${item.id}`);
-  }, [user, navigate, item.id, item.images, dispatch]);
-
-  const title = item.name;
-  const description = item.artists?.slice(0, 3).map((artist) => artist.name).join(', ') || 'Không rõ nghệ sĩ';
-
-  return (
-    <AlbumActionsWrapper album={item} trigger={['contextMenu']}>
-      <div onClick={onClick}>
-        <Card
-          title={title}
-          uri={item.uri}
-          onClick={onNavigate}
-          description={description}
-          image={item.images[0]?.url}
-          context={{ context_uri: item.uri }}
-        />
-      </div>
-    </AlbumActionsWrapper>
-  );
-};
-
-export const PlaylistCard = ({ item, onClick, getDescription }) => {
-  const navigate = useNavigate();
-  const title = item.name;
-  const description = getDescription
-    ? getDescription(item)
-    : item.tracks?.total + (item.tracks?.total === 1 ? ' bài hát' : ' bài hát');
-
-  return (
-    <PlayistActionsWrapper playlist={item} trigger={['contextMenu']}>
-      <div onClick={onClick}>
-        <Card
-          title={title}
-          uri={item.uri}
-          description={description}
-          context={{ context_uri: item.uri }}
-          onClick={() => navigate(`/playlist/${item.id}`)}
-          image={item.images && item.images.length ? item.images[0].url : PLAYLIST_DEFAULT_IMAGE}
-        />
-      </div>
-    </PlayistActionsWrapper>
-  );
-};
-
 export const TrackCard = ({ item, getDescription, onClick }) => {
   const navigate = useNavigate();
-  const description = getDescription ? getDescription(item) : item.album.name;
+  // const description = getDescription ? getDescription(item) : item.album.name;
+  const description = "Chi tiết"; // Thêm sau
 
   return (
     <TrackActionsWrapper track={item} trigger={['contextMenu']}>
       <div onClick={onClick}>
         <Card
-          uri={item.uri}
-          title={item.name}
+          title={item.title}
           description={description}
-          context={{ uris: [item.uri] }}
-          image={item.album.images[0]?.url}
+          context={{ id: item.playlist_id,
+                    type: "playlist", }}
+          image={item.image}
           onClick={() => navigate(`/album/${item.album.id}`)}
         />
       </div>

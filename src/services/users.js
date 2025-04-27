@@ -11,10 +11,6 @@ const initialState = {
   view: 'LIST',
 };
 
-export const fetchTopTracks = async () => {
-  return await axios.get('api/music/songs/');
-};
-
 export const fetchTopArtists = async (params) => {
   return await axios.get('/me/top/artists', { params });
 };
@@ -92,7 +88,6 @@ export const userService = {
   deleteTracks,
   getSavedTracks,
   fetchTopArtists,
-  fetchTopTracks,
   checkSavedTracks,
   followPlaylist,
   checkFollowingUsers,
