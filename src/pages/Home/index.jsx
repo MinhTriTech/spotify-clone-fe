@@ -16,12 +16,7 @@ const Home = memo((props) => {
   useEffect(() => {
     if (user) {
       dispatch(homeActions.fetchTopTracks());
-      dispatch(homeActions.fetchMadeForYou());
-      dispatch(homeActions.fetchRecentlyPlayed());
     }
-    dispatch(homeActions.fetchRanking());
-    dispatch(homeActions.fetchTrending());
-    dispatch(homeActions.fetchNewReleases());
     dispatch(homeActions.fecthFeaturedPlaylists());
   }, [user, dispatch]);
 

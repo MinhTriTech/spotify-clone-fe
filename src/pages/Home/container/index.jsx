@@ -42,51 +42,11 @@ const HomePageContainer = memo((props) => {
             </Col>
           )}
 
-          {user && (
-            <Col span={24}>
-              <MadeForYou />
-            </Col>
-          )}
-
-          {user && (
-            <Col span={24}>
-              <TopMixes />
-            </Col>
-          )}
-
-          {user && section === 'ALL' && (
-            <Col span={24}>
-              <RecentlyPlayed />
-            </Col>
-          )}
-
           <Col span={24}>
             <FeaturePlaylists />
           </Col>
 
           {user && (
-            <Col span={24}>
-              <YourPlaylists />
-            </Col>
-          )}
-
-          <Col span={24}>
-            <NewReleases />
-          </Col>
-
-          {(!user || section === 'MUSIC') && (
-            <Col span={24}>
-              <Rankings />
-            </Col>
-          )}
-
-          {(!user || section === 'MUSIC') && (
-            <Col span={24}>
-              <Trending />
-            </Col>
-          )}
-
-          {user && section === 'ALL' && (
             <Col span={24}>
               <FavouriteArtists />
             </Col>

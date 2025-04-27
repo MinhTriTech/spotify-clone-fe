@@ -1,56 +1,51 @@
 import { Flex } from 'antd';
 import { Link } from 'react-router-dom';
-import { AlbumCard, ArtistCard, PlaylistCard, TrackCard } from './GridCards';
-
-// ❌ Đã xoá useTranslation
-
-// Redux
+import { ArtistCard, TrackCard } from './GridCards';
 import { useAppSelector } from '../../store/store';
+
+const mockArtist = {
+  uri: 'spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ',
+  id: '1Xyo4u8uXC1ZmMpatF05PJ',
+  type: 'artist',
+  name: 'The Weeknd',
+  images: [
+    { url: 'https://via.placeholder.com/300' },
+  ],
+};
+
+export const mockTrack = {
+  uri: 'spotify:track:7szuecWAPwGoV1e5vGu8tl',
+  id: '7szuecWAPwGoV1e5vGu8tl',
+  type: 'track',
+  name: 'Blinding Lights',
+  album: {
+    id: '4yP0hdKOZPNshxUOjY0cZj',
+    name: 'After Hours',
+    images: [
+      { url: 'https://via.placeholder.com/300' },
+    ],
+  },
+  artists: [
+    { name: 'The Weeknd' },
+  ],
+};
+
 
 export function GridItemComponent(props) {
   const { item, getDescription, onClick } = props;
 
-  if (item.type === 'track') {
     return <TrackCard item={item} onClick={onClick} />;
-  }
 
-  if (item.type === 'album') {
-    return <AlbumCard item={item} onClick={onClick} getDescription={getDescription} />;
-  }
-
-  if (item.type === 'playlist') {
-    return <PlaylistCard item={item} onClick={onClick} getDescription={getDescription} />;
-  }
-
-  if (item.type === 'artist') {
-    return <ArtistCard item={item} onClick={onClick} getDescription={getDescription} />;
-  }
+  // if (item.type === 'artist') {
+    // return <ArtistCard item={mockArtist} onClick={onClick} getDescription={getDescription} />;
+  // }
 
   return null;
 }
 
-export const DeleteButton = (props) => {
-  return (
-    <div style={{ position: 'absolute', right: 8, top: 8, zIndex: 10 }}>
-      <button
-        className='item-delete-button'
-        aria-label='Xoá'
-        onClick={(e) => {
-          e.stopPropagation();
-          props.onClick();
-        }}
-      >
-        <svg data-encore-id='icon' role='img' aria-hidden='true' viewBox='0 0 16 16'>
-          <path d='M2.47 2.47a.75.75 0 0 1 1.06 0L8 6.94l4.47-4.47a.75.75 0 1 1 1.06 1.06L9.06 8l4.47 4.47a.75.75 0 1 1-1.06 1.06L8 9.06l-4.47 4.47a.75.75 0 0 1-1.06-1.06L6.94 8 2.47 3.53a.75.75 0 0 1 0-1.06Z'></path>
-        </svg>
-      </button>
-    </div>
-  );
-};
-
 export function GridItemList(props) {
   const user = useAppSelector((state) => !!state.auth.user);
-  const { onItemDelete, onItemClick, getDescription } = props;
+  const { onItemClick } = props;
   const { items, chips, title, moreUrl, extra, subtitle } = props;
 
   return (
@@ -96,16 +91,15 @@ export function GridItemList(props) {
           .filter((i) => i)
           .map((item) => {
             return (
-              <div key={item.uri} style={{ position: 'relative' }}>
-                {onItemDelete ? <DeleteButton onClick={() => onItemDelete(item)} /> : null}
+              <div key={item.playlist_id} style={{ position: 'relative' }}>
                 <GridItemComponent
                   item={item}
-                  getDescription={getDescription}
+                  // getDescription={getDescription}
                   onClick={onItemClick ? () => onItemClick(item) : undefined}
                 />
               </div>
             );
-          })}
+          })} 
       </div>
     </div>
   );

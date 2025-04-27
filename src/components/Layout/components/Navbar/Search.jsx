@@ -53,15 +53,6 @@ export const Search = memo(() => {
         size="large"
         className="search-input"
         prefix={<SearchIcon />}
-        suffix={
-          <button
-            onClick={() => {
-              navigate('/search');
-            }}
-          >
-            <BrowseIcon />
-          </button>
-        }
         defaultValue={INITIAL_VALUE}
         onChange={(e) => {
           setInputValue(e.target.value);
