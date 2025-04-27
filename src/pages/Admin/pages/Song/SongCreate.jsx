@@ -52,6 +52,16 @@ const SongCreate = () => {
                         </div>
 
                         <InputCombo type="text" placeholder="Nhập loại nội dung bài hát" label="Loại nội dung bài hát" name="content_type" />
+                        <div className="w-full px-6 mb-2">
+                            <label for="artist">Thuộc Album</label>
+                            <select name="artist" class="bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled selected>
+                                    - Chọn album -
+                                </option>
+                                <option value="0">abc</option>
+                                <option value="1">cde</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </form>
