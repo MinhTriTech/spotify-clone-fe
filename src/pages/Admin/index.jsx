@@ -1,10 +1,12 @@
+import "../../styles/Admin.css";
+import { Siderbar, BodyContent } from "./layouts";
 const AdminLayout = () => {
     return (
-      <div>
-        <h1 style={{color: "white"}}>Welcome Admin</h1>
-      </div>
+        <div className="bg-spotifyLightBlack w-full h-screen flex font-spotify text-spotifyGray">
+            <Siderbar></Siderbar>
+            <BodyContent></BodyContent>
+        </div>
     );
-  };
-  
-  export default AdminLayout;
-  
+};
+
+export default AdminLayout;
