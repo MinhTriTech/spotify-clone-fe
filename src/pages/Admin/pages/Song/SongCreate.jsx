@@ -3,7 +3,29 @@ import { faChevronLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
 import { InputCombo } from "../../components";
+import { useState, useEffect } from "react";
+import { fetchAlbums } from "../../../../services_admin/album";
 const SongCreate = () => {
+
+    const [mainArtist, setMainArtist] = useState(""); // Lưu ca sĩ chính
+    const [featuredArtists, setFeaturedArtists] = useState([]); // Lưu danh sách ca sĩ phụ
+    const [artists, setArtists] = useState([]); // Lưu danh sách nghệ sĩ từ API
+
+    useEffect(() => {
+        // Gọi API để lấy danh sách nghệ sĩ
+        const fetchArtists = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/manager/artists/");
+                const data = await response.json();
+                setArtists(data);
+            } catch (error) {
+                console.error("Lỗi khi tải danh sách nghệ sĩ:", error);
+            }
+        };
+
+        fetchArtists();
+    }, []);
+
     return (
         <>
             <div style={{ boxShadow: "0 4px 6px rgba(255, 255, 255, 0.2)" }} className="bg-black h-fit w-full flex px-3 py-3">
@@ -60,6 +82,46 @@ const SongCreate = () => {
                                 </option>
                                 <option value="0">abc</option>
                                 <option value="1">cde</option>
+                            </select>
+                        </div>
+                        <div className="w-full px-6 mb-2">
+                            <label htmlFor="main_artist">Ca sĩ chính</label>
+                                <select
+                                    name="main_artist"
+                                    className="bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    value={mainArtist}
+                                    onChange={(e) => setMainArtist(e.target.value)} // Cập nhật state ca sĩ chính
+                                >
+                                    <option value="" disabled>
+                                        - Chọn ca sĩ chính -
+                                    </option>
+                                    {artists.map((artist) => (
+                                        <option key={artist.id} value={artist.id}>
+                                            {artist.name}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+
+                        <div className="w-full px-6 mb-2">
+                            <label htmlFor="featured_artists">Ca sĩ phụ</label>
+                            <select
+                                name="featured_artists"
+                                multiple
+                                className="bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                value={featuredArtists}
+                                onChange={(e) =>
+                                    setFeaturedArtists(Array.from(e.target.selectedOptions, (option) => option.value))
+                                } // Cập nhật state ca sĩ phụ
+                            >
+                                <option value="" disabled>
+                                    - Chọn ca sĩ phụ -
+                                </option>
+                                {artists.map((artist) => (
+                                    <option key={artist.id} value={artist.id}>
+                                        {artist.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
