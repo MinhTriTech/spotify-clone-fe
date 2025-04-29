@@ -1,15 +1,25 @@
 import { PlayCircle } from './PlayCircle';
 import TrackActionsWrapper from '../Actions/TrackActions';
-
 import { useNavigate } from 'react-router-dom';
+import { useAudio } from '../../contexts/AudioContext';
 
-// Redux
-import { useAppSelector } from '../../store/store';
-
-const Card = ({ uri, title, image, rounded, description, onClick, context }) => {
-  const paused = useAppSelector((state) => state.spotify.state?.paused);
-  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
-  const isCurrent = contextUri === uri;
+const Card = ({ title, image, rounded, description, onClick, context }) => {
+  const { isPlaying, currentTrack, playlist, currentIndex } = useAudio();
+  
+  let isCurrent = false;
+  
+  if (context && context.type === 'playlist' && context.id) {
+    const isPlayingThisPlaylist = playlist.length > 0 && 
+                                 currentIndex >= 0 && 
+                                 currentTrack?.playlistId === context.id;
+    
+    isCurrent = isPlayingThisPlaylist;
+  } 
+  else if (context && context.song_id) {
+    isCurrent = currentTrack?.id === context.song_id;
+  }
+  
+  const paused = !isPlaying;
 
   return (
     <div
@@ -30,7 +40,11 @@ const Card = ({ uri, title, image, rounded, description, onClick, context }) => 
         <div
           className={`circle-play-div transition translate-y-1/4 ${isCurrent && !paused ? 'active' : ''}`}
         >
-          <PlayCircle image={image} isCurrent={isCurrent} context={context} />
+          <PlayCircle 
+            image={image} 
+            isCurrent={isCurrent} 
+            context={context} 
+          />
         </div>
       </div>
       <div className='playlist-card-info'>
@@ -51,8 +65,12 @@ export const TrackCard = ({ item, onClick }) => {
         <Card
           title={item.title}
           description={description}
-          context={{ id: item.playlist_id,
-                    type: "playlist", }}
+          context={{ 
+            id: item.playlist_id,
+            image: item.image,
+            type: "playlist",
+            title: item.title
+          }}
           image={item.image}
           onClick={() => navigate(`/album/${item.album.id}`)}
         />

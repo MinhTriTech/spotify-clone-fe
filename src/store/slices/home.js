@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// // Services
 import { playlistService } from '../../services/playlists';
 
 const initialState = {
   topTracks: [],
-  section: 'ALL',
   featurePlaylists: [],
+  songsOfFeaturePlaylists: [],
+  section: 'ALL',
 };
 
 export const fetchTopTracks = createAsyncThunk('home/fetchTopTracks', async () => {
@@ -18,6 +18,15 @@ export const fecthFeaturedPlaylists = createAsyncThunk('home/fecthFeaturedPlayli
   const response = await playlistService.getFeaturedPlaylists();
   return response.data;
 });
+
+export const fetchSongsOfFeaturedPlaylists = createAsyncThunk(
+  'home/fetchSongsOfFeaturedPlaylists',
+  async (id) => {
+    const response = await playlistService.getSongsOfFeaturedPlaylists(id);
+    return response.data;
+  }
+);
+
 
 const homeSlice = createSlice({
   name: 'home',
@@ -34,6 +43,9 @@ const homeSlice = createSlice({
     builder.addCase(fecthFeaturedPlaylists.fulfilled, (state, action) => {
       state.featurePlaylists = action.payload;
     });
+    builder.addCase(fetchSongsOfFeaturedPlaylists.fulfilled, (state, action) => {
+      state.songsOfFeaturePlaylists = action.payload;
+    });
   },
 });
 
@@ -41,6 +53,7 @@ export const homeActions = {
   ...homeSlice.actions,
   fetchTopTracks,
   fecthFeaturedPlaylists,
+  fetchSongsOfFeaturedPlaylists,
 };
 
 export default homeSlice.reducer;

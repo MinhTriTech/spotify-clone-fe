@@ -5,10 +5,16 @@ export const fetchTopTracks = async () => {
 };
 
 const getFeaturedPlaylists = async () => {
-  return await axios.get('api/music/playlistsSuggested/');
+  return await axios.get('api/music/playlistsSuggested');
 };
+
+const getSongsOfFeaturedPlaylists = async (id) => {
+  return await axios.get(`api/music/playlists/${id}/songs`);
+};
+
 
 export const playlistService = {
   fetchTopTracks,
   getFeaturedPlaylists,
+  getSongsOfFeaturedPlaylists,
 };

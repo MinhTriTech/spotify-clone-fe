@@ -1,21 +1,24 @@
 import { Col, Row } from 'antd';
-import { Pause, Play, Replay, ReplayOne, ShuffleIcon, SkipBack, SkipNext } from '../../../Icons';
+import { Pause, Play, SkipBack, SkipNext } from '../../../Icons';
 import { memo, useState, useCallback } from 'react';
 import { useAudio } from '../../../../contexts/AudioContext';
 
-const ShuffleButton = memo(() => {
-  const [shuffle, setShuffle] = useState(false);
-  return (
-    <button onClick={() => setShuffle(!shuffle)}>
-      <ShuffleIcon active={shuffle} />
-    </button>
-  );
-});
-
 const SkipBackButton = memo(() => {
-  const disabled = false;
+  const { playPrevTrack, currentSrc } = useAudio();
+  const disabled = !currentSrc;
+
+  const handleSkipBack = useCallback(() => {
+    if (!disabled) {
+      playPrevTrack();
+    }
+  }, [disabled, playPrevTrack]);
+
   return (
-    <button className={disabled ? 'disabled' : ''} onClick={() => !disabled && console.log('Previous track')}>
+    <button
+      className={disabled ? 'disabled' : ''}
+      onClick={handleSkipBack}
+      disabled={disabled}
+    >
       <SkipBack />
     </button>
   );
@@ -51,31 +54,27 @@ const PlayButton = memo(() => {
 });
 
 const SkipNextButton = memo(() => {
-  const disabled = false;
+  const { playNextTrack, currentSrc } = useAudio();
+  const disabled = !currentSrc;
+
+  const handleSkipNext = useCallback(() => {
+    if (!disabled) {
+      playNextTrack();
+    }
+  }, [disabled, playNextTrack]);
+
   return (
-    <button className={disabled ? 'disabled' : ''} onClick={() => !disabled && console.log('Next track')}>
+    <button
+      className={disabled ? 'disabled' : ''}
+      onClick={handleSkipNext}
+      disabled={disabled}
+    >
       <SkipNext />
     </button>
   );
 });
 
-const ReplayButton = memo(() => {
-  const [repeatMode, setRepeatMode] = useState(0);
-  const looping = repeatMode === 1 || repeatMode === 2;
-  return (
-    <button
-      className={repeatMode === 2 ? 'active-icon-button' : ''}
-      onClick={() => {
-        const nextMode = repeatMode === 2 ? 0 : repeatMode === 1 ? 2 : 1;
-        setRepeatMode(nextMode);
-      }}
-    >
-      {repeatMode === 2 ? <ReplayOne active /> : <Replay active={looping} />}
-    </button>
-  );
-});
-
-const CONTROLS = [ShuffleButton, SkipBackButton, PlayButton, SkipNextButton, ReplayButton];
+const CONTROLS = [SkipBackButton, PlayButton, SkipNextButton];
 
 const ControlButtons = () => {
   return (
