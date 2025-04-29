@@ -1,6 +1,6 @@
 import { Flex } from 'antd';
 import { Link } from 'react-router-dom';
-import { ArtistCard, TrackCard } from './GridCards';
+import {  TrackCard } from './GridCards';
 import { useAppSelector } from '../../store/store';
 
 const mockArtist = {
@@ -32,7 +32,7 @@ export const mockTrack = {
 
 
 export function GridItemComponent(props) {
-  const { item, getDescription, onClick } = props;
+  const { item, onClick } = props;
 
     return <TrackCard item={item} onClick={onClick} />;
 
@@ -46,34 +46,24 @@ export function GridItemComponent(props) {
 export function GridItemList(props) {
   const user = useAppSelector((state) => !!state.auth.user);
   const { onItemClick } = props;
-  const { items, chips, title, moreUrl, extra, subtitle } = props;
+  const { items, chips, title } = props;
 
   return (
     <div className={`${!user ? 'guest' : ''}`}>
       <Flex justify='space-between' align='center'>
         <div>
           {title ? (
-            moreUrl ? (
-              <Link to={moreUrl} style={{ textDecoration: 'none' }}>
+              <Link style={{ textDecoration: 'underline' }}>
                 <h1 className='playlist-header'>{title}</h1>
               </Link>
-            ) : (
-              <h1 className='playlist-header'>{title}</h1>
-            )
           ) : null}
-
-          {subtitle ? <h2 className='playlist-subheader'>{subtitle}</h2> : null}
         </div>
 
-        {extra ? (
-          extra
-        ) : moreUrl ? (
-          <Link to={moreUrl}>
-            <button className='showMore'>
-              <span>Xem thêm</span>
-            </button>
-          </Link>
-        ) : null}
+        <Link>
+          <button className='showMore'>
+            <span>Xem thêm</span>
+          </button>
+        </Link>
       </Flex>
 
       {chips}
@@ -94,7 +84,6 @@ export function GridItemList(props) {
               <div key={item.playlist_id} style={{ position: 'relative' }}>
                 <GridItemComponent
                   item={item}
-                  // getDescription={getDescription}
                   onClick={onItemClick ? () => onItemClick(item) : undefined}
                 />
               </div>

@@ -1,24 +1,25 @@
 import { PlayCircle } from './PlayCircle';
 import TrackActionsWrapper from '../Actions/TrackActions';
-import AlbumActionsWrapper from '../Actions/AlbumActions';
-import ArtistActionsWrapper from '../Actions/ArtistActions';
-import PlayistActionsWrapper from '../Actions/PlaylistActions';
-
-// ❌ Đã xoá useTranslation
 import { useNavigate } from 'react-router-dom';
+import { useAudio } from '../../contexts/AudioContext';
 
-// Redux
-import { useAppDispatch, useAppSelector } from '../../store/store';
-
-// Constants
-import { PLAYLIST_DEFAULT_IMAGE } from '../../constants/spotify';
-import { uiActions } from '../../store/slices/ui';
-import { useCallback } from 'react';
-
-const Card = ({ uri, title, image, rounded, description, onClick, context }) => {
-  const paused = useAppSelector((state) => state.spotify.state?.paused);
-  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
-  const isCurrent = contextUri === uri;
+const Card = ({ title, image, rounded, description, onClick, context }) => {
+  const { isPlaying, currentTrack, playlist, currentIndex } = useAudio();
+  
+  let isCurrent = false;
+  
+  if (context && context.type === 'playlist' && context.id) {
+    const isPlayingThisPlaylist = playlist.length > 0 && 
+                                 currentIndex >= 0 && 
+                                 currentTrack?.playlistId === context.id;
+    
+    isCurrent = isPlayingThisPlaylist;
+  } 
+  else if (context && context.song_id) {
+    isCurrent = currentTrack?.id === context.song_id;
+  }
+  
+  const paused = !isPlaying;
 
   return (
     <div
@@ -39,7 +40,11 @@ const Card = ({ uri, title, image, rounded, description, onClick, context }) => 
         <div
           className={`circle-play-div transition translate-y-1/4 ${isCurrent && !paused ? 'active' : ''}`}
         >
-          <PlayCircle image={image} isCurrent={isCurrent} context={context} />
+          <PlayCircle 
+            image={image} 
+            isCurrent={isCurrent} 
+            context={context} 
+          />
         </div>
       </div>
       <div className='playlist-card-info'>
@@ -50,31 +55,8 @@ const Card = ({ uri, title, image, rounded, description, onClick, context }) => 
   );
 };
 
-export const ArtistCard = ({ item, onClick, getDescription }) => {
+export const TrackCard = ({ item, onClick }) => {
   const navigate = useNavigate();
-  const title = item.name;
-  const description = getDescription ? getDescription(item) : 'Nghệ sĩ';
-
-  return (
-    <ArtistActionsWrapper artist={item} trigger={['contextMenu']}>
-      <div onClick={onClick}>
-        <Card
-          rounded
-          title={title}
-          uri={item.uri}
-          description={description}
-          image={item.images[0]?.url}
-          context={{ context_uri: item.uri }}
-          onClick={() => navigate(`/artist/${item.id}`)}
-        />
-      </div>
-    </ArtistActionsWrapper>
-  );
-};
-
-export const TrackCard = ({ item, getDescription, onClick }) => {
-  const navigate = useNavigate();
-  // const description = getDescription ? getDescription(item) : item.album.name;
   const description = "Chi tiết"; // Thêm sau
 
   return (
@@ -83,8 +65,12 @@ export const TrackCard = ({ item, getDescription, onClick }) => {
         <Card
           title={item.title}
           description={description}
-          context={{ id: item.playlist_id,
-                    type: "playlist", }}
+          context={{ 
+            id: item.playlist_id,
+            image: item.image,
+            type: "playlist",
+            title: item.title
+          }}
           image={item.image}
           onClick={() => navigate(`/album/${item.album.id}`)}
         />
