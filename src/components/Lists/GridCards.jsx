@@ -1,19 +1,10 @@
 import { PlayCircle } from './PlayCircle';
 import TrackActionsWrapper from '../Actions/TrackActions';
-import AlbumActionsWrapper from '../Actions/AlbumActions';
-import ArtistActionsWrapper from '../Actions/ArtistActions';
-import PlayistActionsWrapper from '../Actions/PlaylistActions';
 
-// ❌ Đã xoá useTranslation
 import { useNavigate } from 'react-router-dom';
 
 // Redux
-import { useAppDispatch, useAppSelector } from '../../store/store';
-
-// Constants
-import { PLAYLIST_DEFAULT_IMAGE } from '../../constants/spotify';
-import { uiActions } from '../../store/slices/ui';
-import { useCallback } from 'react';
+import { useAppSelector } from '../../store/store';
 
 const Card = ({ uri, title, image, rounded, description, onClick, context }) => {
   const paused = useAppSelector((state) => state.spotify.state?.paused);
@@ -50,31 +41,8 @@ const Card = ({ uri, title, image, rounded, description, onClick, context }) => 
   );
 };
 
-export const ArtistCard = ({ item, onClick, getDescription }) => {
+export const TrackCard = ({ item, onClick }) => {
   const navigate = useNavigate();
-  const title = item.name;
-  const description = getDescription ? getDescription(item) : 'Nghệ sĩ';
-
-  return (
-    <ArtistActionsWrapper artist={item} trigger={['contextMenu']}>
-      <div onClick={onClick}>
-        <Card
-          rounded
-          title={title}
-          uri={item.uri}
-          description={description}
-          image={item.images[0]?.url}
-          context={{ context_uri: item.uri }}
-          onClick={() => navigate(`/artist/${item.id}`)}
-        />
-      </div>
-    </ArtistActionsWrapper>
-  );
-};
-
-export const TrackCard = ({ item, getDescription, onClick }) => {
-  const navigate = useNavigate();
-  // const description = getDescription ? getDescription(item) : item.album.name;
   const description = "Chi tiết"; // Thêm sau
 
   return (
