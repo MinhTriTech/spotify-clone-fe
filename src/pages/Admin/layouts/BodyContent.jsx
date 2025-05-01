@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { Dashboard } from "../pages/Dashboard";
-import { Album, AlbumCreate, AlbumDetail, AlbumUpdate } from "../pages/Album";
+import { Album, AlbumCreate, AlbumDetail, AlbumUpdate, AlbumAddSong} from "../pages/Album";
 import { Song, SongCreate, SongDetail, SongUpdate } from "../pages/Song";
 import { Artist, ArtistCreate, ArtistDetail, ArtistUpdate } from "../pages/Artist";
 import { Playlist, PlaylistCreate, PlaylistDetail, PlaylistUpdate } from "../pages/Playlist";
@@ -20,8 +20,9 @@ const BodyContent = () => {
 
                 <Route path="/admin/album" element={<Album />} />
                 <Route path="/admin/album/create" element={<AlbumCreate />} />
-                <Route path="/admin/album/detail" element={<AlbumDetail />} />
-                <Route path="/admin/album/update" element={<AlbumUpdate />} />
+                <Route path="/admin/album/:id/detail" element={<AlbumDetail />} />
+                <Route path="/admin/album/:id/update" element={<AlbumUpdate />} />
+                <Route path="/admin/album/:id/add-song" element={<AlbumAddSong />} />
 
                 <Route path="/admin/song" element={<Song />} />
                 <Route path="/admin/song/create" element={<SongCreate />} />

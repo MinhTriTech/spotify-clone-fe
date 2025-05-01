@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = 'http://127.0.0.1:8000/api/manager/songs/';
 
-// Hàm lấy tất cả bài hát
+// Lấy tất cả bài hát
 export const fetchSongs = async () => {
   try {
     const response = await axios.get(API_URL);
@@ -13,12 +13,23 @@ export const fetchSongs = async () => {
   }
 };
 
-// Hàm thêm bài hát
+// Lấy bài hát theo ID
+export const fetchSongById = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Fetch song by ID ${id} error:`, error);
+    throw error;
+  }
+};
+
+// Thêm bài hát
 export const addSong = async (songData) => {
   try {
     const response = await axios.post(`${API_URL}add/`, songData, {
       headers: {
-        "Content-Type": "multipart/form-data", // Phải là multipart để upload file
+        'Content-Type': 'multipart/form-data', // Hỗ trợ upload file
       },
     });
     return response.data;
@@ -28,12 +39,12 @@ export const addSong = async (songData) => {
   }
 };
 
-// Hàm cập nhật bài hát
+// Cập nhật bài hát
 export const updateSong = async (id, songData) => {
   try {
     const response = await axios.put(`${API_URL}${id}/update/`, songData, {
       headers: {
-        "Content-Type": "multipart/form-data", // Update cũng cần gửi đúng content-type
+        'Content-Type': 'multipart/form-data', // Hỗ trợ upload file
       },
     });
     return response.data;
@@ -43,7 +54,7 @@ export const updateSong = async (id, songData) => {
   }
 };
 
-// Hàm xóa bài hát
+// Xóa bài hát
 export const deleteSong = async (id) => {
   try {
     const response = await axios.delete(`${API_URL}${id}/delete/`);
