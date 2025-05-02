@@ -25,8 +25,8 @@ const BodyContent = () => {
 
                 <Route path="/admin/song" element={<Song />} />
                 <Route path="/admin/song/create" element={<SongCreate />} />
-                <Route path="/admin/song/detail" element={<SongDetail />} />
-                <Route path="/admin/song/update" element={<SongUpdate />} />
+                <Route path="/admin/song/:id/detail" element={<SongDetail />} />
+                <Route path="/admin/song/:id/update" element={<SongUpdate />} />
 
                 <Route path="/admin/playlist" element={<Playlist />} />
                 <Route path="/admin/playlist/create" element={<PlaylistCreate />} />
