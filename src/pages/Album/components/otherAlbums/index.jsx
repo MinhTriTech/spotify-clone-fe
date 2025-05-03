@@ -1,5 +1,4 @@
-import { FC, memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { memo, useMemo } from 'react';
 
 // Components
 import { GridItemList } from '../../../../components/Lists/list';
@@ -7,9 +6,7 @@ import { GridItemList } from '../../../../components/Lists/list';
 // Redux
 import { useAppSelector } from '../../../../store/store';
 
-export const OtherAlbums: FC = memo(() => {
-  const { t } = useTranslation(['album']);
-
+export const OtherAlbums = memo(() => {
   const artist = useAppSelector((state) => state.album.artist);
   const current = useAppSelector((state) => state.album.album);
   const otherAlbums = useAppSelector((state) => state.album.otherAlbums);
@@ -21,5 +18,10 @@ export const OtherAlbums: FC = memo(() => {
     return otherAlbums;
   }, [current, otherAlbums]);
 
-  return <GridItemList title={`${t('More by')} ${artist?.name}`} items={items} />;
+  return (
+    <GridItemList
+      title={`More by ${artist?.name || ''}`}
+      items={items}
+    />
+  );
 });

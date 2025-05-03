@@ -11,7 +11,6 @@ import { LibraryLoginInfo } from './loginInfo';
 // Redux
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { getLibraryItems } from '../../../../../store/slices/yourLibrary';
-import { isActiveOnOtherDevice } from '../../../../../store/slices/spotify';
 import { getLibraryCollapsed, uiActions } from '../../../../../store/slices/ui';
 
 // Utils
@@ -25,15 +24,13 @@ const COLLAPSED_STYLE = {
 const YourLibrary = () => {
   const collapsed = useAppSelector(getLibraryCollapsed);
   const user = useAppSelector((state) => !!state.auth.user);
-  const activeOnOtherDevice = useAppSelector(isActiveOnOtherDevice);
 
   const heightValue = useMemo(() => {
     let value = 310;
     if (!user) value = 270;
     if (collapsed) value = 218;
-    if (activeOnOtherDevice) value += 50;
     return value;
-  }, [user, collapsed, activeOnOtherDevice]);
+  }, [user, collapsed]);
 
   return (
     <div className={`Navigation-section library ${!collapsed ? 'open' : ''}`}>
@@ -63,13 +60,20 @@ const AnonymousContent = () => {
   return <LibraryLoginInfo />;
 };
 
+const getItemKey = (item) => {
+  if (item.playlist_id) return `playlist-${item.playlist_id}`;
+  if (item.artist_id) return `artist-${item.artist_id}`;
+  if (item.id) return `likeSongs-${item.id}`;
+  return `unknown-${Math.random()}`; 
+};
+
 const LoggedContent = memo(() => {
   const isMobile = useIsMobile();
   const dispatch = useAppDispatch();
   const items = useAppSelector(getLibraryItems);
   const collapsed = useAppSelector(getLibraryCollapsed);
   const view = useAppSelector((state) => state.yourLibrary.view);
-
+  
   return (
     <>
       {!collapsed ? <SearchArea /> : null}
@@ -80,19 +84,24 @@ const LoggedContent = memo(() => {
         }`}
       >
         {items.map((item) => {
-          if (collapsed) return <ListItemComponent key={item.id} item={item} />;
+        const key = getItemKey(item);
 
-          return (
-            <div
-              key={item.id}
-              onClick={isMobile ? () => dispatch(uiActions.collapseLibrary()) : undefined}
-            >
-              {view === 'LIST' && <ListItemComponent item={item} />}
-              {view === 'COMPACT' && <CompactItemComponent item={item} />}
-              {view === 'GRID' && <GridItemComponent item={item} />}
-            </div>
-          );
-        })}
+        if (collapsed) {
+          return <ListItemComponent key={key} item={item} />;
+        }
+
+        return (
+          <div
+            key={key}
+            onClick={isMobile ? () => dispatch(uiActions.collapseLibrary()) : undefined}
+          >
+            {view === 'LIST' && <ListItemComponent item={item} />}
+            {view === 'COMPACT' && <CompactItemComponent item={item} />}
+            {view === 'GRID' && <GridItemComponent item={item} />}
+          </div>
+        );
+      })}
+
       </div>
     </>
   );

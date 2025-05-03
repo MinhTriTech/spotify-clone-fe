@@ -1,5 +1,5 @@
 import { Col, Row } from 'antd';
-import { Pause, Play, SkipBack, SkipNext } from '../../../Icons';
+import { Pause, Play, SkipBack, SkipNext, DownloadIcon } from '../../../Icons';
 import { memo, useState, useCallback } from 'react';
 import { useAudio } from '../../../../contexts/AudioContext';
 
@@ -74,7 +74,51 @@ const SkipNextButton = memo(() => {
   );
 });
 
-const CONTROLS = [SkipBackButton, PlayButton, SkipNextButton];
+const DownloadButton = memo(() => {
+  const { currentSrc } = useAudio();
+  const disabled = !currentSrc;
+
+  const handleDownload = useCallback(async () => {
+    console.log(currentSrc);
+    
+    if (disabled) return;
+
+    try {
+      const response = await fetch(currentSrc);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      // 🧠 Tách tên file gốc từ URL (nếu có)
+      const originalFilename = currentSrc.split('/').pop() || 'track';
+      const hasExtension = originalFilename.includes('.');
+      const fallbackExt = blob.type.split('/')[1] || 'mp3';
+      const finalFilename = hasExtension ? originalFilename : `track.${fallbackExt}`;
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = finalFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Tải file thất bại:', error);
+    }
+  }, [disabled, currentSrc]);
+
+  return (
+    <button
+      className={disabled ? 'disabled' : ''}
+      onClick={handleDownload}
+      disabled={disabled}
+    >
+      <DownloadIcon />
+    </button>
+  );
+});
+
+
+const CONTROLS = [SkipBackButton, PlayButton, SkipNextButton, DownloadButton];
 
 const ControlButtons = () => {
   return (

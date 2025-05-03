@@ -35,6 +35,8 @@ export const Search = memo(() => {
 
   const isHome = useMemo(() => location.pathname === '/', [location.pathname]);
 
+  const isMessage = useMemo(() => location.pathname.startsWith('/message'), [location.pathname]);
+
   return (
     <Space size={10} align="center">
       <NavigationButton
@@ -45,8 +47,8 @@ export const Search = memo(() => {
 
       <NavigationButton
         text="Tin nhắn"
-        icon={isHome ? <ActiveMessageIcon /> : <MessageIcon />}
-        onClick={() => navigate('/')}
+        icon={isMessage ? <ActiveMessageIcon /> : <MessageIcon />}
+        onClick={() => navigate('/message')} 
       />
 
       <Input

@@ -27,12 +27,14 @@ export const checkSavedTracks = async (ids) => {
   return await axios.get('/me/tracks/contains', { params: { ids: ids.join(',') } });
 };
 
-export const saveTracks = async (ids) => {
-  return await axios.put('/me/tracks', { ids });
+export const saveTracks = async (id) => {
+  return await axios.post('api/music/songs/favorites/add/', { song_id: id });
 };
 
-export const deleteTracks = async (ids) => {
-  return await axios.delete('/me/tracks', { data: { ids } });
+export const deleteTracks = async (id) => {
+  return await axios.delete('/api/music/songs/favorites/remove/', {
+    data: { song_id: id },
+  });
 };
 
 export const checkFollowedPlaylist = async (playlistId) => {

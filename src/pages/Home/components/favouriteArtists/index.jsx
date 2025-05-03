@@ -1,5 +1,6 @@
-import { memo, useMemo } from 'react';
 import { useAppSelector } from '../../../../store/store';
+
+import { memo, useMemo } from 'react';
 
 import { GridItemList } from '../../../../components/Lists/list';
 
@@ -14,7 +15,7 @@ export const FavouriteArtists = memo(() => {
 
   return (
     <div className="home">
-      <GridItemList items={items} title="Your favourite artists" />
+      <GridItemList items={items} title="Nghệ sĩ bạn yêu thích" />
     </div>
   );
 });

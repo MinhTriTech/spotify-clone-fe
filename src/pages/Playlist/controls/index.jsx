@@ -6,21 +6,21 @@ import { MenuDots, OrderCompactIcon, OrderListIcon } from '../../../components/I
 import { AddPlaylistToLibraryButton } from './AddPlaylistToLibrary';
 import PlayistActionsWrapper from '../../../components/Actions/PlaylistActions';
 
-// Utils
-import { useTranslation } from 'react-i18next';
-
 // Redux
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { playlistActions, refreshPlaylist } from '../../../store/slices/playlist';
 
-// Interfaces
-import type { FC } from 'react';
+const filters = ['LIST', 'COMPACT'];
 
-const filters = ['LIST', 'COMPACT'] as const;
+const filterLabels = {
+  LIST: 'Danh sách',
+  COMPACT: 'Thu gọn',
+  'More options for': 'Tùy chọn khác cho',
+  VIEW: 'Chế độ xem',
+};
 
-export const PlaylistControls: FC = () => {
+const PlaylistControls = () => {
   const dispatch = useAppDispatch();
-  const [tor] = useTranslation(['order']);
 
   const user = useAppSelector((state) => state.auth.user);
   const view = useAppSelector((state) => state.playlist.view);
@@ -30,7 +30,7 @@ export const PlaylistControls: FC = () => {
 
   const items = filters.map((filter) => ({
     key: filter,
-    label: tor(filter),
+    label: filterLabels[filter],
     onClick: () => dispatch(playlistActions.setView({ view: filter })),
   }));
 
@@ -43,18 +43,18 @@ export const PlaylistControls: FC = () => {
 
             {!isMine ? (
               <div className='scale' style={{ marginRight: 10 }}>
-                <AddPlaylistToLibraryButton id={playlist!.id} />
+                <AddPlaylistToLibraryButton id={playlist?.id} />
               </div>
             ) : null}
 
             <PlayistActionsWrapper
-              playlist={playlist!}
+              playlist={playlist}
               trigger={['click']}
               onRefresh={() => {
-                dispatch(refreshPlaylist(playlist!.id));
+                dispatch(refreshPlaylist(playlist?.id));
               }}
             >
-              <Tooltip title={`${tor('More options for')} ${playlist?.name}`}>
+              <Tooltip title={`${filterLabels['More options for']} ${playlist?.name}`}>
                 <div className='scale'>
                   <MenuDots />
                 </div>
@@ -64,11 +64,11 @@ export const PlaylistControls: FC = () => {
         </Col>
         <Col>
           <Space className='mobile-hidden'>
-            <Tooltip title={tor('VIEW')}>
+            <Tooltip title={filterLabels.VIEW}>
               <Dropdown placement='bottomRight' menu={{ items, selectedKeys: [view] }}>
                 <button className='order-button'>
                   <Space align='center'>
-                    <span>{tor(view)}</span>
+                    <span>{filterLabels[view]}</span>
                     {view === 'LIST' ? <OrderListIcon /> : <OrderCompactIcon />}
                   </Space>
                 </button>
@@ -80,3 +80,5 @@ export const PlaylistControls: FC = () => {
     </div>
   );
 };
+
+export default PlaylistControls;

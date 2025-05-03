@@ -2,6 +2,7 @@ import { PlayCircle } from './PlayCircle';
 import TrackActionsWrapper from '../Actions/TrackActions';
 import { useNavigate } from 'react-router-dom';
 import { useAudio } from '../../contexts/AudioContext';
+import ArtistActionsWrapper from '../Actions/ArtistActions';
 
 const Card = ({ title, image, rounded, description, onClick, context }) => {
   const { isPlaying, currentTrack, playlist, currentIndex } = useAudio();
@@ -55,16 +56,40 @@ const Card = ({ title, image, rounded, description, onClick, context }) => {
   );
 };
 
+export const ArtistCard = ({ item, onClick }) => {
+  
+  const navigate = useNavigate();
+
+  const title = item.name;
+
+  return (
+    <ArtistActionsWrapper artist={item} trigger={['contextMenu']}>
+      <div onClick={onClick}>
+        <Card
+          rounded
+          title={title}
+          image={item.image}
+          context={{ 
+            id: item.artist_id,
+            image: item.image,
+            type: "artists",
+            title: title
+          }}
+          onClick={() => navigate(`/artist/${item.artist_id}`)}
+        />
+      </div>
+    </ArtistActionsWrapper>
+  );
+};
+
 export const TrackCard = ({ item, onClick }) => {
   const navigate = useNavigate();
-  const description = "Chi tiết"; // Thêm sau
 
   return (
     <TrackActionsWrapper track={item} trigger={['contextMenu']}>
       <div onClick={onClick}>
         <Card
           title={item.title}
-          description={description}
           context={{ 
             id: item.playlist_id,
             image: item.image,
@@ -72,7 +97,7 @@ export const TrackCard = ({ item, onClick }) => {
             title: item.title
           }}
           image={item.image}
-          onClick={() => navigate(`/album/${item.album.id}`)}
+          onClick={() => navigate(`/album/${item.playlist_id}`)}
         />
       </div>
     </TrackActionsWrapper>

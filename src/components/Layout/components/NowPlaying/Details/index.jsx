@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { NowPlayingLayout } from '../layout';
 import { MenuIcon } from '../../../../Icons';
 import TrackActionsWrapper from '../../../../Actions/TrackActions';
-import AddSongToLibraryButton from '../../../../Actions/AddSongToLibrary';
+import {AddSongToLibraryButton} from '../../../../Actions/AddSongToLibrary';
 
 // Redux
 import { spotifyActions } from '../../../../../store/slices/spotify';

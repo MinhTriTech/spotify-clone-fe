@@ -80,16 +80,13 @@ export const CollapsedCard = (props) => {
 
 const CardList = (props) => {
   const { image, title, subtitle, isCurrent, onClick, disabled } = props;
-
   const isPlaying = useAppSelector((state) => !state.spotify.state?.paused);
 
   const button = disabled ? null : (
     <button
-      className='image-button'
+      className="image-button"
       onClick={async (e) => {
-        if (e && e.stopPropagation) {
-          e.stopPropagation();
-        }
+        e.stopPropagation?.();
         if (isCurrent && isPlaying) {
           return playerService.pausePlayback();
         }
@@ -101,9 +98,11 @@ const CardList = (props) => {
   );
 
   return (
-    <button
+    <div
       onClick={onClick}
-      className='library-card'
+      role="button"
+      tabIndex={0}
+      className="library-card"
       style={{ borderRadius: 10 }}
       onDoubleClick={props.onDoubleClick}
     >
@@ -112,8 +111,8 @@ const CardList = (props) => {
           <div>
             <img
               src={image}
-              alt='song cover'
-              className='rounded-md'
+              alt="song cover"
+              className="rounded-md"
               style={{ width: 52, height: 52 }}
             />
           </div>
@@ -129,9 +128,9 @@ const CardList = (props) => {
           width: '100%',
         }}
       >
-        <div id='playlist-song-and-artist-name'>
+        <div id="playlist-song-and-artist-name">
           <h3
-            className='text-md font-semibold text-white'
+            className="text-md font-semibold text-white"
             style={{
               fontSize: 15,
               marginBottom: -5,
@@ -143,7 +142,7 @@ const CardList = (props) => {
           </h3>
 
           <p
-            className='text-md font-semibold text-white'
+            className="text-md font-semibold text-white"
             style={{
               fontSize: 13,
               opacity: 0.7,
@@ -155,10 +154,10 @@ const CardList = (props) => {
         </div>
 
         <div style={{ padding: 8 }}>
-          {isCurrent ? <SpeakerIcon fill='#1db954' height={16} width={16} /> : null}
+          {isCurrent ? <SpeakerIcon fill="#1db954" height={16} width={16} /> : null}
         </div>
       </div>
-    </button>
+    </div>
   );
 };
 
@@ -177,7 +176,6 @@ const Card = memo((props) => {
 
 const ArtistCardShort = ({ artist }) => {
   const navigate = useNavigate();
-  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
 
   const onClick = () => {
     navigate(`/artist/${artist.id}`);
@@ -188,58 +186,26 @@ const ArtistCardShort = ({ artist }) => {
       <div>
         <Card
           rounded
-          uri={artist.uri}
           subtitle='Artist'
           onClick={onClick}
           title={artist.name}
-          isCurrent={contextUri === artist.uri}
-          image={artist?.images[0]?.url || ARTISTS_DEFAULT_IMAGE}
+          image={artist.image || ARTISTS_DEFAULT_IMAGE}
         />
       </div>
     </ArtistActionsWrapper>
   );
 };
 
-const AlbumCardShort = memo(({ album }) => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const userId = useAppSelector((state) => state.auth.user?.id);
-  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
-
-  const onClick = useCallback(() => {
-    if (!userId) {
-      return dispatch(uiActions.openLoginModal(album.images[0].url));
-    }
-    navigate(`/album/${album.id}`);
-  }, [userId, navigate, album.id, album.images, dispatch]);
-
-  return (
-    <AlbumActionsWrapper album={album} trigger={['contextMenu']}>
-      <div>
-        <Card
-          uri={album.uri}
-          onClick={onClick}
-          title={album.name}
-          image={album.images[0].url}
-          subtitle={album.artists[0].name}
-          isCurrent={contextUri === album.uri}
-        />
-      </div>
-    </AlbumActionsWrapper>
-  );
-});
-
 const PlaylistCardShort = memo(({ playlist }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
 
   const onClick = () => {
-    if (playlist.id === 'liked-songs') {
+    if (playlist.id) {
       navigate('/collection/tracks');
       return;
     }
-    navigate(`/playlist/${playlist.id}`);
+    navigate(`/playlist/${playlist.playlist_id}`);
   };
 
   return (
@@ -253,20 +219,30 @@ const PlaylistCardShort = memo(({ playlist }) => {
       <div>
         <Card
           onClick={onClick}
-          uri={playlist.uri}
-          title={playlist.name}
-          disabled={!playlist.tracks?.total}
-          isCurrent={contextUri === playlist.uri}
-          subtitle={`Playlist • ${playlist.owner?.display_name}`}
-          image={playlist?.images?.length ? playlist?.images[0]?.url : PLAYLIST_DEFAULT_IMAGE}
+          title={playlist.title}
+          image={playlist.image ? playlist.image : PLAYLIST_DEFAULT_IMAGE}
+          context={{ 
+            id: playlist.playlist_id,
+            image: playlist.image,
+            type: "playlist",
+            title: playlist.title
+          }}
         />
       </div>
     </PlayistActionsWrapper>
   );
 });
 
+const getItemKey = (item) => {
+  if (item.playlist_id) return `playlist-${item.playlist_id}`;
+  if (item.artist_id) return `artist-${item.artist_id}`;
+  if (item.id) return `likeSongs-${item.id}`;
+  return `unknown-${Math.random()}`; 
+};
+
 export const ListItemComponent = ({ item }) => {
-  if (item.type === 'artist') return <ArtistCardShort key={item.id} artist={item} />;
-  if (item.type === 'album') return <AlbumCardShort key={item.id} album={item} />;
-  return <PlaylistCardShort key={item.id} playlist={item} />;
+  const key = getItemKey(item);
+
+  if (item.artist_id) return <ArtistCardShort key={key} artist={item} />;
+  return <PlaylistCardShort key={key} playlist={item} />;
 };

@@ -5,13 +5,13 @@ import { AlbumIcon } from '../../../../components/Icons';
 import { AlbumControls } from '../../components/controls';
 import { OtherAlbums } from '../../components/otherAlbums';
 
-import { memo, useMemo } from 'react';
-
 // Utils
 import { groupBy } from 'lodash';
 
 // Redux
 import { useAppSelector } from '../../../../store/store';
+
+import { memo, useMemo } from 'react';
 
 // Constants
 import { DEFAULT_PAGE_COLOR } from '../../../../constants/spotify';
@@ -39,10 +39,10 @@ export const AlbumList = memo(({ color }) => {
 
       <div style={{ paddingBottom: 30 }}>
         {disks.map((disk, diskIndex) => (
-          <div key={`disk-${diskIndex}`}>
+          <div key={diskIndex}>
             {disks.length > 1 ? (
               <div className='disk-section'>
-                <AlbumIcon /> Đĩa {diskIndex + 1}
+                <AlbumIcon /> Disk {diskIndex + 1}
               </div>
             ) : null}
             {disk.map((song, index) => (

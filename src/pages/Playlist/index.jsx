@@ -1,6 +1,6 @@
 // Components
 import { PlaylistList } from './table';
-import { PlaylistHeader } from './header';
+import PlaylistHeader from './header';
 
 // Utils
 import { useParams } from 'react-router-dom';
@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from '../../store/store';
 import { DEFAULT_PAGE_COLOR } from '../../constants/spotify';
 import tinycolor from 'tinycolor2';
 
-const PlaylistView = (props) => {
+const PlaylistView = ({ container }) => {
   const dispatch = useAppDispatch();
   const containerRef = useRef(null);
   const { playlistId } = useParams();
@@ -47,8 +47,8 @@ const PlaylistView = (props) => {
   if (!playlist) return null;
 
   return (
-    <div className='Playlist-section' ref={containerRef}>
-      <PlaylistHeader color={color} container={props.container} sectionContainer={containerRef} />
+    <div className="Playlist-section" ref={containerRef}>
+      <PlaylistHeader color={color} container={container} sectionContainer={containerRef} />
       <PlaylistList color={color} />
     </div>
   );

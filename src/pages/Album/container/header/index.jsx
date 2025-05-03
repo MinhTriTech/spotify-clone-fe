@@ -2,10 +2,7 @@ import { Col, Row, Space } from 'antd';
 import { Link } from 'react-router-dom';
 import { AlbumTableHeader } from '../table/header';
 import { PlayCircleButton } from '../../components/controls/playCircle';
-import { ArtistActionsWrapper } from '../../../../components/Actions/ArtistActions';
-
-// I18n
-import { useTranslation } from 'react-i18next';
+import ArtistActionsWrapper from '../../../../components/Actions/ArtistActions';
 
 // Redux
 import { useAppSelector } from '../../../../store/store';
@@ -14,23 +11,14 @@ import { isRightLayoutOpen } from '../../../../store/slices/ui';
 // Utils
 import dayjs from 'dayjs';
 import tinycolor from 'tinycolor2';
-import { sumTracksLength } from '../../../../utils/spotify/sumTracksLength';
+// import { sumTracksLength } from '../../../../utils/spotify/sumTracksLength';
 
 // Constants
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
 
-// Interfaces
-import { RefObject, useEffect, useState, type FC } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
-interface AlbumHeaderProps {
-  color: string;
-  container: RefObject<HTMLDivElement | null>;
-  sectionContainer?: RefObject<HTMLDivElement | null>;
-}
-
-export const AlbumHeader: FC<AlbumHeaderProps> = ({ container, sectionContainer, color }) => {
-  const { t } = useTranslation(['album']);
-
+export const AlbumHeader = ({ container, sectionContainer, color }) => {
   const album = useAppSelector((state) => state.album.album);
   const artist = useAppSelector((state) => state.album.artist);
 
@@ -103,13 +91,13 @@ export const AlbumHeader: FC<AlbumHeaderProps> = ({ container, sectionContainer,
         <Row gutter={[24, 24]} align={'middle'}>
           <Col xs={24} sm={6} lg={5}>
             <div>
-              <img src={album?.images[0].url} alt={album!.name} className='playlist-img' />
+              <img src={album?.images[0].url} alt={album?.name} className='playlist-img' />
             </div>
           </Col>
           <Col xs={24} sm={18} lg={19}>
             <Row justify='space-between'>
               <Col span={24}>
-                <p className='text-white'>{t('Album')}</p>
+                <p className='text-white'>Album</p>
                 <h1 className='playlist-title'>{album?.name}</h1>
               </Col>
               <Col span={24}>
@@ -129,17 +117,17 @@ export const AlbumHeader: FC<AlbumHeaderProps> = ({ container, sectionContainer,
                     {artist ? (
                       <ArtistActionsWrapper artist={artist} trigger={['contextMenu']}>
                         <Link to={`/artist/${artist.id}`} className='link-text'>
-                          {artist?.name}
+                          {artist.name}
                         </Link>
                       </ArtistActionsWrapper>
                     ) : (
                       ''
-                    )}{' '}
+                    )}
                     <span className='songs-number'>
                       {' '}
-                      • {dayjs(album?.release_date!).format('YYYY')} • {album?.total_tracks}{' '}
-                      {t(album?.total_tracks === 1 ? 'song' : 'songs')},{'  '}
-                      {sumTracksLength(tracks)}
+                      • {dayjs(album?.release_date).format('YYYY')} • {album?.total_tracks}{' '}
+                      {album?.total_tracks === 1 ? 'song' : 'songs'},{' '}
+                      {/* {sumTracksLength(tracks)} */}
                     </span>
                   </h3>
                 </Space>

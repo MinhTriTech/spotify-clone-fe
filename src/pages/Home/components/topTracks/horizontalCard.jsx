@@ -20,10 +20,6 @@ export const HorizontalCard = memo(({ item, setColor }) => {
 
   const isCurrent = currentSrc.includes(item.file_path);
 
-  const onClick = useCallback(() => {
-    console.log(item); 
-  }, [item]);
-
   useEffect(() => {
     if (item) {
       getImageAnalysis2(item.image).then();
@@ -34,11 +30,7 @@ export const HorizontalCard = memo(({ item, setColor }) => {
     <TrackActionsWrapper track={item} trigger={['contextMenu']}>
       <div
         className="horizontal-playlist"
-        onClick={isMobile ? onClick : undefined}
-        onDoubleClick={isMobile ? undefined : onClick}
-        onMouseEnter={
-          !isMobile
-            ? () => {
+        onMouseEnter={ () => {
                 getImageAnalysis2(item.image).then((r) => {
                   let color = tinycolor(r);
                   while (color.isLight()) {
@@ -47,7 +39,6 @@ export const HorizontalCard = memo(({ item, setColor }) => {
                   setColor(color.toHexString());
                 });
               }
-            : undefined
         }
       >
         <div style={{ display: 'flex' }}>

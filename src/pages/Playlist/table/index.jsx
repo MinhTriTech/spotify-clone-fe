@@ -2,7 +2,7 @@
 import { Divider } from 'antd';
 import SongView from './Song';
 import { PlaylistTableHeader } from './header';
-import { PlaylistControls } from '../controls';
+import PlaylistControls from '../controls';
 import ReactDragListView from 'react-drag-listview';
 import { PlaylistRecommendations } from '../recommendations';
 
@@ -16,15 +16,11 @@ import { useAppDispatch, useAppSelector } from '../../../store/store';
 // Constants
 import { DEFAULT_PAGE_COLOR } from '../../../constants/spotify';
 
-// Interfaces
-import { memo, type FC } from 'react';
+// React
+import { memo } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-interface PlaylistListProps {
-  color: string;
-}
-
-export const PlaylistList: FC<PlaylistListProps> = memo(({ color }) => {
+export const PlaylistList = memo(({ color }) => {
   const dispatch = useAppDispatch();
   const tracks = useAppSelector((state) => state.playlist.tracks);
   const canEdit = useAppSelector((state) => state.playlist.canEdit);
@@ -56,7 +52,7 @@ export const PlaylistList: FC<PlaylistListProps> = memo(({ color }) => {
         next={() => {
           dispatch(playlistActions.getNextTracks());
         }}
-        hasMore={tracks.length < playlist?.tracks?.total!}
+        hasMore={tracks.length < (playlist?.tracks?.total || 0)}
       >
         {hasTracks ? (
           <div style={{ paddingBottom: 30 }}>
@@ -68,12 +64,12 @@ export const PlaylistList: FC<PlaylistListProps> = memo(({ color }) => {
                   onDragEnd={(from, to) => {
                     playlistService
                       .reorderPlaylistItems(
-                        playlist?.id!,
+                        playlist?.id,
                         [tracks[from].track.uri],
                         from,
                         to,
                         1,
-                        playlist?.snapshot_id!
+                        playlist?.snapshot_id
                       )
                       .then(() => {
                         dispatch(playlistActions.reorderTracks({ from, to }));

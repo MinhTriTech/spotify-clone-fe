@@ -11,9 +11,11 @@ export const PlaylistRecommendations = memo(() => {
 
   return (
     <div className='playlist-recommendations'>
-      <h1 className='playlist-header'>Recommended</h1>
+      <h1 className='playlist-header'>Gợi ý từ danh sách phát</h1>
       <span>
-        {playlist.tracks?.total ? `Based on what's in this playlist` : 'Based on your listening'}
+        {playlist.tracks?.total
+          ? 'Dựa trên những bài hát trong danh sách này'
+          : 'Dựa trên thói quen nghe nhạc của bạn'}
       </span>
 
       <div style={{ margin: 5, marginTop: 10 }}>

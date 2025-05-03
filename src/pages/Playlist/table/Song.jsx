@@ -1,19 +1,11 @@
 import { useCallback } from 'react';
-import { PlaylistItemWithSaved } from '../../../interfaces/playlists';
 import SongView, { SongViewComponents } from '../../../components/SongsTable/songView';
 
 // Redux
 import { playlistActions } from '../../../store/slices/playlist';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 
-interface SongProps {
-  index: number;
-  song: PlaylistItemWithSaved;
-}
-
-export const Song = (props: SongProps) => {
-  const { song, index } = props;
-
+export const Song = ({ index, song }) => {
   const dispatch = useAppDispatch();
   const view = useAppSelector((state) => state.playlist.view);
   const canEdit = useAppSelector((state) => state.playlist.canEdit);

@@ -1,6 +1,6 @@
-import { FC, memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 
-import { useTranslation } from 'react-i18next';
+// Components
 import { Tooltip } from '../../../../components/Tooltip';
 import { AddedToLibrary, AddToLibrary } from '../../../../components/Icons';
 
@@ -13,12 +13,7 @@ import { albumActions } from '../../../../store/slices/album';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 import { yourLibraryActions } from '../../../../store/slices/yourLibrary';
 
-const FollowAlbum: FC<{ id: string; onToggle: () => void; size?: number }> = ({
-  id,
-  size,
-  onToggle,
-}) => {
-  const { t } = useTranslation(['playlist']);
+const FollowAlbum = ({ id, size, onToggle }) => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
 
@@ -31,7 +26,7 @@ const FollowAlbum: FC<{ id: string; onToggle: () => void; size?: number }> = ({
   };
 
   return (
-    <Tooltip title={t('Add to Your Library')}>
+    <Tooltip title="Add to Your Library">
       <button onClick={handleAddToLibrary}>
         <AddToLibrary height={size} width={size} />
       </button>
@@ -39,12 +34,7 @@ const FollowAlbum: FC<{ id: string; onToggle: () => void; size?: number }> = ({
   );
 };
 
-const UnfollowAlbum: FC<{ id: string; onToggle: () => void; size?: number }> = ({
-  id,
-  size,
-  onToggle,
-}) => {
-  const { t } = useTranslation();
+const UnfollowAlbum = ({ id, size, onToggle }) => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
 
@@ -57,7 +47,7 @@ const UnfollowAlbum: FC<{ id: string; onToggle: () => void; size?: number }> = (
   }, [dispatch, id, onToggle, user]);
 
   return (
-    <Tooltip title={t('Remove from Your Library')}>
+    <Tooltip title="Remove from Your Library">
       <button onClick={handleDeleteFromLibrary}>
         <AddedToLibrary height={size} width={size} />
       </button>
@@ -65,7 +55,7 @@ const UnfollowAlbum: FC<{ id: string; onToggle: () => void; size?: number }> = (
   );
 };
 
-export const AddAlbumToLibraryButton = memo(({ id }: { id: string }) => {
+export const AddAlbumToLibraryButton = memo(({ id }) => {
   const dispatch = useAppDispatch();
   const isSaved = useAppSelector((state) => state.album.following);
 

@@ -4,7 +4,7 @@ import './styles/App.scss';
 import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 // Components
-import { ConfigProvider } from 'antd';
+import { App as AntdApp, ConfigProvider } from 'antd';
 import AppLayout from './components/Layout';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 
@@ -27,6 +27,8 @@ const AdminLayout = lazy(() => import('./pages/Admin'));
 const Home = lazy(() => import('./pages/Home'));
 const Page404 = lazy(() => import('./pages/404'));
 const AlbumView = lazy(() => import('./pages/Album'));
+const Message = lazy(() => import('./pages/Message'));
+const MessView = lazy(() => import('./pages/Message/components/MessView'));
 const GenrePage = lazy(() => import('./pages/Genre'));
 const BrowsePage = lazy(() => import('./pages/Browse'));
 const ArtistPage = lazy(() => import('./pages/Artist'));
@@ -88,6 +90,8 @@ const RoutesComponent = memo(() => {
       { path: '/collection/tracks', element: <LikedSongsPage container={container} /> },
       { public: true, path: '/playlist/:playlistId', element: <PlaylistView container={container} /> },
       { path: '/album/:albumId', element: <AlbumView container={container} /> },
+      { path: '/message', element: <Message container={container} /> },
+      { path: '/message/:messageId', element: <MessView container={container} /> },
       { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
       { path: '/users/:userId/artists', element: <ProfileArtists container={container} /> },
@@ -177,14 +181,16 @@ const RootComponent = () => {
 function App() {
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <AudioProvider>
-            <GlobalMedia />
-            <RootComponent />
-          </AudioProvider>
-        </PersistGate>
-      </Provider>
+      <AntdApp> 
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AudioProvider>
+              <GlobalMedia />
+              <RootComponent />
+            </AudioProvider>
+          </PersistGate>
+        </Provider>
+      </AntdApp> 
     </ConfigProvider>
   );
 }

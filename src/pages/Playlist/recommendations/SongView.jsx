@@ -5,15 +5,7 @@ import SongView, { SongViewComponents } from '../../../components/SongsTable/son
 // Redux
 import { useAppSelector } from '../../../store/store';
 
-// Interface
-import type { Track } from '../../../interfaces/track';
-
-interface SongProps {
-  song: Track;
-}
-
-export const Song = (props: SongProps) => {
-  const { song } = props;
+export const Song = ({ song }) => {
   const recommendations = useAppSelector((state) => state.playlist.recommedations);
 
   const uris = useMemo(() => {

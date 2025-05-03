@@ -1,15 +1,15 @@
 import { Col, Row, Space } from 'antd';
 import AlbumSongDetails from './Album';
-import { ExpandOutIcon } from '../Icons';
+import { ExpandOutIcon, DownloadIcon } from '../Icons';
 import VolumeControls from '../Layout/components/PlayingBar/Volume';
 import ControlButtons from '../Layout/components/PlayingBar/ControlButtons';
 import SongProgressBar from '../Layout/components/PlayingBar/SongProgressBar';
 import { Tooltip } from '../Tooltip';
-import AddSongToLibraryButton from '../Actions/AddSongToLibrary';
+import {AddSongToLibraryButton} from '../Actions/AddSongToLibrary';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { spotifyActions } from '../../store/slices/spotify';
 import { useAudio } from '../../contexts/AudioContext';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo, useCallback } from 'react';
 
 const ExpandOutButton = ({ onExit }) => (
   <Tooltip title="Thoát toàn màn hình">
@@ -35,6 +35,48 @@ const AddToLibrary = () => {
     <AddSongToLibraryButton size={20} isSaved={isLiked} id={song?.id} onToggle={handleToggle} />
   );
 };
+
+const DownloadVideoButton = memo(({ videoUrl }) => {
+
+  const handleDownload = useCallback(async () => {
+    console.log(videoUrl);
+    if (!videoUrl) return;
+
+    try {
+      const response = await fetch(videoUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      const originalFilename = videoUrl.split('/').pop() || 'video';
+      const hasExtension = originalFilename.includes('.');
+      const defaultExtension = blob.type.split('/')[1] || 'mp4';
+      const finalFilename = hasExtension ? originalFilename : `video.${defaultExtension}`;
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = finalFilename;
+      link.click();
+
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Tải video thất bại:', err);
+    }
+  }, [videoUrl]);
+
+  if (!videoUrl) return null;
+
+  return (
+    <Tooltip title="Tải video">
+      <button
+        onClick={handleDownload}
+        style={{ marginLeft: 12, background: 'none', border: 'none', cursor: 'pointer' }}
+      >
+        <DownloadIcon />
+      </button>
+    </Tooltip>
+  );
+});
+
 
 export const FullScreenPlayer = ({ onExit }) => {
   const { currentTrack, audioRef } = useAudio();
@@ -110,12 +152,13 @@ export const FullScreenPlayer = ({ onExit }) => {
     <div className="Full-screen-page">
       <div style={{ width: '100%', padding: 60 }}>
         <Row gutter={[24, 24]} justify="center" style={{ alignItems: 'baseline' }}>
-          <Col span={24} style={{ textAlign: 'center' }}>
-            {videoUrl ? (
+        <Col span={24} style={{ textAlign: 'center' }}>
+          {videoUrl ? (
+            <>
               <video
                 ref={localVideoRef}
                 style={{
-                  width: '80%',
+                  width: '100%',
                   maxHeight: '400px',
                   borderRadius: '10px',
                   objectFit: 'cover',
@@ -124,19 +167,24 @@ export const FullScreenPlayer = ({ onExit }) => {
                 muted
                 controls={false}
               />
-            ) : imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={currentTrack?.title || 'cover'}
-                style={{
-                  width: '80%',
-                  maxHeight: '400px',
-                  borderRadius: '10px',
-                  objectFit: 'cover',
-                }}
-              />
-            ) : null}
-          </Col>
+              <div style={{ marginTop: 8 }}>
+                <DownloadVideoButton videoUrl={localVideoRef?.current?.currentSrc} />
+              </div>
+            </>
+          ) : imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={currentTrack?.title || 'cover'}
+              style={{
+                width: '80%',
+                maxHeight: '400px',
+                borderRadius: '10px',
+                objectFit: 'cover',
+              }}
+            />
+          ) : null}
+        </Col>
+
 
           <Col span={24}>
             <AlbumSongDetails />

@@ -176,6 +176,5 @@ const PlaylistCardShort = memo(({ playlist }) => {
 
 export const CompactItemComponent = ({ item }) => {
   if (item.type === 'artist') return <ArtistCardShort key={item.id} artist={item} />;
-  if (item.type === 'album') return <AlbumCardShort key={item.id} album={item} />;
   return <PlaylistCardShort key={item.id} playlist={item} />;
 };

@@ -1,47 +1,51 @@
-import { memo, useMemo, useState } from 'react';
+import { memo, useMemo } from 'react';
+
 import Chip from '../../../Chip';
 import { Dropdown, Flex, Space } from 'antd';
-import {
-  CloseIcon2,
-  GridIcon,
-  OrderCompactIcon,
-  OrderListIcon,
-  SearchIcon,
-} from '../../../Icons';
+import { CloseIcon2, GridIcon, OrderCompactIcon, OrderListIcon, SearchIcon } from '../../../Icons';
 
-const t = (s) => s;
+// Redux
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { yourLibraryActions } from '../../../../store/slices/yourLibrary';
+
 const VIEW = ['COMPACT', 'LIST', 'GRID'];
+
+const viewLabels = {
+  COMPACT: 'Gọn nhẹ',
+  LIST: 'Danh sách',
+  GRID: 'Lưới',
+};
 
 const SearchSelector = memo(() => {
   return (
-    <button className="addButton">
+    <button className='addButton'>
       <SearchIcon style={{ height: '1rem' }} />
     </button>
   );
 });
 
 const ViewSelector = memo(() => {
-  const [view, setView] = useState('GRID');
+  const dispatch = useAppDispatch();
+  const view = useAppSelector((state) => state.yourLibrary.view);
 
-  const items = VIEW.map((v) => ({
-    key: v,
-    label: t(v),
+  const items = VIEW.map((viewKey) => ({
+    key: viewKey,
+    label: viewLabels[viewKey],
     onClick: () => {
-      console.log('Mock setView:', v);
-      setView(v);
+      dispatch(yourLibraryActions.setView({ view: viewKey }));
     },
   }));
 
   return (
     <Dropdown
-      placement="bottomRight"
-      className="viewSelector"
+      placement='bottomRight'
+      className='viewSelector'
       menu={{ items, selectedKeys: [view] }}
       trigger={['click']}
     >
-      <button className="order-button">
-        <Space align="center">
-          <span>{t(view)}</span>
+      <button className='order-button'>
+        <Space align='center'>
+          <span>{viewLabels[view]}</span>
           {view === 'GRID' && <GridIcon style={{ height: '1rem' }} />}
           {view === 'LIST' && <OrderListIcon style={{ height: '1rem' }} />}
           {view === 'COMPACT' && <OrderCompactIcon style={{ height: '1rem' }} />}
@@ -53,7 +57,7 @@ const ViewSelector = memo(() => {
 
 export const SearchArea = () => {
   return (
-    <Flex align="center" justify="space-between" style={{ margin: '0px 10px', marginBottom: 10 }}>
+    <Flex align='center' justify='space-between' style={{ margin: '0px 10px', marginBottom: 10 }}>
       <SearchSelector />
       <ViewSelector />
     </Flex>
@@ -61,32 +65,29 @@ export const SearchArea = () => {
 };
 
 const TypeSelector = memo(() => {
-  const [filter, setFilter] = useState('ALL');
+  const dispatch = useAppDispatch();
+  const filter = useAppSelector((state) => state.yourLibrary.filter);
 
-  // ✅ Mock dữ liệu thư viện
-  const hasAlbums = true;
-  const hasArtists = true;
-  const hasPlaylists = true;
+  const hasArtists = useAppSelector((state) => state.yourLibrary.myArtists.length > 0);
+  const hasPlaylists = useAppSelector((state) => state.yourLibrary.myPlaylists.length > 0);
 
-  const onClick = (f) => {
-    console.log('Mock setFilter:', f);
-    setFilter(f);
+  const onClick = (filterType) => {
+    dispatch(yourLibraryActions.setFilter({ filter: filterType }));
   };
 
   const items = useMemo(() => {
     const data = [];
-    if (hasPlaylists) data.push({ text: 'Playlists', type: 'PLAYLISTS' });
-    if (hasArtists) data.push({ text: 'Artists', type: 'ARTISTS' });
-    if (hasAlbums) data.push({ text: 'Albums', type: 'ALBUMS' });
+    if (hasPlaylists) data.push({ text: 'Danh sách phát', type: 'PLAYLISTS' });
+    if (hasArtists) data.push({ text: 'Nghệ sĩ', type: 'ARTISTS' });
     return data;
-  }, [hasAlbums, hasArtists, hasPlaylists]);
+  }, [hasArtists, hasPlaylists]);
 
-  if (!hasAlbums && !hasArtists && !hasPlaylists) return null;
+  if (!hasArtists && !hasPlaylists) return null;
 
   return (
     <Space>
       {filter !== 'ALL' && (
-        <Chip key="close" text={<CloseIcon2 />} onClick={() => onClick('ALL')} />
+        <Chip key='close' text={<CloseIcon2 />} onClick={() => onClick('ALL')} />
       )}
 
       {items.map(({ text, type }) => {
@@ -94,7 +95,7 @@ const TypeSelector = memo(() => {
           return (
             <Chip
               key={text}
-              text={t(text)}
+              text={text}
               active={filter === type}
               onClick={() => onClick(type)}
             />
