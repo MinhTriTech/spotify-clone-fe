@@ -225,8 +225,8 @@ const SongCreate = () => {
                                     - Chọn album -
                                 </option>
                                 {albums.map((album) => (
-                                    <option key={album.id} value={album.id}>
-                                        {album.name}
+                                    <option key={album.album_id} value={album.album_id}>
+                                        {album.title}
                                     </option>
                                 ))}
                             </select>

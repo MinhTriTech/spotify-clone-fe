@@ -13,16 +13,6 @@ export const fetchSongs = async () => {
     }
 };
 
-export const fetchSongById = async (id) => {
-    try {
-        const response = await axios.get(`${API_URL}${id}`);
-        return response.data;
-    } catch (error) {
-        console.error("Fetch song by id: " + id + "error", error);
-        throw error;
-    }
-};
-
 // Lấy bài hát theo ID
 export const fetchSongById = async (id) => {
   try {
