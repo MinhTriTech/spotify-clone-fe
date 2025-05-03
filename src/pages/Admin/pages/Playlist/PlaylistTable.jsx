@@ -1,10 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
+import { useEffect, useState } from "react";
+import { fetchPlaylists } from "../../../../services_admin/playlist";
 const PlaylistTable = () => {
     const navigate = useNavigate();
+    const [playlists, setPlaylists] = useState([]);
 
-    const handleRowClick = () => {
-        navigate("/admin/playlist/detail");
+    useEffect(() => {
+        const loadPlaylists = async () => {
+            try {
+                const data = await fetchPlaylists();
+                setPlaylists(data);
+            } catch (error) {
+                console.error("Error loading songs:", error);
+            }
+        };
+
+        loadPlaylists();
+    }, []);
+
+    const handleDetail = (id) => {
+        navigate(`/admin/playlist/${id}/detail`);
     };
 
     return (
@@ -13,31 +29,24 @@ const PlaylistTable = () => {
                 <thead class="bg-spotifyGreen sticky top-0 z-10 shadow-md">
                     <tr class="text-left text-white h-12">
                         <th class="p-4 text-center">STT</th>
-                        <th class="p-4 text-center">Ảnh bìa</th>
+                        <th class="p-4">Ảnh bìa</th>
                         <th class="p-4">Tên danh sách phát</th>
-                        <th class="p-4">Tạo bởi</th>
+                        <th class="p-4 text-center">Được tạo bởi</th>
                         <th class="p-4 text-center">Ngày khởi tạo</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 cursor-pointer">
-                    <tr onClick={handleRowClick} class="transition-all duration-300  hover:bg-gray-900 h-16 group">
-                        <td class="p-4 text-center">1</td>
-                        <td class="p-4">
-                            <img src={thumbnail} alt="Ảnh" class="w-10 h-10 object-cover mx-auto" />
-                        </td>
-                        <td class="p-4 text-violet-500 group-hover:underline">HAITHUHIEU</td>
-                        <td class="p-4">ai biết đại đại đi</td>
-                        <td class="p-4 text-center">21/09/2025</td>
-                    </tr>
-                    <tr onClick={handleRowClick} class="hover:bg-gray-900 h-16 group">
-                        <td class="p-4 text-center">2</td>
-                        <td class="p-4">
-                            <img src={thumbnail} alt="Ảnh" class="w-10 h-10 object-cover mx-auto" />
-                        </td>
-                        <td class="p-4 text-violet-500 group-hover:underline">HAITHUHIEU</td>
-                        <td class="p-4">ai biết đại đại đi</td>
-                        <td class="p-4 text-center">21/09/2025</td>
-                    </tr>
+                    {playlists.map((playlist, index) => (
+                        <tr key={playlist.playlist_id} className="transition-all duration-300 hover:bg-gray-900 h-16 group" onClick={() => handleDetail(playlist.playlist_id)}>
+                            <td className="p-4 text-center">{index + 1}</td>
+                            <td className="p-4">
+                                <img src={playlist.image || thumbnail} alt="Ảnh bài hát" className="w-10 h-10 object-cover mx-auto" />
+                            </td>
+                            <td className="p-4 text-violet-500">{playlist.title}</td>
+                            <td className="p-4 text-center">{playlist.created_by_id || "Không rõ"}</td>
+                            <td className="p-4 text-center">{new Date(playlist.created_at).toLocaleDateString("vi-VN")}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
