@@ -1,20 +1,61 @@
 import { faMusic, faUser, faFileAudio, faImages, faIdBadge } from "@fortawesome/free-solid-svg-icons";
 import { DashboardItem } from "../../components";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 const Dashboard = () => {
     const navigate = useNavigate();
     const handleRowClick = () => {
         navigate("admin/user/detail");
     };
 
+    const [countArtists, setCountArtists] = useState(0);
+    const [countAlbums, setCountAlbums] = useState(0);
+    const [countSongs, setCountSongs] = useState(0);
+    const [countPlaylists, setCountPlaylists] = useState(0);
+    const [countUsers, setCountUsers] = useState(0);
+
+    useEffect(() => {
+        const loadAllArtists = async () => {
+            const response = await axios.get("http://127.0.0.1:8000/api/manager/artists/count/");
+            setCountArtists(response.data.total_artists);
+        };
+
+        const loadAllAlbums = async () => {
+            const response = await axios.get("http://127.0.0.1:8000/api/manager/albums/count/");
+            setCountAlbums(response.data.total_albums);
+        };
+
+        const loadAllSongs = async () => {
+            const response = await axios.get("http://127.0.0.1:8000/api/manager/songs/count/");
+            setCountSongs(response.data.total_songs);
+        };
+
+        const loadAllPlaylist = async () => {
+            const response = await axios.get("http://127.0.0.1:8000/api/manager/playlists/count/");
+            setCountPlaylists(response.data.total_playlists);
+        };
+
+        const loadAllUser = async () => {
+            const response = await axios.get("http://127.0.0.1:8000/api/manager/users/count/");
+            setCountUsers(response.data.total_users);
+        };
+
+        loadAllArtists();
+        loadAllAlbums();
+        loadAllPlaylist();
+        loadAllUser();
+        loadAllSongs();
+    }, []);
+
     return (
         <div className="w-full flex flex-col gap-6">
             <div className="w-full h-24 flex gap-6">
-                <DashboardItem icon={faIdBadge} title="Nghệ sĩ" number="40" />
-                <DashboardItem icon={faImages} title="Albums" number="100" />
-                <DashboardItem icon={faMusic} title="Bài hát" number="8000" />
-                <DashboardItem icon={faFileAudio} title="Danh sách phát" number="52" />
-                <DashboardItem icon={faUser} title="Người dùng" number="999" />
+                <DashboardItem icon={faIdBadge} title="Nghệ sĩ" number={countArtists} />
+                <DashboardItem icon={faImages} title="Albums" number={countAlbums} />
+                <DashboardItem icon={faMusic} title="Bài hát" number={countSongs} />
+                <DashboardItem icon={faFileAudio} title="Danh sách phát" number={countPlaylists} />
+                <DashboardItem icon={faUser} title="Người dùng" number={countUsers} />
             </div>
 
             <div className="w-full flex gap-4 h-72">
