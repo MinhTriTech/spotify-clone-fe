@@ -4,20 +4,20 @@ import AlbumActionsWrapper from '../../../../Actions/AlbumActions';
 import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
 import PlayistActionsWrapper from '../../../../Actions/PlaylistActions';
 
-// Utils
 import { useNavigate } from 'react-router-dom';
 
-// Services
 import { playerService } from '../../../../../services/player';
 
-// Redux
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
 
-// Constants
 import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../../constants/spotify';
 import { memo, useCallback } from 'react';
 import { uiActions } from '../../../../../store/slices/ui';
+
+import { useAudio } from '../../../../../contexts/AudioContext'
+
+import { fetchSongsOfFeaturedPlaylists, getSongsOfLikedSongs } from '../../../../../store/slices/home';
 
 const Play = (
   <svg
@@ -79,21 +79,65 @@ export const CollapsedCard = (props) => {
 };
 
 const CardList = (props) => {
-  const { image, title, subtitle, isCurrent, onClick, disabled } = props;
-  const isPlaying = useAppSelector((state) => !state.spotify.state?.paused);
+  const { title, image, context, subtitle, onClick, disabled } = props;
+
+  const dispatch = useAppDispatch();
+
+  const {
+    isPlaying,
+    play,
+    pause,
+    playlist,
+    currentIndex,
+    currentTrack,
+    currentPlaylistId,
+    setPlaylistAndPlay,
+  } = useAudio();
+
+  const isCurrent =
+    playlist.length > 0 &&
+    currentIndex >= 0 &&
+    currentPlaylistId === context?.id;
+
+  const isThisTrackPlaying = isCurrent && isPlaying;
+
+  const handleClick = async (e) => {
+    e.stopPropagation?.();
+
+    if (isCurrent) {
+      return isThisTrackPlaying ? pause() : play();
+    }
+
+    try {
+      const tracks = await dispatch(
+        typeof context.id === 'number'
+          ? fetchSongsOfFeaturedPlaylists(context.id)
+          : getSongsOfLikedSongs()
+      ).unwrap();
+
+      console.log(tracks);
+      
+
+      if (tracks && tracks.length > 0) {
+        const formattedTracks = tracks.map(track => ({
+          id: track.song_id,
+          title: track.title,
+          artists: track.artists,
+          image: track.image,
+          src: track.file_path,
+          video: track.video_url,
+        }));
+
+        await setPlaylistAndPlay(formattedTracks, 0, context.id);
+      }
+    } catch (error) {
+      console.error('Error playing playlist:', error);
+    }
+  };
 
   const button = disabled ? null : (
-    <button
-      className="image-button"
-      onClick={async (e) => {
-        e.stopPropagation?.();
-        if (isCurrent && isPlaying) {
-          return playerService.pausePlayback();
-        }
-        return playerService.startPlayback(!isCurrent ? { context_uri: props.uri } : undefined);
-      }}
-    >
-      {isCurrent && isPlaying ? Pause : Play}
+    <button className="image-button" onClick={handleClick}>
+      {isThisTrackPlaying ? Pause : Play}
     </button>
   );
 
@@ -104,18 +148,16 @@ const CardList = (props) => {
       tabIndex={0}
       className="library-card"
       style={{ borderRadius: 10 }}
-      onDoubleClick={props.onDoubleClick}
+      onDoubleClick={handleClick}
     >
       <div className={`image p-2 h-full items-center ${props.rounded ? 'rounded' : ''}`}>
         <div style={{ position: 'relative' }}>
-          <div>
-            <img
-              src={image}
-              alt="song cover"
-              className="rounded-md"
-              style={{ width: 52, height: 52 }}
-            />
-          </div>
+          <img
+            src={image}
+            alt="playlist cover"
+            className="rounded-md"
+            style={{ width: 52, height: 52 }}
+          />
           {button}
         </div>
       </div>
@@ -134,7 +176,7 @@ const CardList = (props) => {
             style={{
               fontSize: 15,
               marginBottom: -5,
-              color: isCurrent ? '#1db954' : undefined,
+              color: isThisTrackPlaying ? '#1db954' : undefined,
               fontWeight: 100,
             }}
           >
@@ -154,12 +196,13 @@ const CardList = (props) => {
         </div>
 
         <div style={{ padding: 8 }}>
-          {isCurrent ? <SpeakerIcon fill="#1db954" height={16} width={16} /> : null}
+          {isThisTrackPlaying && <SpeakerIcon fill="#1db954" height={16} width={16} />}
         </div>
       </div>
     </div>
   );
 };
+
 
 const Card = memo((props) => {
   const collapsed = useAppSelector((state) => state.ui.libraryCollapsed);
@@ -222,9 +265,9 @@ const PlaylistCardShort = memo(({ playlist }) => {
           title={playlist.title}
           image={playlist.image ? playlist.image : PLAYLIST_DEFAULT_IMAGE}
           context={{ 
-            id: playlist.playlist_id,
-            image: playlist.image,
-            type: "playlist",
+            id: playlist.playlist_id ? playlist.playlist_id : "likedSongs",
+            image: playlist.image ? playlist.image : PLAYLIST_DEFAULT_IMAGE,
+            type: playlist.playlist_id ? "playlist" : "likedSongs",
             title: playlist.title
           }}
         />

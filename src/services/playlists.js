@@ -12,6 +12,10 @@ const getSongsOfFeaturedPlaylists = async (id) => {
   return await axios.get(`api/music/playlists/${id}/songs`);
 };
 
+const getSongsOfLikedSongs = async () => {
+  return await axios.get(`api/music/songs/favorites`);
+};
+
 const createPlaylist = async (title, image) => {
   const res = await axios.post('api/music/playlists/create/', {
     title: title,
@@ -21,11 +25,10 @@ const createPlaylist = async (title, image) => {
 };
 
 export const playlistService = {
-  // Trang home
   fetchTopTracks,
   getFeaturedPlaylists,
   getSongsOfFeaturedPlaylists,
+  getSongsOfLikedSongs,
 
-  // Navbar bên trái
   createPlaylist,
 };

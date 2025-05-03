@@ -1,19 +1,13 @@
-// Components
 import { Col } from 'antd';
 import { LibraryTitle } from '../Title';
 import { ListItemComponent } from './ListCards';
-import { CompactItemComponent } from './CompactCards';
-import { LibraryFilters, SearchArea } from '../Filters';
-import { GridItemComponent } from '../../../../Lists/list';
 import { memo, useMemo } from 'react';
 import { LibraryLoginInfo } from './loginInfo';
 
-// Redux
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { getLibraryItems } from '../../../../../store/slices/yourLibrary';
 import { getLibraryCollapsed, uiActions } from '../../../../../store/slices/ui';
 
-// Utils
 import useIsMobile from '../../../../../utils/isMobile';
 
 const COLLAPSED_STYLE = {
@@ -35,8 +29,6 @@ const YourLibrary = () => {
   return (
     <div className={`Navigation-section library ${!collapsed ? 'open' : ''}`}>
       <LibraryTitle />
-
-      {!collapsed && user ? <LibraryFilters /> : null}
 
       <div className='library-list-container'>
         <Col style={collapsed ? {} : COLLAPSED_STYLE}>
@@ -76,12 +68,8 @@ const LoggedContent = memo(() => {
   
   return (
     <>
-      {!collapsed ? <SearchArea /> : null}
-
       <div
-        className={`${collapsed ? 'collapsed' : ''} ${
-          !collapsed && view === 'GRID' ? 'grid-view' : ''
-        }`}
+        className={`${collapsed ? 'collapsed' : ''}`}
       >
         {items.map((item) => {
         const key = getItemKey(item);
@@ -96,8 +84,6 @@ const LoggedContent = memo(() => {
             onClick={isMobile ? () => dispatch(uiActions.collapseLibrary()) : undefined}
           >
             {view === 'LIST' && <ListItemComponent item={item} />}
-            {view === 'COMPACT' && <CompactItemComponent item={item} />}
-            {view === 'GRID' && <GridItemComponent item={item} />}
           </div>
         );
       })}
