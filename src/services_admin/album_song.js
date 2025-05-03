@@ -13,6 +13,17 @@ export const fetchAlbumSongs = async () => {
   }
 };
 
+// Lấy các bài hát KHÔNG nằm trong album nhưng thuộc artist chủ album đó
+export const fetchSongsNotInAlbumByArtist = async (albumId) => {
+  try {
+    const response = await axios.get(`${API_URL}not-in-album-by-artist/?album_id=${albumId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Fetch songs not in album ${albumId} by album's artist error:`, error);
+    throw error;
+  }
+};
+
 // Lấy liên kết album-song theo album_id
 export const fetchAlbumSongsByAlbum = async (albumId) => {
   try {

@@ -1,42 +1,49 @@
 // src/pages/admin/album/AlbumAddSong.jsx
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchSongs } from "../../../../services_admin/song";
-import { addAlbumSong } from "../../../../services_admin/album_song";
+import { addAlbumSong, fetchSongsNotInAlbumByArtist } from "../../../../services_admin/album_song";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { ButtonAdmin } from "../../components";
 
 const AlbumAddSong = () => {
-  const { id: albumId } = useParams(); // lấy album_id từ URL
+  const { id: albumId } = useParams();
   const navigate = useNavigate();
 
   const [songs, setSongs] = useState([]);
+  const [selectedSongs, setSelectedSongs] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const loadSongs = async () => {
       try {
-        const result = await fetchSongs(); // Lấy tất cả bài hát
-        setSongs(result);
+        const result = await fetchSongsNotInAlbumByArtist(albumId);
+        setSongs(result.songs);
       } catch (err) {
         console.error("Lỗi khi tải bài hát:", err);
         setError("Không thể tải danh sách bài hát.");
       }
     };
-
     loadSongs();
   }, []);
 
-  const handleAddSong = async (songId) => {
+  const handleCheckboxChange = (songId) => {
+    setSelectedSongs((prev) =>
+      prev.includes(songId) ? prev.filter((id) => id !== songId) : [...prev, songId]
+    );
+  };
+
+  const handleAddSelectedSongs = async () => {
     try {
-      await addAlbumSong({ album_id: albumId, song_id: songId }); // Gửi object đúng format
-      setSuccess("Đã thêm bài hát vào album.");
+      for (const songId of selectedSongs) {
+        await addAlbumSong({ album_id: albumId, song_id: songId });
+      }
+      setSuccess("Đã thêm tất cả bài hát đã chọn vào album.");
       setTimeout(() => navigate(`/admin/album/${albumId}/detail`), 1000);
     } catch (err) {
       console.error("Lỗi khi thêm bài hát:", err);
-      setError("Không thể thêm bài hát vào album.");
+      setError("Không thể thêm một số bài hát vào album.");
     }
   };
 
@@ -54,30 +61,47 @@ const AlbumAddSong = () => {
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {success && <div className="text-green-500 mb-4">{success}</div>}
 
-      <table className="w-full table-auto border-collapse text-sm">
-        <thead className="bg-spotifyGreen text-white">
-          <tr>
-            <th className="p-3 text-left">Tên bài hát</th>
-            <th className="p-3 text-center">Hành động</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-600">
-          {songs.map((song) => (
-            <tr key={song.song_id} className="hover:bg-gray-800 transition">
-              <td className="p-3">{song.title}</td>
-              <td className="p-3 text-center">
-                <ButtonAdmin
-                  icon={faPlus}
-                  title="Thêm"
-                  color="spotifyGreen"
-                  textHover="white"
-                  onClick={() => handleAddSong(song.song_id)}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {songs.length === 0 ? (
+        <p className="text-gray-400 italic">
+          Tất cả bài hát của ca sĩ này đã có trong album này.
+        </p>
+      ) : (
+        <>
+          <table className="w-full table-auto border-collapse text-sm mb-4">
+            <thead className="bg-spotifyGreen text-white">
+              <tr>
+                <th className="p-3 text-center w-12">Chọn</th>
+                <th className="p-3 text-left">Tên bài hát</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-600">
+              {songs.map((song) => (
+                <tr key={song.song_id} className="hover:bg-gray-800 transition">
+                  <td className="p-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedSongs.includes(song.song_id)}
+                      onChange={() => handleCheckboxChange(song.song_id)}
+                    />
+                  </td>
+                  <td className="p-3">{song.title}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="text-center">
+            <ButtonAdmin
+              icon={faPlus}
+              title="Thêm tất cả đã chọn"
+              color="spotifyGreen"
+              textHover="white"
+              onClick={handleAddSelectedSongs}
+              disabled={selectedSongs.length === 0}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

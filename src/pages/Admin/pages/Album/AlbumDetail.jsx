@@ -6,7 +6,7 @@ import { InputCombo, ButtonAdmin } from "../../components";
 import { useState, useEffect } from "react";
 import { fetchAlbumById, deleteAlbum } from "../../../../services_admin/album";
 import {fetchArtistById} from "../../../../services_admin/artist";
-import { fetchAlbumSongsByAlbum } from "../../../../services_admin/album_song";
+import { fetchAlbumSongsByAlbum, deleteAlbumSong } from "../../../../services_admin/album_song";
 import { fetchSongById } from "../../../../services_admin/song";
 
 const AlbumDetail = () => {
@@ -55,11 +55,10 @@ const AlbumDetail = () => {
     };
 
     // Xử lý xóa album_song
-    const deleteAlbumSong = async () => {
+    const handleDeleteAlbumSong = async (albumSongId) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa bài hát này khỏi album không?")) {
             try {
-                await deleteAlbumSong(id);
-                // Cập nhật lại danh sách bài hát sau khi xóa
+                await deleteAlbumSong(albumSongId); // gọi từ services đúng cách
                 const updatedAlbumSongs = await fetchAlbumSongsByAlbum(id);
                 setAlbumSongs(updatedAlbumSongs);
             } catch (err) {
@@ -173,7 +172,7 @@ const AlbumDetail = () => {
                                                     title="Xóa"
                                                     color="red-500"
                                                     textHover="white"
-                                                    onClick={deleteAlbumSong}
+                                                    onClick={() => handleDeleteAlbumSong(albumSong.id)} // truyền đúng id
                                                 />
                                             </td>
                                         </tr>
