@@ -19,8 +19,8 @@ const PlaylistTable = () => {
         loadPlaylists();
     }, []);
 
-    const handleDetail = () => {
-        navigate("/admin/playlist/detail");
+    const handleDetail = (id) => {
+        navigate(`/admin/playlist/${id}/detail`);
     };
 
     return (
@@ -37,7 +37,7 @@ const PlaylistTable = () => {
                 </thead>
                 <tbody class="divide-y divide-gray-200 cursor-pointer">
                     {playlists.map((playlist, index) => (
-                        <tr key={playlist.playlist_id} className="transition-all duration-300 hover:bg-gray-900 h-16 group" onClick={() => handleDetail(song.song_id)}>
+                        <tr key={playlist.playlist_id} className="transition-all duration-300 hover:bg-gray-900 h-16 group" onClick={() => handleDetail(playlist.playlist_id)}>
                             <td className="p-4 text-center">{index + 1}</td>
                             <td className="p-4">
                                 <img src={playlist.image || thumbnail} alt="Ảnh bài hát" className="w-10 h-10 object-cover mx-auto" />

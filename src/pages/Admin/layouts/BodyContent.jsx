@@ -30,8 +30,8 @@ const BodyContent = () => {
 
                 <Route path="/admin/playlist" element={<Playlist />} />
                 <Route path="/admin/playlist/create" element={<PlaylistCreate />} />
-                <Route path="/admin/playlist/detail" element={<PlaylistDetail />} />
-                <Route path="/admin/playlist/update" element={<PlaylistUpdate />} />
+                <Route path="/admin/playlist/:id/detail" element={<PlaylistDetail />} />
+                <Route path="/admin/playlist/:id/update" element={<PlaylistUpdate />} />
 
                 <Route path="/admin/user" element={<User />} />
                 <Route path="/admin/user/create" element={<UserCreate />} />

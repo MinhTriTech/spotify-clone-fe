@@ -1,6 +1,26 @@
 import { faRightFromBracket, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { InputCombo, ButtonAdmin } from "../../components";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../../../store/store";
+import { handleLogout } from "../../../../store/slices/auth";
+import { logout } from "../../../../services/auth";
+import { useState } from "react";
 const InfoUser = () => {
+    const [user, setUser] = useState("");
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    const Logout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Lỗi khi logout:", error);
+        } finally {
+            await dispatch(handleLogout()).unwrap();
+            navigate("/admin/login");
+        }
+    };
+
     return (
         <div>
             <div style={{ boxShadow: "0 4px 6px rgba(255, 255, 255, 0.2)" }} className="bg-black w-full h-fit px-4 py-4 font-gilroy rounded-md">
@@ -16,7 +36,7 @@ const InfoUser = () => {
                     </div>
                     <div className="ml-auto mr-6">
                         <ButtonAdmin icon={faPenToSquare} color="spotifyLightBlack" textHover="white" title="Chỉnh sửa hồ sơ" />
-                        <ButtonAdmin icon={faRightFromBracket} color="spotifyGreen" textHover="white" title="Đăng xuất" />
+                        <ButtonAdmin icon={faRightFromBracket} color="spotifyGreen" textHover="white" title="Đăng xuất" onClick={Logout} />
                     </div>
                 </div>
                 <div className="text-white w-full px-8 py-8 flex flex-wrap gap-4 h-fit bg-black">
