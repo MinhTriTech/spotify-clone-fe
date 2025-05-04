@@ -1,20 +1,28 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
-// Redux
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { artistActions } from '../../../../store/slices/artist';
 import { yourLibraryActions } from '../../../../store/slices/yourLibrary';
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { uiActions } from '../../../../store/slices/ui';
+
+import { userService } from '../../../../services/users';
 
 const FollowArtist = ({ id, onToggle }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const user = useAppSelector((state) => !!state.auth.user, (prev, next) => prev === next);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(
+    (state) => !!state.auth.user,
+    (prev, next) => prev === next
+  );
 
   const handleFollow = useCallback(() => {
     if (!user) {
-      console.warn('Không có token, nhưng vẫn cho load UI');
+      return dispatch(uiActions.openLoginTooltip());
     }
-    setIsFollowing(true);
-    onToggle();
-  }, [onToggle, user]);
+    userService.followArtists(id).then(() => {
+      dispatch(artistActions.setFollowing({ following: true }));
+      onToggle();
+    });
+  }, [dispatch, id, onToggle, user]);
 
   return (
     <button className="transparent-button" onClick={handleFollow}>
@@ -24,16 +32,21 @@ const FollowArtist = ({ id, onToggle }) => {
 };
 
 const UnfollowArtist = ({ id, onToggle }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const user = useAppSelector((state) => !!state.auth.user, (prev, next) => prev === next);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(
+    (state) => !!state.auth.user,
+    (prev, next) => prev === next
+  );
 
   const handleUnfollow = useCallback(() => {
     if (!user) {
-      console.warn('Không có token, nhưng vẫn cho load UI');
+      return dispatch(uiActions.openLoginTooltip());
     }
-    setIsFollowing(false);
-    onToggle();
-  }, [onToggle, user]);
+    userService.unfollowArtists(id).then(() => {
+      dispatch(artistActions.setFollowing({ following: false }));
+      onToggle();
+    });
+  }, [dispatch, id, onToggle, user]);
 
   return (
     <button className="transparent-button" onClick={handleUnfollow}>
@@ -42,19 +55,17 @@ const UnfollowArtist = ({ id, onToggle }) => {
   );
 };
 
-const FollowArtistButton = ({ id }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+export const FollowArtistButton = ({ id }) => {
   const dispatch = useAppDispatch();
-
+  const isSaved = useAppSelector((state) => state.artist.following);
+  
   const onToggle = () => {
     dispatch(yourLibraryActions.fetchMyArtists());
   };
 
-  return isFollowing ? (
+  return isSaved ? (
     <UnfollowArtist id={id} onToggle={onToggle} />
   ) : (
     <FollowArtist id={id} onToggle={onToggle} />
   );
 };
-
-export default FollowArtistButton;

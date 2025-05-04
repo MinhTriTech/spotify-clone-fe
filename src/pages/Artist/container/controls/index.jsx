@@ -3,13 +3,13 @@ import { Col, Row, Space, Tooltip } from 'antd';
 import { PlayCircleButton } from './playCircle';
 import { FollowArtistButton } from './followButton';
 import { MenuDots } from '../../../../components/Icons';
-import { ArtistActionsWrapper } from '../../../../components/Actions/ArtistActions';
+import ArtistActionsWrapper from '../../../../components/Actions/ArtistActions';
 
-// Redux
 import { useAppSelector } from '../../../../store/store';
 
 const ArtistControls = () => {
   const artist = useAppSelector((state) => state.artist.artist);
+  const artistFolowing = useAppSelector((state) => state.artist.following);
 
   return (
     <div className="playlist-controls">
@@ -19,11 +19,11 @@ const ArtistControls = () => {
             <PlayCircleButton />
 
             <div style={{ marginRight: 10 }}>
-              <FollowArtistButton id={artist?.id} />
+              <FollowArtistButton id={artist?.artist_id} />
             </div>
 
-            <ArtistActionsWrapper artist={artist} trigger={['click']}>
-              <Tooltip title={`Tùy chọn khác cho ${artist?.name}`}>
+            <ArtistActionsWrapper artist={artist} follow={artistFolowing} trigger={['click']}>
+              <Tooltip title={`Tùy chọn khác cho nghệ sĩ ${artist?.name}`}>
                 <div className="scale">
                   <MenuDots />
                 </div>
