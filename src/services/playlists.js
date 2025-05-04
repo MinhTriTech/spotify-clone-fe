@@ -24,6 +24,18 @@ const createPlaylist = async (title, image) => {
   return res.data.playlist;
 };
 
+const getPlaylist = async (id) => {
+  return await axios.get(`api/music/playlists/${id}/`);
+};
+
+const addPlaylistItems = async (playlist_id, song_id) => {
+  return await axios.post('/api/music/playlists/add-song/', {
+    playlist_id,
+    song_id,
+  });  
+};
+
+
 export const playlistService = {
   fetchTopTracks,
   getFeaturedPlaylists,
@@ -31,4 +43,6 @@ export const playlistService = {
   getSongsOfLikedSongs,
 
   createPlaylist,
+  getPlaylist,
+  addPlaylistItems,
 };

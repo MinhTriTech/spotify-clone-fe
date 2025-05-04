@@ -1,13 +1,10 @@
-// Components
 import { PlaylistList } from './table';
 import PlaylistHeader from './header';
 
-// Utils
 import { useParams } from 'react-router-dom';
 import { getImageAnalysis2 } from '../../utils/imageAnyliser';
 import { useEffect, useRef, useState } from 'react';
 
-// Redux
 import { playlistActions } from '../../store/slices/playlist';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
@@ -22,10 +19,10 @@ const PlaylistView = ({ container }) => {
 
   const [color, setColor] = useState(DEFAULT_PAGE_COLOR);
   const playlist = useAppSelector((state) => state.playlist.playlist);
-
+  
   useEffect(() => {
-    if (playlist && playlist.images?.length) {
-      getImageAnalysis2(playlist.images[0].url).then((color) => {
+    if (playlist && playlist.image) {
+      getImageAnalysis2(playlist.image).then((color) => {
         let item = tinycolor(color);
         while (item.isLight()) {
           item = item.darken(10);

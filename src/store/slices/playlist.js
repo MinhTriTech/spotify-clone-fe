@@ -5,28 +5,20 @@ import { userService } from '../../services/users';
 import { playlistService } from '../../services/playlists';
 
 const initialState = {
-  user: null,
-  recommedations: [],
   tracks: [],
   playlist: null,
-
   loading: true,
   canEdit: false,
   following: false,
-
   order: 'ALL',
   view: 'LIST',
 };
 
 export const fetchPlaylist = createAsyncThunk(
   'playlist/fetchPlaylist',
-  async (id, thunkAPI) => {
-    try {
-      const response = await playlistService.getPlaylist(id);
-      return response.data; 
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || 'Something went wrong');
-    }
+  async (id) => {
+    const response = await playlistService.getPlaylist(id);
+    return response.data;
   }
 );
 
@@ -99,7 +91,6 @@ const playlistSlice = createSlice({
         state.tracks = [];
         state.following = false;
         state.canEdit = false;
-        state.user = null;
         state.loading = true;
         state.view = 'LIST';
       }
@@ -124,12 +115,9 @@ const playlistSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(fetchPlaylist.fulfilled, (state, action) => {
-      state.playlist = action.payload;
-      state.tracks = action.payload[1];
-      state.following = action.payload[2];
-      state.canEdit = action.payload[3];
-      state.user = action.payload[4];
-      state.recommedations = action.payload[5];
+      state.playlist = action.payload.playlist;
+      state.tracks = action.payload.songs;
+      state.canEdit = action.payload.is_owner;
       state.loading = false;
     });
     builder.addCase(refreshTracks.fulfilled, (state, action) => {

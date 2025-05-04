@@ -30,7 +30,6 @@ const AlbumView = lazy(() => import('./pages/Album'));
 const Message = lazy(() => import('./pages/Message'));
 const MessView = lazy(() => import('./pages/Message/components/MessView'));
 const GenrePage = lazy(() => import('./pages/Genre'));
-const BrowsePage = lazy(() => import('./pages/Browse'));
 const ArtistPage = lazy(() => import('./pages/Artist'));
 const PlaylistView = lazy(() => import('./pages/Playlist'));
 const ArtistDiscographyPage = lazy(() => import('./pages/Discography'));
@@ -99,7 +98,6 @@ const RoutesComponent = memo(() => {
       { path: '/users/:userId/tracks', element: <ProfileTracks container={container} /> },
       { path: '/users/:userId', element: <Profile container={container} /> },
       { public: true, path: '/genre/:genreId', element: <GenrePage /> },
-      { public: true, path: '/search', element: <BrowsePage /> },
       { path: '/recent-searches', element: <RecentlySearched /> },
       {
         public: true,

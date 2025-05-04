@@ -9,19 +9,39 @@ import { memo, useMemo } from 'react';
 
 export const PlayCircleButton = memo(({ size = 30 }) => {
   const playlist = useAppSelector((state) => state.playlist.playlist);
-  const context = useAppSelector((state) => state.spotify.state?.context.uri);
+  const track = useAppSelector((state) => state.playlist.tracks);
 
-  const isCurrent = useMemo(() => playlist?.uri === context, [playlist, context]);
+  console.log(playlist);
 
-  if (!playlist || !playlist.tracks?.total) return null;
+  const context={ 
+    id: playlist.playlist_id,
+    image: playlist.image,
+    type: "playlist",
+    title: playlist.title
+  }
+
+  let isCurrent = false;
+  
+  if (context && context.type === 'playlist' && context.id) {
+    const isPlayingThisPlaylist = playlist.length > 0 && 
+                                 currentIndex >= 0 && 
+                                 currentPlaylistId === context.id;
+    
+    isCurrent = isPlayingThisPlaylist;
+  } 
+  else if (context && context.song_id) {
+    isCurrent = currentTrack?.id === context.song_id;
+  }
+  
+
+  if ( !track ) return null; 
 
   return (
     <PlayCircle
       size={size}
       big={size >= 30}
       isCurrent={isCurrent}
-      image={playlist?.images[0]?.url}
-      context={{ context_uri: playlist?.uri }}
+      context={context}
     />
   );
 });

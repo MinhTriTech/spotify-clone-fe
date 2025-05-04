@@ -17,7 +17,6 @@ export const ArtistContent = memo((props) => {
       <div style={{ margin: 20, paddingTop: 30, paddingBottom: 30 }}>
         <ArtistControls />
         <ArtistTopTracks />
-        {/* <Discography /> */}
       </div>
     </div>
   );

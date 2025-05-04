@@ -25,8 +25,9 @@ export const PlaylistList = memo(({ color }) => {
   const tracks = useAppSelector((state) => state.playlist.tracks);
   const canEdit = useAppSelector((state) => state.playlist.canEdit);
   const playlist = useAppSelector((state) => state.playlist.playlist);
+  
 
-  const hasTracks = !!playlist?.tracks?.total;
+  const hasTracks = !!tracks?.length;
 
   return (
     <div
@@ -49,10 +50,6 @@ export const PlaylistList = memo(({ color }) => {
         loader={null}
         scrollThreshold={0.5}
         dataLength={tracks.length}
-        next={() => {
-          dispatch(playlistActions.getNextTracks());
-        }}
-        hasMore={tracks.length < (playlist?.tracks?.total || 0)}
       >
         {hasTracks ? (
           <div style={{ paddingBottom: 30 }}>
@@ -61,38 +58,22 @@ export const PlaylistList = memo(({ color }) => {
                 <ReactDragListView
                   nodeSelector='button'
                   lineClassName='drag-line'
-                  onDragEnd={(from, to) => {
-                    playlistService
-                      .reorderPlaylistItems(
-                        playlist?.id,
-                        [tracks[from].track.uri],
-                        from,
-                        to,
-                        1,
-                        playlist?.snapshot_id
-                      )
-                      .then(() => {
-                        dispatch(playlistActions.reorderTracks({ from, to }));
-                      });
-                  }}
                 >
                   {tracks.map((song, index) => (
-                    <SongView song={song} key={`${song.added_at}-${song.track.id}`} index={index} />
+                    <SongView song={song} key={`${song.song_id}`} index={index} />
                   ))}
                 </ReactDragListView>
               </div>
             ) : (
               <div>
                 {tracks.map((song, index) => (
-                  <SongView song={song} key={`${song.added_at}-${song.track.id}`} index={index} />
+                  <SongView song={song} key={`${song.song_id}`} index={index} />
                 ))}
               </div>
             )}
           </div>
         ) : null}
       </InfiniteScroll>
-
-      <PlaylistRecommendations />
     </div>
   );
 });

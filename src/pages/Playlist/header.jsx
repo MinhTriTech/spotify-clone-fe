@@ -1,21 +1,16 @@
-// Components
 import { Col, Row, Space } from 'antd';
 import { Link } from 'react-router-dom';
 import { PlaylistTableHeader } from './table/header';
 import { PlayCircleButton } from './controls/playCircle';
 import { editPlaylistModalActions } from '../../store/slices/editPlaylistModal';
 
-// React
 import { useEffect, useMemo, useState, useRef } from 'react';
 
-// Constants
 import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../constants/spotify';
 
-// Utils
 import tinycolor from 'tinycolor2';
 import { getPlaylistDescription } from '../../utils/getDescription';
 
-// Redux
 import { isRightLayoutOpen } from '../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
@@ -25,14 +20,14 @@ const PlaylistHeader = ({ container, color, sectionContainer }) => {
   const owner = useAppSelector((state) => state.playlist.user);
   const playlist = useAppSelector((state) => state.playlist.playlist);
   const tracks = useAppSelector((state) => state.playlist.tracks);
-
-  const isMine = user?.id === owner?.id;
+  const isMineCheck = useAppSelector((state) => state.playlist.canEdit);
+  
+  const isMine = isMineCheck;
 
   const [headerWidth, setHeaderWidth] = useState(0);
   const [activeHeader, setActiveHeader] = useState(false);
   const [activeTable, setActiveTable] = useState(false);
 
-  const rightLayoutOpen = useAppSelector(isRightLayoutOpen);
   const libraryCollapsed = useAppSelector((state) => state.ui.libraryCollapsed);
 
   useEffect(() => {
@@ -59,7 +54,7 @@ const PlaylistHeader = ({ container, color, sectionContainer }) => {
       observer.observe(ref);
       return () => ref && observer.unobserve(ref);
     }
-  }, [sectionContainer, libraryCollapsed, rightLayoutOpen]);
+  }, [sectionContainer, libraryCollapsed]);
 
   return (
     <div
@@ -87,7 +82,7 @@ const PlaylistHeader = ({ container, color, sectionContainer }) => {
         >
           <Space>
             <PlayCircleButton size={20} />
-            <h1 className='nav-header-playlist-title'>{playlist?.name}</h1>
+            <h1 className='nav-header-playlist-title'>{playlist?.title}</h1>
           </Space>
           <div
             style={{ padding: '0px 20px' }}
@@ -129,8 +124,8 @@ const PlaylistHeader = ({ container, color, sectionContainer }) => {
               ) : null}
               <img
                 src={
-                  playlist?.images?.length
-                    ? playlist.images[0].url
+                  playlist?.image
+                    ? playlist.image
                     : PLAYLIST_DEFAULT_IMAGE
                 }
                 alt=''
@@ -142,7 +137,7 @@ const PlaylistHeader = ({ container, color, sectionContainer }) => {
             <Row justify='space-between'>
               <Col span={24}>
                 <p className='text-white'>
-                  {playlist?.public ? 'Playlist' : 'Private Playlist'}
+                  {'Playlist'}
                 </p>
                 <div
                   className={isMine ? 'pointer' : ''}
@@ -150,45 +145,26 @@ const PlaylistHeader = ({ container, color, sectionContainer }) => {
                     if (isMine) dispatch(editPlaylistModalActions.setPlaylist({ playlist }));
                   }}
                 >
-                  <h1 className='playlist-title'>{playlist?.name}</h1>
-                  <p className='playlist-description'>{getPlaylistDescription(playlist)}</p>
+                  <h1 className='playlist-title'>{playlist?.title}</h1>
                 </div>
               </Col>
               <Col span={24}>
                 <Space className='owner'>
-                  {owner?.images?.length ? (
-                    <Link to={`/users/${owner.id}`}>
+                  {playlist?.created_by_id ? (
+                    <Link to={`/users/${playlist.created_by_id}`}>
                       <img
                         className='playlist-avatar'
                         id='user-avatar'
                         alt='User Avatar'
-                        src={
-                          owner.images.length
-                            ? owner.images[0].url
-                            : ARTISTS_DEFAULT_IMAGE
-                        }
+                        src={ARTISTS_DEFAULT_IMAGE}
                       />
                     </Link>
                   ) : null}
                   <h3 className='text-sm font-semibold text-white'>
-                    {owner ? (
-                      owner.display_name === 'Spotify' ? (
-                        <span className='link-text'>{owner.display_name}</span>
-                      ) : (
-                        <Link to='/' className='link-text'>
-                          {owner.display_name}
-                        </Link>
-                      )
-                    ) : (
-                      ''
-                    )}
                     <span className='songs-number'>
-                      {playlist?.followers?.total
-                        ? ` • ${playlist.followers.total} saves`
-                        : ''}
-                      {playlist?.tracks?.total
-                        ? ` • ${playlist.tracks.total} ${
-                            playlist.tracks.total === 1 ? 'song' : 'songs'
+                      {tracks?.length
+                        ? ` • ${tracks?.length} ${
+                            tracks?.length === 1 ? 'song' : 'songs'
                           }`
                         : ''}
                     </span>

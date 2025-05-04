@@ -97,7 +97,7 @@ export const TrackCard = ({ item, onClick }) => {
             title: item.title
           }}
           image={item.image}
-          onClick={() => navigate(`/album/${item.playlist_id}`)}
+          onClick={() => navigate(`/playlist/${item.playlist_id}`)}
         />
       </div>
     </TrackActionsWrapper>
