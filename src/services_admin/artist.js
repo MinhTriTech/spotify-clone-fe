@@ -75,3 +75,36 @@ export const countArtists = async () => {
     throw error;
   }
 };
+
+// Hàm lấy tất cả artists có phân trang
+export const fetchArtistsPaginated = async (page = 1, pageSize = 6) => {
+  try {
+    const response = await axios.get(API_URL, {
+      params: {
+        page,
+        page_size: pageSize,
+      },
+    });
+    return response.data; // trả về: { count, next, previous, results }
+  } catch (error) {
+    console.error('Fetch paginated artists error:', error);
+    throw error;
+  }
+};
+
+// Hàm tìm kiếm nghệ sĩ theo tên (có phân trang)
+export const searchArtists = async (name, page = 1, pageSize = 6) => {
+  try {
+    const response = await axios.get(`${API_URL}search/`, {
+      params: {
+        name,
+        page,
+        page_size: pageSize,
+      },
+    });
+    return response.data; // trả về: { count, next, previous, results }
+  } catch (error) {
+    console.error('Search artists error:', error);
+    throw error;
+  }
+};

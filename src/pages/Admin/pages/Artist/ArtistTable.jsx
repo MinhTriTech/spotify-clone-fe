@@ -1,42 +1,63 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchArtistsPaginated, searchArtists } from "../../../../services_admin/artist";
 import thumbnail from "../../../../../public/images/artist.png";
-import { fetchArtists } from "../../../../services_admin/artist";
-import { useState, useEffect } from "react";
 
-const ArtistTable = () => {
-  const navigate = useNavigate();
-
+const ArtistTable = ({ searchTerm }) => {
   const [artists, setArtists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const navigate = useNavigate();
+  const pageSize = 6;
 
+  // Debounce search input
   useEffect(() => {
-    const loadArtists = async () => {
-      try {
-        const data = await fetchArtists();
-        setArtists(data);
-      } catch (err) {
-        console.error(err);
-        setError("Không thể tải nghệ sĩ.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset về trang đầu khi search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-    loadArtists();
-  }, []);
+  // Load data khi page hoặc debouncedSearch thay đổi
+  useEffect(() => {
+    if (debouncedSearch.trim() === "") {
+      fetchData(page);
+    } else {
+      handleSearch(debouncedSearch, page);
+    }
+  }, [debouncedSearch, page]);
+
+  const fetchData = async (page) => {
+    try {
+      const data = await fetchArtistsPaginated(page, pageSize);
+      setArtists(data.results);
+      setTotalPages(Math.ceil(data.count / pageSize));
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách nghệ sĩ:", error);
+    }
+  };
+
+  const handleSearch = async (keyword, page) => {
+    try {
+      const data = await searchArtists(keyword, page, pageSize);
+      setArtists(data.results);
+      setTotalPages(Math.ceil(data.count / pageSize));
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm nghệ sĩ:", error);
+    }
+  };
 
   const handleRowClick = (id) => {
     navigate(`/admin/artist/${id}/detail`);
   };
 
-  if (loading) {
-    return <div className="text-white text-center p-5">Đang tải dữ liệu...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500 text-center p-5">{error}</div>;
-  }
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+    }
+  };
 
   return (
     <div className="bg-black overflow-auto max-h-[calc(100vh-250px)] px-1 py-1 shadow-md rounded-lg">
@@ -50,30 +71,30 @@ const ArtistTable = () => {
             <th className="p-4 text-center">Ngày khởi tạo</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200">
-          {artists.length > 0 ? (
-            artists.map((artist, index) => (
-              <tr
-                key={artist.artist_id}
-                className="transition-all duration-300 hover:bg-gray-900 h-16 cursor-pointer"
-                onClick={() => handleRowClick(artist.artist_id)}
-              >
-                <td className="p-4 text-center">{index + 1}</td>
-                <td className="p-4">
-                  <img
-                    src={artist.image || thumbnail}
-                    alt="Ảnh"
-                    className="w-10 h-10 object-cover mx-auto"
-                  />
-                </td>
-                <td className="p-4 text-violet-500">{artist.name}</td>
-                <td className="p-4">{artist.bio}</td>
-                <td className="p-4 text-center">
-                  {new Date(artist.created_at).toLocaleDateString()}
-                </td>
-              </tr>
-            ))
-          ) : (
+        <tbody className="divide-y divide-gray-200 cursor-pointer">
+          {artists.map((artist, index) => (
+            <tr
+              key={artist.artist_id}
+              className="transition-all duration-300 hover:bg-gray-900 h-16"
+              onClick={() => handleRowClick(artist.artist_id)}
+            >
+              <td className="p-4 text-center">{(page - 1) * pageSize + index + 1}</td>
+              <td className="p-4">
+                <img
+                  src={artist.image || thumbnail}
+                  alt="Ảnh"
+                  className="w-10 h-10 object-cover mx-auto"
+                />
+              </td>
+              <td className="p-4 text-violet-500">{artist.name}</td>
+              <td className="p-4">{artist.bio}</td>
+              <td className="p-4 text-center">
+                {new Date(artist.created_at).toLocaleDateString()}
+              </td>
+            </tr>
+          ))}
+
+          {artists.length === 0 && (
             <tr>
               <td colSpan="5" className="text-center p-5">
                 Không có nghệ sĩ nào.
@@ -82,6 +103,17 @@ const ArtistTable = () => {
           )}
         </tbody>
       </table>
+
+      {/* Phân trang */}
+      <div className="flex justify-center mt-4 gap-2 text-white">
+        <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
+          ◀
+        </button>
+        <span>Trang {page} / {totalPages}</span>
+        <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>
+          ▶
+        </button>
+      </div>
     </div>
   );
 };
