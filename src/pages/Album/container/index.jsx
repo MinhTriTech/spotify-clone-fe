@@ -14,7 +14,7 @@ import { useAppSelector } from '../../../store/store';
 import { DEFAULT_PAGE_COLOR } from '../../../constants/spotify';
 import tinycolor from 'tinycolor2';
 
-const AlbumPageContainer = (props) => {
+const AlbumPageContainer = ({ container }) => {
   const containerRef = useRef(null);
 
   const album = useAppSelector((state) => state.album.album);
@@ -23,11 +23,11 @@ const AlbumPageContainer = (props) => {
   useEffect(() => {
     if (album && album.images?.length) {
       getImageAnalysis2(album.images[0].url).then((r) => {
-        let colorObj = tinycolor(r);
-        while (colorObj.isLight()) {
-          colorObj = colorObj.darken(10);
+        let color = tinycolor(r);
+        while (color.isLight()) {
+          color = color.darken(10);
         }
-        setColor(colorObj.toHexString());
+        setColor(color.toHexString());
       });
     }
   }, [album]);
@@ -36,7 +36,7 @@ const AlbumPageContainer = (props) => {
 
   return (
     <div className='Playlist-section' ref={containerRef}>
-      <AlbumHeader color={color} container={props.container} sectionContainer={containerRef} />
+      <AlbumHeader color={color} container={container} sectionContainer={containerRef} />
       <AlbumList color={color} />
     </div>
   );

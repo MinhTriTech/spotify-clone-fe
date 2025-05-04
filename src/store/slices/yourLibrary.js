@@ -1,14 +1,11 @@
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
-// Services
-import { userService } from '../../services/users';
-import { albumsService } from '../../services/albums';
-import { playlistService } from '../../services/playlists';
+import { libraryService } from '../../services/library';
 
 import { LIKED_SONGS_IMAGE } from '../../constants/spotify';
 
 const initialState = {
-  myAlbums: [],
+  myLikeSongs: [],
   myArtists: [],
   myPlaylists: [],
   search: '',
@@ -17,19 +14,19 @@ const initialState = {
   filter: 'ALL',
 };
 
-export const fetchMyPlaylists = createAsyncThunk('yourLibrary/fetchMyPlaylists', async () => {
-  const response = await playlistService.getMyPlaylists({ limit: 50 });
-  return response.data.items;
+export const fetchMyLikeSongs = createAsyncThunk('yourLibrary/fetchMyLikeSongs', async () => {
+  const response = await libraryService.getMyLikeSongs();
+  return response.data;
 });
 
-export const fetchMyAlbums = createAsyncThunk('yourLibrary/fetchTopTracks', async () => {
-  const response = await albumsService.fetchSavedAlbums({ limit: 50 });
-  return response.data.items.map((item) => item.album);
+export const fetchMyPlaylists = createAsyncThunk('yourLibrary/fetchMyPlaylists', async () => {
+  const response = await libraryService.getMyPlaylists();
+  return response.data;
 });
 
 export const fetchMyArtists = createAsyncThunk('yourLibrary/fetchMyArtists', async () => {
-  const response = await userService.fetchFollowedArtists({ limit: 50 });
-  return response.data.artists.items;
+  const response = await libraryService.getFollowedArtists();
+  return response.data;
 });
 
 const yourLibrarySlice = createSlice({
@@ -50,11 +47,11 @@ const yourLibrarySlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchMyLikeSongs.fulfilled, (state, action) => {
+      state.myLikeSongs = action.payload;
+    });
     builder.addCase(fetchMyPlaylists.fulfilled, (state, action) => {
       state.myPlaylists = action.payload;
-    });
-    builder.addCase(fetchMyAlbums.fulfilled, (state, action) => {
-      state.myAlbums = action.payload;
     });
     builder.addCase(fetchMyArtists.fulfilled, (state, action) => {
       state.myArtists = action.payload;
@@ -66,63 +63,44 @@ export const getLibraryItems = createSelector(
   [
     (state) => state.auth.user,
     (state) => state.yourLibrary.filter,
-    (state) => state.yourLibrary.myAlbums,
+    (state) => state.yourLibrary.myLikeSongs,
     (state) => state.yourLibrary.myArtists,
     (state) => state.yourLibrary.myPlaylists,
   ],
-  (user, filter, myAlbums, myArtists, myPlaylists) => {
-    if (filter === 'ALBUMS') return myAlbums;
+  (user, filter, myLikeSongs, myArtists, myPlaylists) => {
     if (filter === 'ARTISTS') return myArtists;
     if (filter === 'PLAYLISTS') return myPlaylists;
-
+    
     if (!user) return [];
-    if (!myAlbums.length && !myArtists.length && !myPlaylists.length) return [];
+    if (!myArtists.length && !myPlaylists.length) return [];
 
     const likedSongs = {
       id: 'liked-songs',
-      name: 'Liked Songs',
-      snapshot_id: '',
-      collaborative: false,
-      public: false,
-      description: '',
-      href: '',
+      title: 'Liked Songs',
       type: 'playlist',
-      tracks: { href: '', total: 0 },
-      external_urls: { spotify: '' },
-      followers: { href: '', total: 0 },
-      uri: `spotify:user:${user?.id}:collection`,
-      images: [{ url: LIKED_SONGS_IMAGE, width: 300, height: 300 }],
-      owner: user,
+      image: LIKED_SONGS_IMAGE,
+      context: myLikeSongs,
     };
 
     return [
-      myPlaylists.slice(0, 3),
       likedSongs,
-      myAlbums.slice(0, 2),
+      myPlaylists.slice(0, 3),
       myPlaylists.slice(3, 6),
       myArtists.slice(0, 1),
-      myAlbums.slice(2, 5),
       myArtists.slice(1, 2),
       myPlaylists.slice(6, 10),
-      myAlbums.slice(5, 9),
       myArtists.slice(2, 6),
       myPlaylists.slice(10, 15),
-      myAlbums.slice(9, 13),
       myArtists.slice(6, 10),
       myPlaylists.slice(15, 20),
-      myAlbums.slice(13, 17),
       myArtists.slice(10, 14),
       myPlaylists.slice(20, 25),
-      myAlbums.slice(17, 21),
       myArtists.slice(14, 18),
       myPlaylists.slice(25, 30),
-      myAlbums.slice(21, 25),
       myArtists.slice(18, 22),
       myPlaylists.slice(30, 35),
-      myAlbums.slice(25, 43),
       myPlaylists.slice(35),
       myArtists.slice(22),
-      myAlbums.slice(43),
     ]
       .filter((r) => r)
       .flat();
@@ -137,9 +115,9 @@ export const getUserPlaylists = createSelector(
 );
 
 export const yourLibraryActions = {
-  fetchMyAlbums,
-  fetchMyArtists,
+  fetchMyLikeSongs,
   fetchMyPlaylists,
+  fetchMyArtists,
   ...yourLibrarySlice.actions,
 };
 

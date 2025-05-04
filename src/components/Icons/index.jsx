@@ -14,6 +14,21 @@ const SongExtraControlStyle = {
   maxWidth: 17,
 };
 
+export const DownloadIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" 
+  data-encore-id='icon'
+  role='img'
+  viewBox="0 -960 960 960" 
+  fill="#000"
+  className='hoverable-icon expand-icon'
+  style={{ ...SongExtraControlStyle, height: '2em', maxWidth: 30, }}
+  {...props}
+  >
+    <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/>
+  </svg>
+);
+
+
 export const LogoutIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg"
       data-encore-id='icon'
@@ -841,5 +856,20 @@ export const MenuIcon = (props) => {
     >
       <path d='M3 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm6.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM16 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z'></path>
     </svg>
+  );
+};
+
+export const MenuDots = (props) => {
+  return (
+    <svg
+    data-encore-id='icon'
+    role='img'
+    aria-hidden='true'
+    viewBox='0 0 24 24'
+    className='hoverable-icon'
+    style={{ ...ControlStyle, height: '2rem' }}
+  >
+    <path d='M4.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm15 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-7.5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z'></path>
+  </svg>
   );
 };

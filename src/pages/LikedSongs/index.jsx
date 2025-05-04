@@ -1,16 +1,13 @@
-// Components
 import { LikedSongsList } from './table';
 import { LikedSongsHeader } from './header';
 
-// Utils
 import tinycolor from 'tinycolor2';
 import { getImageAnalysis2 } from '../../utils/imageAnyliser';
 import { useEffect, useRef, useState } from 'react';
 
-// Constants
 import { DEFAULT_PAGE_COLOR, LIKED_SONGS_IMAGE } from '../../constants/spotify';
 import { useAppDispatch } from '../../store/store';
-import { likedSongsActions } from '../../store/slices/likedSongs';
+import { fetchLikeSongs } from '../../store/slices/likedSongs';
 
 const LikedSongsPage = (props) => {
   const dispatch = useAppDispatch();
@@ -23,7 +20,7 @@ const LikedSongsPage = (props) => {
       const item = tinycolor(color);
       setColor(item.isLight() ? item.darken(10).toHexString() : item.toHexString());
     });
-    dispatch(likedSongsActions.fetchLikeSongs());
+    dispatch(fetchLikeSongs());
   }, [dispatch]);
 
   return (

@@ -4,7 +4,7 @@ import './styles/App.scss';
 import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 // Components
-import { ConfigProvider } from 'antd';
+import { App as AntdApp, ConfigProvider } from 'antd';
 import AppLayout from './components/Layout';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 
@@ -27,8 +27,9 @@ const AdminLayout = lazy(() => import('./pages/Admin'));
 const Home = lazy(() => import('./pages/Home'));
 const Page404 = lazy(() => import('./pages/404'));
 const AlbumView = lazy(() => import('./pages/Album'));
+const Message = lazy(() => import('./pages/Message'));
+const MessView = lazy(() => import('./pages/Message/components/MessView'));
 const GenrePage = lazy(() => import('./pages/Genre'));
-const BrowsePage = lazy(() => import('./pages/Browse'));
 const ArtistPage = lazy(() => import('./pages/Artist'));
 const PlaylistView = lazy(() => import('./pages/Playlist'));
 const ArtistDiscographyPage = lazy(() => import('./pages/Discography'));
@@ -88,6 +89,8 @@ const RoutesComponent = memo(() => {
       { path: '/collection/tracks', element: <LikedSongsPage container={container} /> },
       { public: true, path: '/playlist/:playlistId', element: <PlaylistView container={container} /> },
       { path: '/album/:albumId', element: <AlbumView container={container} /> },
+      { path: '/message', element: <Message container={container} /> },
+      { path: '/message/:messageId', element: <MessView container={container} /> },
       { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
       { path: '/users/:userId/artists', element: <ProfileArtists container={container} /> },
@@ -95,7 +98,6 @@ const RoutesComponent = memo(() => {
       { path: '/users/:userId/tracks', element: <ProfileTracks container={container} /> },
       { path: '/users/:userId', element: <Profile container={container} /> },
       { public: true, path: '/genre/:genreId', element: <GenrePage /> },
-      { public: true, path: '/search', element: <BrowsePage /> },
       { path: '/recent-searches', element: <RecentlySearched /> },
       {
         public: true,
@@ -131,18 +133,22 @@ const RoutesComponent = memo(() => {
 });
 
 const RootComponent = () => {
+  const { resetAudio } = useAudio();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
-  const role = useAppSelector((state) => state.auth.role);
-  const loading = useAppSelector((state) => state.auth.loading);
-  const loginModalMain = useAppSelector((state) => !!state.ui.loginModalMain);
+  const { user, role, loading, loginModalMain } = useAppSelector((state) => ({
+    user: state.auth.user,
+    role: state.auth.role,
+    loading: state.auth.loading,
+    loginModalMain: state.ui.loginModalMain,
+  }));
+  
 
   useEffect(() => {
     if (!user) {
       dispatch(fetchUser());
+      resetAudio();
     }
-  }, [dispatch, user]);
-  
+  }, [dispatch, user, resetAudio]);
 
   useEffect(() => {
     if (!user) return;
@@ -159,34 +165,30 @@ const RootComponent = () => {
 
   if (!loginModalMain && !user) return <LoginPage />;
 
-  if (role === true) {
-    return (
-      <Router>
-        <AdminLayout />
-      </Router>
-    );
-  }
+  const Layout = role ? AdminLayout : AppLayout;
 
   return (
     <Router>
-      <AppLayout>
-        <RoutesComponent />
-      </AppLayout>
+      <Layout>
+        {!role && <RoutesComponent />}
+      </Layout>
     </Router>
-  );
+  )
 };
 
 function App() {
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <AudioProvider>
-            <GlobalMedia />
-            <RootComponent />
-          </AudioProvider>
-        </PersistGate>
-      </Provider>
+      <AntdApp> 
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AudioProvider>
+              <GlobalMedia />
+              <RootComponent />
+            </AudioProvider>
+          </PersistGate>
+        </Provider>
+      </AntdApp> 
     </ConfigProvider>
   );
 }

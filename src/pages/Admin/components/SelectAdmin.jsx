@@ -1,0 +1,12 @@
+const SelectAdmin = ({ label, name, placeholder }) => {
+    <div className="w-full px-6 mb-2">
+        <label for={name}>{label}</label>
+        <select name="artist" class="bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="" disabled>
+                {placeholder}
+            </option>
+            <option value="1">HAITHUHIEU</option>
+        </select>
+    </div>;
+};
+export default SelectAdmin;

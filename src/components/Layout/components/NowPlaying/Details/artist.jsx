@@ -1,8 +1,7 @@
 import { ArtistsCard } from './card';
 import { useAppSelector } from '../../../../../store/store';
 import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
-import FollowArtistButton from '../../../../../pages/Artist/container/controls/followButton';
-// ❌ Đã xoá useTranslation
+import { FollowArtistButton } from '../../../../../pages/Artist/container/controls/followButton';
 
 export const Artist = () => {
   const artist = useAppSelector((state) => state.playingNow.artist);
