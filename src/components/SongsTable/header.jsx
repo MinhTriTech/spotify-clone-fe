@@ -34,9 +34,6 @@ const DateAdded = (props) => {
 };
 
 const Artists = (props) => {
-  const { isList } = props;
-
-  if (isList) return null;
   return (
     <div style={{ flex: 5 }} className="tablet-hidden">
       <h3 className="column-name text-left">Nghệ sĩ</h3>

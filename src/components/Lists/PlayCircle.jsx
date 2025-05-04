@@ -4,6 +4,7 @@ import { uiActions } from '../../store/slices/ui';
 import { useAudio } from '../../contexts/AudioContext';
 import { fetchSongsOfFeaturedPlaylists } from '../../store/slices/home';
 import { fetchArtist } from '../../store/slices/artist';
+import { fetchLikeSongs } from '../../store/slices/likedSongs';
 
 export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,8 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
     currentArtistId,
     updateCurrentPlaylistId,
     updateCurrentArtistId,
+    currentLikedSongId,
+    updateCurrentLikedSongId,
   } = useAudio();
 
   const isThisTrackPlaying = useCallback(() => {
@@ -32,17 +35,23 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
     if (context.type === "artist") {
       return context.id === currentArtistId;
     }
+
+    if (context.type === "likedSongs") {
+      return context.id === currentLikedSongId;
+    }
   
     if (context.file_path && currentTrack?.id) {
       return context.song_id === currentTrack.id;
     }
   
     return false;
-  }, [isPlaying, context, currentTrack, currentPlaylistId, currentArtistId]);
+  }, [isPlaying, context, currentTrack, currentPlaylistId, currentArtistId, currentLikedSongId]);
 
   const isPlaylist = context && 'id' in context && 'type' in context && context.type === 'playlist';
 
   const isArtist = context && 'id' in context && 'type' in context && context.type === 'artist';
+
+  const isLikedSong = context && 'id' in context && 'type' in context && context.type === 'likedSongs';
 
   const onClick = useCallback(
     async (e) => {
@@ -57,6 +66,7 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
       if (isSingle) {
         updateCurrentPlaylistId(null);
         updateCurrentArtistId(null);
+        updateCurrentLikedSongId(null)
         if (!isCurrent) {
           setSrc(context.file_path, {
             id: context.song_id,
@@ -82,6 +92,11 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
         return;
       }
 
+      if (isLikedSong && isCurrent) {
+        isThisTrackPlaying() ? pause() : play();
+        return;
+      }
+
       if (isPlaylist && context?.id) {
         try {
           const tracks = await dispatch(fetchSongsOfFeaturedPlaylists(context.id)).unwrap();
@@ -96,7 +111,7 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
               video: track.video_url,
             }));
 
-            await setPlaylistAndPlay(formattedTracks, 0, context.id, null);
+            await setPlaylistAndPlay(formattedTracks, 0, context.id);
           }
         } catch (error) {
           console.error('Error playing playlist:', error);
@@ -116,6 +131,25 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
             }));
 
             await setPlaylistAndPlay(formattedTracks, 0, null, context.id);
+          }
+        } catch (error) {
+          console.error('Error playing playlist:', error);
+        }
+      } else if (isLikedSong && context?.id) {
+        try {
+          const tracks = await dispatch(fetchLikeSongs()).unwrap();
+          
+          if (tracks && tracks.length > 0) {
+            const formattedTracks = tracks.map(track => ({
+              id: track.song_id,
+              title: track.title,
+              artists: track.artists,
+              image: track.image,
+              src: track.file_path,
+              video: track.video_url,
+            }));
+
+            await setPlaylistAndPlay(formattedTracks, 0, null, null, context.id);
           }
         } catch (error) {
           console.error('Error playing playlist:', error);

@@ -1,6 +1,5 @@
 import TableHeader, { TableHeaderComponents } from '../../../components/SongsTable/header';
 
-// Redux
 import { useAppSelector } from '../../../store/store';
 
 export const PlaylistTableHeader = () => {
@@ -12,11 +11,8 @@ export const PlaylistTableHeader = () => {
       fields={[
         TableHeaderComponents.Index,
         TableHeaderComponents.Title,
-        TableHeaderComponents.Artists,
-        TableHeaderComponents.Album,
-        TableHeaderComponents.DateAdded,
         TableHeaderComponents.Space,
-        TableHeaderComponents.Time,
+        TableHeaderComponents.Artists,
         TableHeaderComponents.Space,
       ]}
     />

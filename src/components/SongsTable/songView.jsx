@@ -248,7 +248,7 @@ const Index = ({ index, isCurrent, isPlaying, onClick }) => {
 export const SongView = (props) => {
   const { size = 'normal' } = props;
   const { activable, view, song, index, artist, fields } = props;
-  const { isPlaying, currentTrack, play, pause, setSrc, updateCurrentPlaylistId, updateCurrentArtistId, currentArtistId } = useAudio(); 
+  const { isPlaying, currentTrack, play, pause, setSrc, updateCurrentPlaylistId, updateCurrentArtistId, updateCurrentLikedSongId } = useAudio(); 
 
   const isCurrent = useMemo(() => {
     return song && song.song_id && currentTrack?.id === song.song_id;
@@ -273,7 +273,7 @@ export const SongView = (props) => {
   const onClick = useCallback(() => {
     updateCurrentPlaylistId(null);
     updateCurrentArtistId(null);
-
+    updateCurrentLikedSongId(null);
     if (!user) {
       return dispatch(uiActions.openLoginModal(song.image));
     }
@@ -292,7 +292,7 @@ export const SongView = (props) => {
       isThisTrackPlaying() ? pause() : play();
     }
 
-  }, [user, dispatch, song.image, currentTrack, pause, play, updateCurrentPlaylistId, updateCurrentArtistId, setSrc, isThisTrackPlaying]);
+  }, [user, dispatch, song.image, currentTrack, pause, play, updateCurrentPlaylistId, updateCurrentArtistId, setSrc, isThisTrackPlaying, updateCurrentLikedSongId]);
 
   return (
     <TrackActionsWrapper

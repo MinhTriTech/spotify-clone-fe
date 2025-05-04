@@ -2,7 +2,6 @@ import { memo, useCallback, useMemo } from 'react';
 import { Dropdown, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-// Icons
 import {
   AlbumIcon,
   ArtistIcon,
@@ -13,10 +12,9 @@ import {
   AddedToLibrary,
 } from '../Icons';
 
-// Redux + Services
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { playlistActions } from '../../store/slices/playlist';
-import { likedSongsActions } from '../../store/slices/likedSongs';
+import fetchLikeSongs from '../../store/slices/likedSongs';
 import { yourLibraryActions, fetchMyPlaylists, getUserPlaylists } from '../../store/slices/yourLibrary';
 import { spotifyActions } from '../../store/slices/spotify';
 import { albumActions } from '../../store/slices/album';
@@ -101,7 +99,6 @@ const TrackActionsWrapper = memo((props) => {
           if (!handleUserValidation(true)) return;
           if (saved) {
             userService.deleteTracks([track.id]).then(() => {
-              dispatch(likedSongsActions.removeSong({ id: track.id }));
               dispatch(albumActions.updateTrackLikeState({ id: track.id, saved: false }));
               dispatch(artistActions.setTopSongLikeState({ id: track.id, saved: false }));
               dispatch(playlistActions.setTrackLikeState({ id: track.id, saved: false }));
@@ -113,7 +110,7 @@ const TrackActionsWrapper = memo((props) => {
             });
           } else {
             userService.saveTracks([track.id]).then(() => {
-              dispatch(likedSongsActions.fetchLikeSongs());
+              dispatch(fetchLikeSongs());
               dispatch(albumActions.updateTrackLikeState({ id: track.id, saved: true }));
               dispatch(artistActions.setTopSongLikeState({ id: track.id, saved: true }));
               dispatch(playlistActions.setTrackLikeState({ id: track.id, saved: true }));
