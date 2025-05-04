@@ -12,8 +12,14 @@ const getFollowedArtists = async () => {
   return await axios.get(`api/music/artists/followed/`);
 };
 
+const checkLiked = async (id) => {
+  return await axios.get(`api/music/songs/${id}/is-favorite/`);
+};
+
+
 export const libraryService = {
   getMyLikeSongs,
   getMyPlaylists,
   getFollowedArtists,
+  checkLiked,
 };

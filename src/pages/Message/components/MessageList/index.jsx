@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { List, Avatar, Space } from 'antd';
 
-const MessageList = ({ container }) => {
+const MessageList = () => {
   const navigate = useNavigate();
+  const [conversations, setConversations] = useState([]);
 
-  const conversations = container.getConversations?.() || [
-    { id: '123', user: 'John Doe', lastMessage: 'Hey, how’s it going?', time: '10:30 AM' },
-    { id: '456', user: 'Jane Smith', lastMessage: 'Check out this song!', time: 'Yesterday' },
-    { id: '789', user: 'Alex Brown', lastMessage: 'Let’s meet up later.', time: 'Monday' },
-  ];
+  useEffect(() => {
+    fetch('/chat/chatrooms/', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        const parsed = data.map(item => ({
+          id: item.other_user_id,
+          user: item.other_user_name,
+          lastMessage: item.last_message?.content || 'No messages yet',
+          time: item.last_message?.timestamp
+            ? new Date(item.last_message.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+            : '',
+        }));
+        setConversations(parsed);
+      })
+      .catch((err) => {
+        console.error('❌ Failed to fetch conversations:', err);
+        setConversations([]);
+      });
+  }, []);
 
   const handleClick = (id) => navigate(`/message/${id}`);
 
