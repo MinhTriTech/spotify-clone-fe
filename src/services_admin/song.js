@@ -2,14 +2,21 @@ import axios from "axios";
 
 const API_URL = "http://127.0.0.1:8000/api/manager/songs/";
 
-// Hàm lấy tất cả bài hát
-export const fetchSongs = async () => {
+export const fetchSongs = async (params = {}) => {
     try {
-        const response = await axios.get(API_URL);
-        return response.data;
+        const response = await axios.get(`${API_URL}search`, {
+            params, // Truyền tham số tìm kiếm và trang
+        });
+        if (!response.data) {
+            throw new Error("No data returned from API");
+        }
+        return {
+            results: response.data.results || [],
+            count: response.data.count || 0, // Tổng số bài hát
+        };
     } catch (error) {
-        console.error("Fetch songs error:", error);
-        throw error;
+        console.error("API Error:", error.response?.data || error.message);
+        throw new Error("Failed to fetch songs");
     }
 };
 

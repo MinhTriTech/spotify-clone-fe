@@ -13,7 +13,7 @@ const InfoUser = () => {
     const userId = user?.id;
     const userEmail = user?.email;
     const userUsername = user?.username;
-    console.log("USER: ", userId + userEmail + userUsername);
+    const firstUsername = userUsername.charAt(0).toUpperCase();
 
     const Logout = async () => {
         try {
@@ -33,7 +33,7 @@ const InfoUser = () => {
                 <div className="h-px bg-spotifyGray"></div>
                 <div className="w-full h-fit px-8 pt-8 flex justify-start items-center">
                     <div className="ml-3 h-16 w-16 bg-violet-400 border-2 border-white rounded-full flex justify-center items-center">
-                        <span className="text-white text-3xl">T</span>
+                        <span className="text-white text-3xl">{firstUsername}</span>
                     </div>
                     <div className="text-white ml-4">
                         <p className="text-xl">{userUsername}</p>

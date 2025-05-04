@@ -268,13 +268,13 @@ const SongUpdate = () => {
 
                         <div className="w-full px-6 mb-2">
                             <label htmlFor="album">Thuộc Album</label>
-                            <select name="album" value={selectedAlbum} onChange={(e) => setSelectedAlbum(e.target.value)} className="bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select name="album" value={selectedAlbum} className="bg-black mt-2 w-full h-10 pl-3 pr-4 py-2 border border-spotifyGray rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="" disabled>
                                     - Chọn album -
                                 </option>
                                 {albums.map((album) => (
-                                    <option key={album.id} value={album.id}>
-                                        {album.name}
+                                    <option key={album.album_id} value={album.album_id}>
+                                        {album.title}
                                     </option>
                                 ))}
                             </select>

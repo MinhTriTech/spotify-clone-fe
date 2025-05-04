@@ -2,8 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 const ButtonAdmin = ({ path, icon, color, textHover, title, onClick }) => {
     const navigate = useNavigate();
-    const handleClick = () => {
-        if (onClick) onClick();
+    const handleClick = (e) => {
+        if (onClick) onClick(e);
         else if (path) navigate(path);
     };
 

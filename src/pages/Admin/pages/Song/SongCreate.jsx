@@ -81,7 +81,10 @@ const SongCreate = () => {
         if (formData.file_path) data.append("file_path", formData.file_path);
         if (formData.video_url) data.append("video_url", formData.video_url);
         data.append("content_type", formData.content_type);
-        if (selectedAlbum) data.append("album", selectedAlbum);
+        if (selectedAlbum) {
+            data.append("album", selectedAlbum);
+            console.log("album đang chọn: ", selectedAlbum);
+        }
 
         try {
             // Gửi yêu cầu tạo bài hát
@@ -94,6 +97,20 @@ const SongCreate = () => {
 
             const songId = songResponse.data.song.song_id;
             console.log("Bài hát đã được tạo với ID:", songId);
+
+            const albumSongData = {
+                album_id: selectedAlbum,
+                song_id: songId,
+            };
+
+            const albumSongResponse = await axios({
+                method: "post",
+                url: "http://127.0.0.1:8000/api/manager/album_songs/add/",
+                data: albumSongData,
+                headers: { "Content-Type": "application/json" },
+            });
+
+            console.log("Kết quả liên kết album:", albumSongResponse.data);
 
             // Gửi yêu cầu lưu ca sĩ chính - SỬA LỖI Ở ĐÂY
             console.log("Đang liên kết ca sĩ chính với ID:", mainArtist, "cho bài hát ID:", songId);
@@ -225,8 +242,8 @@ const SongCreate = () => {
                                     - Chọn album -
                                 </option>
                                 {albums.map((album) => (
-                                    <option key={album.id} value={album.id}>
-                                        {album.name}
+                                    <option key={album.album_id} value={album.album_id}>
+                                        {album.title}
                                     </option>
                                 ))}
                             </select>

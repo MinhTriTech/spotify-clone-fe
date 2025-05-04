@@ -133,7 +133,7 @@ const Dashboard = () => {
                                         <img src={song.image || ""} alt="Ảnh bìa" className="bg-violet-500 h-12 w-14" />
                                         <div className="w-full my-auto ml-2">
                                             <p className="font-gilroy_md whitespace-nowrap overflow-hidden">{song.title}</p>
-                                            <p className="overflow-auto text-blue-600 whitespace-nowrap overflow-hidden">{song.artists[song.artists.length - 1]?.name || "không có tác giả"}</p>
+                                            <p className="text-blue-600 whitespace-nowrap overflow-hidden">{song.artists[song.artists.length - 1]?.name || "không có tác giả"}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -146,7 +146,7 @@ const Dashboard = () => {
                                     <img src={song.image || ""} alt="Ảnh bìa" className="bg-violet-500 h-12 w-14" />
                                     <div className="w-full my-auto ml-2">
                                         <p className="font-gilroy_md whitespace-nowrap overflow-hidden">{song.title}</p>
-                                        <p className="overflow-auto text-blue-600 whitespace-nowrap overflow-hidden">{song.artists[song.artists.length - 1]?.name || "không có tác giả"}</p>
+                                        <p className="text-blue-600 whitespace-nowrap overflow-hidden">{song.artists[song.artists.length - 1]?.name || "không có tác giả"}</p>
                                     </div>
                                 </div>
                             ))}
