@@ -1,6 +1,4 @@
 import { memo, useEffect, useState } from 'react';
-
-// Redux
 import { useAppSelector } from '../../../store/store';
 
 const VerifiedIcon = () => (
@@ -15,10 +13,11 @@ const VerifiedIcon = () => (
   </svg>
 );
 
-const ArtistHeader = ({ color, container }) => {
+export const ArtistHeader = memo((props) => {
+  const { container, color } = props;
   const [scroll, setScroll] = useState(0);
   const artist = useAppSelector((state) => state.artist.artist);
-
+  
   useEffect(() => {
     const ref = container.current;
     const handleScroll = () => {
@@ -35,27 +34,19 @@ const ArtistHeader = ({ color, container }) => {
   return (
     <div className="artist-page-header" style={{ position: 'relative' }}>
       <div className="under-main-view">
-        <div
-          style={{
-            '--scroll': scroll,
-          }}
-        >
+        <div style={{ '--scroll': scroll }}>
           <div
             className="background"
-            style={{ backgroundImage: `url("${artist?.images[0]?.url}")` }}
+            style={{ backgroundImage: `url("${artist?.image}")` }}
           />
           <div
             className="background-image"
-            style={{
-              backgroundImage: `url("${artist?.images[0]?.url}")`,
-            }}
-          />
+            style={{ backgroundImage: `url("${artist?.image}")` }}
+          ></div>
           <div
             className="background-gradient"
-            style={{
-              '--bgColor': color,
-            }}
-          />
+            style={{ '--bgColor': color }}
+          ></div>
         </div>
       </div>
 
@@ -66,20 +57,15 @@ const ArtistHeader = ({ color, container }) => {
             <span className="verifyContainer">
               <div className="verifyDiv"></div>
               <VerifiedIcon />
-              <span>Nghệ sĩ đã xác thực</span>
+              <span>Nghệ sĩ đã xác minh</span>
             </span>
 
             <span className="artistName">
               <h1>{artist?.name}</h1>
-            </span>
-            <span className="listeners">
-              {artist?.followers.total} người theo dõi
             </span>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default memo(ArtistHeader);
+});
