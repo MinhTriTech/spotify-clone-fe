@@ -23,7 +23,7 @@ export const fecthFeaturedPlaylists = createAsyncThunk('home/fecthFeaturedPlayli
 export const fetchSongsOfFeaturedPlaylists = createAsyncThunk(
   'home/fetchSongsOfFeaturedPlaylists',
   async (id) => {
-    const response = await playlistService.getSongsOfFeatsuredPlaylists(id);
+    const response = await playlistService.getSongsOfFeaturedPlaylists(id);
     return response.data;
   }
 );

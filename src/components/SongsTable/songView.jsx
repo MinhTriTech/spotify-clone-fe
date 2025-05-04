@@ -4,28 +4,26 @@ import { useCallback, useMemo } from 'react';
 import { MenuIcon, Pause, Play } from '../Icons';
 import TrackActionsWrapper from '../Actions/TrackActions';
 
-// Utils
 import { msToTime } from '../../utils';
 
-// Redux
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
-// Services
 import { Link, useNavigate } from 'react-router-dom';
-import { playerService } from '../../services/player';
 import ArtistActionsWrapper from '../Actions/ArtistActions';
-import {AddSongToLibraryButton} from '../Actions/AddSongToLibrary';
+import { AddSongToLibraryButton } from '../Actions/AddSongToLibrary';
 
-// Constants
-import { EQUILISER_IMAGE } from '../../constants/spotify';
-
+import { spotifyActions } from '../../store/slices/spotify';
 import useIsMobile from '../../utils/isMobile';
+import { EQUILISER_IMAGE } from '../../constants/spotify';
+import { uiActions } from '../../store/slices/ui';
+
+import { useAudio } from '../../contexts/AudioContext';
 
 const getArtists = (artists) => {
   return artists.slice(0, 3).map((a, i) => (
-    <span key={a.id}>
+    <span key={a.artist_id}>
       <ArtistActionsWrapper artist={a} trigger={['contextMenu']}>
-        <Link to={`/artist/${a.id}`} style={{ cursor: 'pointer' }}>
+        <Link key={a.artist_id} to={`/artist/${a.artist_id}`} style={{ cursor: 'pointer' }}>
           {a.name}
         </Link>
       </ArtistActionsWrapper>
@@ -34,7 +32,9 @@ const getArtists = (artists) => {
   ));
 };
 
-const ClickeableCover = ({ song, onPlay, isCurrent, isPlaying }) => {
+const ClickeableCover = (props) => {
+  const { song, onPlay, isCurrent, isPlaying } = props;
+
   const button = (
     <button className='image-button' onClick={onPlay}>
       {isPlaying && isCurrent ? <Pause /> : <Play />}
@@ -45,7 +45,7 @@ const ClickeableCover = ({ song, onPlay, isCurrent, isPlaying }) => {
   if (!imageUrl) return null;
 
   return (
-    <div className='image p-2 h-full items-center'>
+    <div className={`image p-2 h-full items-center`}>
       <div style={{ position: 'relative' }}>
         <div>
           <img
@@ -61,42 +61,49 @@ const ClickeableCover = ({ song, onPlay, isCurrent, isPlaying }) => {
   );
 };
 
-const Title = ({ song, isList, isCurrent }) => {
+const Title = (props) => {
+  const { song, isList, isCurrent } = props;
+
   return (
-    <div className='flex flex-col' style={{ flex: 8 }}>
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div className='flex flex-row items-center'>
-            <p className={`title text-left ${isCurrent ? 'active' : ''}`}>
-              <span>{song.name}</span>{' '}
-              {song.explicit && !isList ? <span className='explicit'>E</span> : null}
-            </p>
+    <>
+      <div className='flex flex-col' style={{ flex: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className='flex flex-row items-center'>
+              <p className={`title text-left ${isCurrent ? 'active' : ''}`}>
+                <span>{song.name}</span>{' '}
+                {song.explicit && !isList ? <span className='explicit'>18+</span> : null}
+              </p>
+            </div>
+
+            {isList ? (
+              <p className='text-left artist mobile-hidden'>
+                {song.explicit ? <span className='explicit'>18+</span> : null}
+                {getArtists(song.artists)}
+              </p>
+            ) : null}
           </div>
-          {isList ? (
-            <p className='text-left artist mobile-hidden'>
-              {song.explicit ? <span className='explicit'>E</span> : null}
-              {getArtists(song.artists)}
-            </p>
-          ) : null}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
 const Cover = ({ song, isList }) => {
   if (!isList) return null;
 
-  const imageUrl = (song?.album?.images || [])[0]?.url;
+  const imageUrl = song?.image;
   if (!imageUrl) return null;
 
   return (
-    <img alt='song cover' src={imageUrl} className='w-10 h-10 mr-4 rounded-md' />
+    <img alt='Bìa bài hát' src={song?.image} className='w-10 h-10 mr-4 rounded-md' />
   );
 };
 
 const TitleWithCover = (props) => {
+  
   const { song, isList, isCurrent } = props;
+  
   return (
     <div className='flex flex-col' style={{ flex: 8 }}>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -104,14 +111,12 @@ const TitleWithCover = (props) => {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div className='flex flex-row items-center'>
             <p className={`title text-left ${isCurrent ? 'active' : ''}`}>
-              <span>{song.name}</span>{' '}
-              {song.explicit && !isList ? <span className='explicit'>E</span> : null}
+              <span>{song.title}</span>{' '}
             </p>
           </div>
           {isList ? (
             <p className='text-left artist mobile-hidden'>
-              {song.explicit ? <span className='explicit'>E</span> : null}
-              <div>{getArtists(song.artists)}</div>
+              {getArtists(song.artists)}
             </p>
           ) : null}
         </div>
@@ -134,14 +139,17 @@ const Album = ({ song }) => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
 
-  const onNavigate = useCallback((e) => {
-    e?.stopPropagation();
-    e?.preventDefault();
-    if (!user) {
-      return dispatch(uiActions.openLoginModal(song.album.images[0].url));
-    }
-    navigate(`/album/${song.album.id}`);
-  }, [user, navigate, song.album, dispatch]);
+  const onNavigate = useCallback(
+    (e) => {
+      if (e) e.stopPropagation();
+      if (e) e.preventDefault();
+      if (!user) {
+        return dispatch(uiActions.openLoginModal(song.album.images[0].url));
+      }
+      navigate(`/album/${song.album.id}`);
+    },
+    [user, navigate, song.album.id, song.album.images, dispatch]
+  );
 
   return (
     <p className='text-left tablet-hidden' style={{ flex: 5 }}>
@@ -155,7 +163,6 @@ const Album = ({ song }) => {
 const AddedAt = ({ addedAt }) => {
   const language = useAppSelector((state) => state.language.language);
   if (!addedAt) return null;
-
   return (
     <p className='text-left tablet-hidden' style={{ flex: 3 }}>
       <ReactTimeAgo date={new Date(addedAt)} locale={language === 'es' ? 'es-AR' : undefined} />
@@ -163,9 +170,15 @@ const AddedAt = ({ addedAt }) => {
   );
 };
 
-const AddToLiked = ({ song, saved, onLikeRefresh }) => {
+const AddToLiked = ({
+  song,
+  saved,
+  onLikeRefresh,
+}) => {
   const dispatch = useAppDispatch();
-  const currentSong = useAppSelector((state) => state.spotify.state?.track_window.current_track.id);
+  const currentSong = useAppSelector(
+    (state) => state.spotify.state?.track_window.current_track.id
+  );
 
   return (
     <p className='text-right tablet-hidden' style={{ flex: 1, display: 'flex', justifyContent: 'end' }}>
@@ -184,15 +197,15 @@ const AddToLiked = ({ song, saved, onLikeRefresh }) => {
 
 const Actions = ({ song }) => {
   return (
-    <p className='text-right actions tablet-hidden' style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+    <div className='text-right actions tablet-hidden' style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
       <TrackActionsWrapper track={song} trigger={['click']}>
-        <Tooltip title={`More options for ${song.name}`}>
+        <Tooltip title={`Tuỳ chọn khác cho ${song.name}`}>
           <div>
             <MenuIcon />
           </div>
         </Tooltip>
       </TrackActionsWrapper>
-    </p>
+    </div>
   );
 };
 
@@ -214,59 +227,86 @@ const Index = ({ index, isCurrent, isPlaying, onClick }) => {
           <span style={{ margin: '0 auto' }}>{index + 1}</span>
         )}
       </p>
-      <button className='song-details-play' onClick={onClick}>
+      <div
+        className='song-details-play'
+        role='button'
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            onClick();
+          }
+        }}
+      >
         {isCurrent && isPlaying ? <Pause /> : <Play />}
-      </button>
+      </div>
     </div>
   );
 };
 
-export const SongView = (props) => {
-  const { size = 'normal', view, song, index, context, artist, playlist, canEdit, fields, album } = props;
 
+export const SongView = (props) => {
+  const { size = 'normal' } = props;
+  const { activable, view, song, index, artist, fields } = props;
+  const { isPlaying, currentTrack, play, pause, setSrc, updateCurrentPlaylistId, updateCurrentArtistId, currentArtistId } = useAudio(); 
+
+  const isCurrent = useMemo(() => {
+    return song && song.song_id && currentTrack?.id === song.song_id;
+  }, [song, currentTrack]);
+  
   const isMobile = useIsMobile();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
-  const isPlaying = useAppSelector((state) => !!state.spotify.state?.paused);
-  const currentSong = useAppSelector((state) => state.spotify.state?.track_window.current_track);
-
-  const isCurrent = useMemo(() => currentSong?.uri === song.uri, [currentSong, song]);
   const selectedView = isMobile ? 'LIST' : view;
   const isList = selectedView === 'LIST';
 
+  const isThisTrackPlaying = useCallback(() => {
+    if (!isPlaying || !song) return false;
+  
+    if (song.file_path && currentTrack?.id) {
+      return song.song_id === currentTrack.id;
+    }
+  
+    return false;
+  }, [isPlaying, song, currentTrack]);
+
   const onClick = useCallback(() => {
+    updateCurrentPlaylistId(null);
+    updateCurrentArtistId(null);
+
     if (!user) {
-      return dispatch(uiActions.openLoginModal(song.album.images[0].url));
+      return dispatch(uiActions.openLoginModal(song.image));
     }
-    if (isCurrent && isPlaying) {
-      return playerService.pausePlayback();
+
+    if (!isCurrent) {
+      
+      setSrc(song.file_path, {
+        id: song.song_id,
+        title: song.title,
+        artists: song.artists,
+        image: song.image,
+        video: song.video_url,
+      });
+      play();
+    } else {
+      isThisTrackPlaying() ? pause() : play();
     }
-    if (isCurrent) {
-      return playerService.startPlayback();
-    }
-    return playerService.startPlayback(context);
-  }, [user, isCurrent, isPlaying, context, dispatch, song.album?.images]);
+
+  }, [user, dispatch, song.image, currentTrack, pause, play, updateCurrentPlaylistId, updateCurrentArtistId, setSrc, isThisTrackPlaying]);
 
   return (
     <TrackActionsWrapper
       track={song}
-      album={album}
-      key={song.id}
+      key={song.song_id}
       artist={artist}
-      canEdit={canEdit}
-      playlist={playlist}
       trigger={['contextMenu']}
-      saved={props.onToggleLike ? props.saved : undefined}
-      onSavedToggle={props.onToggleLike ? props.onToggleLike : undefined}
     >
-      <div
+      <button
         onClick={isMobile ? onClick : undefined}
         onDoubleClick={!isMobile ? onClick : undefined}
         className={`flex flex-col w-full hover:bg-spotify-gray-lightest items-center ${
           size === 'normal' ? 'p-2' : ''
-        } rounded-lg ${props.activable ? 'activable-song' : ''}`}
-        role="button"
-        tabIndex={0}
+        } rounded-lg ${activable ? 'activable-song' : ''}`}
       >
         <div className='song-details flex flex-row items-center w-full'>
           <div className='flex flex-row items-center justify-between w-full'>
@@ -285,7 +325,7 @@ export const SongView = (props) => {
             ))}
           </div>
         </div>
-      </div>
+      </button>
     </TrackActionsWrapper>
   );
 };

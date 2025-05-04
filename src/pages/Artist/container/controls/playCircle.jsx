@@ -1,24 +1,36 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { useAppSelector } from '../../../../store/store';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
+import { useAudio } from '../../../../contexts/AudioContext';
 
-const PlayCircleButton = ({ size = 30 }) => {
+export const PlayCircleButton = memo(({ size = 30 }) => {
   const artist = useAppSelector(
     (state) => state.artist.artist,
     (prev, next) => prev?.id === next?.id
   );
-  const context = useAppSelector((state) => state.spotify.state?.context.uri);
-  const isCurrent = useMemo(() => artist?.uri === context, [artist, context]);
+
+  const { currentArtistId } = useAudio();
+
+  let isCurrent = false;
+  
+  if (artist.artist_id == currentArtistId) {
+    isCurrent = true;
+  } 
+  else {
+    isCurrent = false;
+  }
 
   return (
     <PlayCircle
       size={size}
       big={size >= 30}
-      isCurrent={isCurrent}
-      image={artist?.images[0]?.url}
-      context={{ context_uri: artist?.uri }}
+      isCurrent={isCurrent} 
+      context={{ 
+        id: artist.artist_id,
+        image: artist.image,
+        type: "artist",
+        title: artist.name
+      }}
     />
   );
-};
-
-export default memo(PlayCircleButton);
+});

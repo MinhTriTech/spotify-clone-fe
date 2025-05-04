@@ -5,14 +5,14 @@ import { useAudio } from '../../contexts/AudioContext';
 import ArtistActionsWrapper from '../Actions/ArtistActions';
 
 const Card = ({ title, image, rounded, description, onClick, context }) => {
-  const { isPlaying, currentTrack, playlist, currentIndex } = useAudio();
+  const { isPlaying, currentTrack, playlist, currentIndex, currentPlaylistId } = useAudio();
   
   let isCurrent = false;
   
   if (context && context.type === 'playlist' && context.id) {
     const isPlayingThisPlaylist = playlist.length > 0 && 
                                  currentIndex >= 0 && 
-                                 currentTrack?.playlistId === context.id;
+                                 currentPlaylistId === context.id;
     
     isCurrent = isPlayingThisPlaylist;
   } 

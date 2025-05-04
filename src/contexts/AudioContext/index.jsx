@@ -18,15 +18,15 @@ export const AudioProvider = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
 
+  const [currentArtistId, setCurrentArtistId] = useState(null);
+
   
   const volumeRef = useRef(1);
   const syncingRef = useRef(false);
 
-  // Đồng bộ hóa video với audio
   const syncVideoWithAudio = useCallback(() => {
     if (!videoRef.current || !audioRef.current || !currentTrack?.video || syncingRef.current) return;
     
-    // Chỉ đồng bộ khi chênh lệch thời gian vượt quá ngưỡng
     if (Math.abs(videoRef.current.currentTime - audioRef.current.currentTime) > 0.2) {
       videoRef.current.currentTime = audioRef.current.currentTime;
     }
@@ -216,11 +216,20 @@ export const AudioProvider = ({ children }) => {
     setCurrentIndex(-1); 
   }, []);
 
-  const setPlaylistAndPlay = useCallback(async (tracks, index = 0, playlistId = null) => {
+  const updateCurrentPlaylistId = useCallback((temp) => {
+    setCurrentPlaylistId(temp);
+  }, []);
+  
+  const updateCurrentArtistId = useCallback((temp) => {
+    setCurrentArtistId(temp);
+  }, []);  
+
+  const setPlaylistAndPlay = useCallback(async (tracks, index = 0, playlistId = null, artistId = null) => {
     if (!tracks || tracks.length === 0 || index < 0 || index >= tracks.length) return;
   
     setPlaylist(tracks);
     setCurrentPlaylistId(playlistId);
+    setCurrentArtistId(artistId)
     setCurrentIndex(index);
   
     const track = tracks[index];
@@ -301,7 +310,6 @@ export const AudioProvider = ({ children }) => {
         currentTime,
         duration,
         
-        // Các phương thức cũ
         play,
         pause,
         setSrc,
@@ -311,7 +319,6 @@ export const AudioProvider = ({ children }) => {
         setVolume,
         resetAudio,
         
-        // Quản lý playlist
         playlist,
         currentIndex,
         currentPlaylistId,
@@ -320,6 +327,10 @@ export const AudioProvider = ({ children }) => {
         playTrackByIndex,
         playNextTrack,
         playPrevTrack,
+        updateCurrentPlaylistId,
+
+        currentArtistId,
+        updateCurrentArtistId,
       }}
     >
       {children}
