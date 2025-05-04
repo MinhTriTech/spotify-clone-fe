@@ -68,18 +68,19 @@ export const deleteAlbum = async (id) => {
 // Hàm lấy danh sách albums có phân trang
 export const fetchAlbumsPaginated = async (page = 1, pageSize = 6) => {
     try {
-        const response = await axios.get(API_URL, {
+        const response = await axios.get(`${API_URL}all-albums/`, {
             params: {
                 page,
                 page_size: pageSize,
             },
         });
-        return response.data;
+        return response.data; // Trả về { count, next, previous, results }
     } catch (error) {
         console.error('Fetch paginated albums error:', error);
         throw error;
     }
 };
+
 
 // Hàm tìm kiếm albums theo title (có phân trang)
 export const searchAlbums = async (title, page = 1, pageSize = 6) => {

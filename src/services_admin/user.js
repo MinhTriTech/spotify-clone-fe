@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:8000/api/manager/users/';
 
 // services_admin/user.js
 export const fetchAllUsers = async (page = 1, pageSize = 6) => {
-    const response = await axios.get(`${API_URL}?page=${page}&page_size=${pageSize}`);
+    const response = await axios.get(`${API_URL}all-users/?page=${page}&page_size=${pageSize}`);
     return response.data;
   };
 

@@ -79,10 +79,10 @@ export const countArtists = async () => {
 // Hàm lấy tất cả artists có phân trang
 export const fetchArtistsPaginated = async (page = 1, pageSize = 6) => {
   try {
-    const response = await axios.get(API_URL, {
+    const response = await axios.get(`${API_URL}all-artists/`, {
       params: {
-        page,
-        page_size: pageSize,
+        page,         // Số trang hiện tại
+        page_size: pageSize, // Số items mỗi trang
       },
     });
     return response.data; // trả về: { count, next, previous, results }
