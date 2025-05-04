@@ -36,8 +36,8 @@ const BodyContent = () => {
 
                 <Route path="/admin/user" element={<User />} />
                 <Route path="/admin/user/create" element={<UserCreate />} />
-                <Route path="/admin/user/detail" element={<UserDetail />} />
-                <Route path="/admin/user/update" element={<UserUpdate />} />
+                <Route path="/admin/user/:id/detail" element={<UserDetail />} />
+                <Route path="/admin/user/:id/update" element={<UserUpdate />} />
 
                 <Route path="/admin/role" element={<Role />} />
 

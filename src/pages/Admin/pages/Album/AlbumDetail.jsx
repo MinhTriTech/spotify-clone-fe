@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faXmark, faPenToSquare, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
-import { InputCombo, ButtonAdmin } from "../../components";
+import { InputCombo, ButtonAdmin, MiniAudioPlayer, PlayVideoButton } from "../../components";
 import { useState, useEffect } from "react";
 import { fetchAlbumById, deleteAlbum } from "../../../../services_admin/album";
 import {fetchArtistById} from "../../../../services_admin/artist";
@@ -166,7 +166,12 @@ const AlbumDetail = () => {
                                             <td className="p-4 text-center">{index + 1}</td>
                                             <td className="p-4">{song[index]?.title || "Không có tiêu đề"}</td>
                                             <td className="p-4 text-center">{new Date(albumSong.added_at).toLocaleDateString('vi-VN')}</td>
-                                            <td className="p-4 text-center">
+                                            <td className="p-4 text-center flex items-center justify-center gap-2">
+                                                <PlayVideoButton
+                                                    videoUrl={song[index]?.video_url} // Truyền video_url từ bài hát
+                                                     
+                                                /> {/* Chạy video bài hát tương ứng */}
+                                                <MiniAudioPlayer src={song[index]?.file_path} /> {/* Chạy nhạc bài hát tương ứng */}
                                                 <ButtonAdmin
                                                     icon={faXmark}
                                                     title="Xóa"
