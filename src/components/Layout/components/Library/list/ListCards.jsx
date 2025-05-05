@@ -1,6 +1,5 @@
 import { Tooltip } from '../../../../Tooltip';
 import { SpeakerIcon } from '../../../../Icons';
-import AlbumActionsWrapper from '../../../../Actions/AlbumActions';
 import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
 import PlayistActionsWrapper from '../../../../Actions/PlaylistActions';
 
@@ -13,11 +12,11 @@ import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
 
 import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../../constants/spotify';
 import { memo, useCallback } from 'react';
-import { uiActions } from '../../../../../store/slices/ui';
 
 import { useAudio } from '../../../../../contexts/AudioContext'
 
-import { fetchSongsOfFeaturedPlaylists, getSongsOfLikedSongs } from '../../../../../store/slices/home';
+import { getSongsOfLikedSongs } from '../../../../../store/slices/playlist';
+import { fetchSongsOfFeaturedPlaylists } from '../../../../../store/slices/playlist';
 
 const Play = (
   <svg

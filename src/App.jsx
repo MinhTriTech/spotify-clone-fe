@@ -1,24 +1,19 @@
 import './styles/App.scss';
 
-// Utils
 import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
-// Components
 import { App as AntdApp, ConfigProvider } from 'antd';
 import AppLayout from './components/Layout';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 
-// Redux
 import { Provider } from 'react-redux';
 import { uiActions } from './store/slices/ui';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 import { fetchUser } from './store/slices/auth';
 
-// Context
 import { AudioProvider, useAudio } from './contexts/AudioContext';
 
-// Pages
 import SearchContainer from './pages/Search/Container';
 import { Spinner } from './components/spinner';
 
@@ -90,7 +85,7 @@ const RoutesComponent = memo(() => {
       { public: true, path: '/playlist/:playlistId', element: <PlaylistView container={container} /> },
       { path: '/album/:albumId', element: <AlbumView container={container} /> },
       { path: '/message', element: <Message container={container} /> },
-      { path: '/message/:messageId', element: <MessView container={container} /> },
+      { path: '/message/:idUser/:idChatRoom', element: <MessView container={container} /> },
       { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
       { path: '/users/:userId/artists', element: <ProfileArtists container={container} /> },

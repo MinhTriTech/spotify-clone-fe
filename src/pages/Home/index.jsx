@@ -1,10 +1,7 @@
-// Utils
 import { memo, useEffect } from 'react';
 
-// Components
 import HomePageContainer from './container';
 
-// Store
 import { homeActions } from '../../store/slices/home';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
@@ -18,6 +15,7 @@ const Home = memo((props) => {
       dispatch(homeActions.fetchTopTracks());
     }
     dispatch(homeActions.fecthFeaturedPlaylists());
+    dispatch(homeActions.fecthArtists());
   }, [user, dispatch]);
 
   return <HomePageContainer container={container} />;

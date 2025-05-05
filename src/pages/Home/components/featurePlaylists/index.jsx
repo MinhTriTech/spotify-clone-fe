@@ -1,6 +1,5 @@
 import { useAppSelector } from '../../../../store/store';
 import { GridItemList } from '../../../../components/Lists/list';
-import { getPlaylistDescription } from '../../../../utils/getDescription';
 
 export const FeaturePlaylists = () => {
   const featurePlaylists = useAppSelector((state) => state.home.featurePlaylists);
