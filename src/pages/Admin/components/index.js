@@ -3,3 +3,4 @@ export { default as InputCombo } from "./InputCombo";
 export { default as ButtonAdmin } from "./ButtonAdmin";
 export { default as SelectAdmin } from "./SelectAdmin";
 export { default as DashboardItem } from "./DashboardItem";
+export { default as DashboardChart } from "./DashboardChart";
