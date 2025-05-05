@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { uiActions } from '../../store/slices/ui';
 import { useAudio } from '../../contexts/AudioContext';
-import { fetchSongsOfFeaturedPlaylists } from '../../store/slices/home';
+import { fetchSongsOfFeaturedPlaylists } from '../../store/slices/playlist';
 import { fetchArtist } from '../../store/slices/artist';
 import { fetchLikeSongs } from '../../store/slices/likedSongs';
 

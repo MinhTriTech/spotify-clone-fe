@@ -5,8 +5,7 @@ import { playlistService } from '../../services/playlists';
 const initialState = {
   topTracks: [],
   featurePlaylists: [],
-  songsOfFeaturePlaylists: [],
-  songsOfLikedSongs: [],
+  artists: [],
   section: 'ALL',
 };
 
@@ -16,23 +15,14 @@ export const fetchTopTracks = createAsyncThunk('home/fetchTopTracks', async () =
 });
 
 export const fecthFeaturedPlaylists = createAsyncThunk('home/fecthFeaturedPlaylists', async () => {
-  const response = await playlistService.getFeaturedPlaylists();
+  const response = await playlistService.fecthPlaylists();
   return response.data;
 });
 
-export const fetchSongsOfFeaturedPlaylists = createAsyncThunk(
-  'home/fetchSongsOfFeaturedPlaylists',
-  async (id) => {
-    const response = await playlistService.getSongsOfFeaturedPlaylists(id);
-    return response.data;
-  }
-);
-
-export const getSongsOfLikedSongs = createAsyncThunk('home/getSongsOfLikedSongs', async () => {
-  const response = await playlistService.getSongsOfLikedSongs();
+export const fecthArtists = createAsyncThunk('home/fecthArtists', async () => {
+  const response = await playlistService.fecthArtists();
   return response.data;
 });
-
 
 const homeSlice = createSlice({
   name: 'home',
@@ -49,11 +39,8 @@ const homeSlice = createSlice({
     builder.addCase(fecthFeaturedPlaylists.fulfilled, (state, action) => {
       state.featurePlaylists = action.payload;
     });
-    builder.addCase(fetchSongsOfFeaturedPlaylists.fulfilled, (state, action) => {
-      state.songsOfFeaturePlaylists = action.payload;
-    });
-    builder.addCase(getSongsOfLikedSongs.fulfilled, (state, action) => {
-      state.songsOfLikedSongs = action.payload;
+    builder.addCase(fecthArtists.fulfilled, (state, action) => {
+      state.artists = action.payload;
     });
   },
 });
@@ -62,8 +49,7 @@ export const homeActions = {
   ...homeSlice.actions,
   fetchTopTracks,
   fecthFeaturedPlaylists,
-  fetchSongsOfFeaturedPlaylists,
-  getSongsOfLikedSongs,
+  fecthArtists,
 };
 
 export default homeSlice.reducer;
