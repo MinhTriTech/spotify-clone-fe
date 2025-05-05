@@ -137,8 +137,9 @@ const AlbumUpdate = () => {
                         </div>
 
                         <div className="w-full px-6 mb-2">
-                            <label className="block text-sm font-medium mb-1">Tên nghệ sĩ</label>
+                            <label className="block text-sm font-medium mb-1">Tên nghệ sĩ (Không sửa nghệ sĩ)</label>
                             <select
+                                disabled
                                 name="artist_id"
                                 value={formData.artist_id}
                                 onChange={handleChange}
