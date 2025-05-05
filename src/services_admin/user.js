@@ -2,12 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/api/manager/users/';
 
-// services_admin/user.js
-export const fetchAllUsers = async (page = 1, pageSize = 6) => {
-    const response = await axios.get(`${API_URL}all-users/?page=${page}&page_size=${pageSize}`);
-    return response.data;
-  };
-
 export const searchUser = async (keyword, page = 1, pageSize = 6) => {
   const response = await axios.get(`${API_URL}search/`, {
     params: {

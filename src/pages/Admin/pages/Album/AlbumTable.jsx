@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
-import {
-  fetchAlbumsPaginated,
-  searchAlbums
-} from "../../../../services_admin/album";
+import { searchAlbums } from "../../../../services_admin/album";
 import { fetchArtistById } from "../../../../services_admin/artist";
 
 const AlbumTable = ({ searchTerm }) => {
@@ -19,59 +16,35 @@ const AlbumTable = ({ searchTerm }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-      setPage(1); // Reset về trang đầu khi tìm kiếm
+      setPage(1); // Reset về trang đầu khi có từ khóa mới
     }, 500);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Load dữ liệu khi search hoặc page thay đổi
+  // Gọi API mỗi khi debouncedSearch hoặc page thay đổi
   useEffect(() => {
-    if (debouncedSearch.trim() === "") {
-      fetchData(page);
-    } else {
-      handleSearch(debouncedSearch, page);
-    }
+    const fetchAlbums = async () => {
+      try {
+        const data = await searchAlbums(debouncedSearch, page, pageSize);
+        const albumsWithArtists = await Promise.all(
+          data.results.map(async (album) => {
+            try {
+              const artist = await fetchArtistById(album.artist_id);
+              return { ...album, artist_name: artist.name };
+            } catch {
+              return { ...album, artist_name: "Không rõ" };
+            }
+          })
+        );
+        setAlbums(albumsWithArtists);
+        setTotalPages(Math.ceil(data.count / pageSize));
+      } catch (error) {
+        console.error("Lỗi khi tải album:", error);
+      }
+    };
+
+    fetchAlbums();
   }, [debouncedSearch, page]);
-
-  const fetchData = async (page) => {
-    try {
-      const data = await fetchAlbumsPaginated(page, pageSize);
-      const albumsWithArtists = await Promise.all(
-        data.results.map(async (album) => {
-          try {
-            const artist = await fetchArtistById(album.artist_id);
-            return { ...album, artist_name: artist.name };
-          } catch {
-            return { ...album, artist_name: "Không rõ" };
-          }
-        })
-      );
-      setAlbums(albumsWithArtists);
-      setTotalPages(Math.ceil(data.count / pageSize));
-    } catch (error) {
-      console.error("Lỗi khi tải danh sách album:", error);
-    }
-  };
-
-  const handleSearch = async (keyword, page) => {
-    try {
-      const data = await searchAlbums(keyword, page, pageSize);
-      const albumsWithArtists = await Promise.all(
-        data.results.map(async (album) => {
-          try {
-            const artist = await fetchArtistById(album.artist_id);
-            return { ...album, artist_name: artist.name };
-          } catch {
-            return { ...album, artist_name: "Không rõ" };
-          }
-        })
-      );
-      setAlbums(albumsWithArtists);
-      setTotalPages(Math.ceil(data.count / pageSize));
-    } catch (error) {
-      console.error("Lỗi khi tìm kiếm album:", error);
-    }
-  };
 
   const handleRowClick = (id) => {
     navigate(`/admin/album/${id}/detail`);
@@ -129,13 +102,23 @@ const AlbumTable = ({ searchTerm }) => {
       </table>
 
       {/* Phân trang */}
-      <div className="flex justify-center mt-4 gap-2 text-white">
-        <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
-          ◀
+      <div className="flex justify-between items-center mt-4">
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+          className={`px-4 py-2 rounded-md ${page === 1 ? "bg-gray-500 cursor-not-allowed" : "bg-spotifyGreen hover:bg-green-600"} text-white`}
+        >
+          Previous
         </button>
-        <span>Trang {page} / {totalPages}</span>
-        <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>
-          ▶
+        <span className="text-white">
+          Page {page} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+          className={`px-4 py-2 rounded-md ${page === totalPages ? "bg-gray-500 cursor-not-allowed" : "bg-spotifyGreen hover:bg-green-600"} text-white`}
+        >
+          Next
         </button>
       </div>
     </div>

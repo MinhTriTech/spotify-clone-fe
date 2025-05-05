@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchArtistsPaginated, searchArtists } from "../../../../services_admin/artist";
+import { searchArtists } from "../../../../services_admin/artist";
 import thumbnail from "../../../../../public/images/artist.png";
 
 const ArtistTable = ({ searchTerm }) => {
@@ -31,7 +31,7 @@ const ArtistTable = ({ searchTerm }) => {
 
   const fetchData = async (page) => {
     try {
-      const data = await fetchArtistsPaginated(page, pageSize);
+      const data = await searchArtists(debouncedSearch, page, pageSize); // Thay đổi API gọi
       setArtists(data.results);
       setTotalPages(Math.ceil(data.count / pageSize));
     } catch (error) {
@@ -89,7 +89,7 @@ const ArtistTable = ({ searchTerm }) => {
               <td className="p-4 text-violet-500">{artist.name}</td>
               <td className="p-4">{artist.bio}</td>
               <td className="p-4 text-center">
-                {new Date(artist.created_at).toLocaleDateString()}
+                {new Date(artist.created_at).toLocaleDateString("vi-VN")}
               </td>
             </tr>
           ))}
@@ -105,15 +105,25 @@ const ArtistTable = ({ searchTerm }) => {
       </table>
 
       {/* Phân trang */}
-      <div className="flex justify-center mt-4 gap-2 text-white">
-        <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
-          ◀
-        </button>
-        <span>Trang {page} / {totalPages}</span>
-        <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>
-          ▶
-        </button>
-      </div>
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            className={`px-4 py-2 rounded-md ${page === 1 ? "bg-gray-500 cursor-not-allowed" : "bg-spotifyGreen hover:bg-green-600"} text-white`}
+          >
+            Previous
+          </button>
+          <span className="text-white">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+            className={`px-4 py-2 rounded-md ${page === totalPages ? "bg-gray-500 cursor-not-allowed" : "bg-spotifyGreen hover:bg-green-600"} text-white`}
+          >
+            Next
+          </button>
+        </div>
     </div>
   );
 };
