@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
+
 import { Link } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
 import { InputCombo } from "../../components";

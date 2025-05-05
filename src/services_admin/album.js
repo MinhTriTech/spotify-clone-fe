@@ -1,0 +1,51 @@
+import axios from 'axios';
+
+const API_URL = 'http://127.0.0.1:8000/api/manager/albums/';
+
+// Hàm lấy tất cả albums
+export const fetchAlbums = async () => {
+    try {
+        const response = await axios.get(API_URL);
+        return response.data;
+    } catch (error) {
+        console.error('Fetch albums error:', error);
+        throw error;
+    }
+};
+
+// Hàm thêm album
+export const addAlbum = async (albumData) => {
+    try {
+        const response = await axios.post("http://127.0.0.1:8000/api/manager/albums/add/", albumData, {
+            headers: {
+                "Content-Type": "multipart/form-data", // Vì có thể có ảnh
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Add album error:", error);
+        throw error;
+    }
+};
+
+// Hàm cập nhật album
+export const updateAlbum = async (id, albumData) => {
+    try {
+        const response = await axios.put(`${API_URL}${id}/update/`, albumData);
+        return response.data;
+    } catch (error) {
+        console.error('Update album error:', error);
+        throw error;
+    }
+};
+
+// Hàm xóa album
+export const deleteAlbum = async (id) => {
+    try {
+        const response = await axios.delete(`${API_URL}${id}/delete/`);
+        return response.data;
+    } catch (error) {
+        console.error('Delete album error:', error);
+        throw error;
+    }
+};

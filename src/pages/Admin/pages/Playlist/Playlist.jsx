@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { PlaylistTable } from "../Playlist";
 import { ButtonAdmin } from "../../components";
+
 const Playlist = () => {
     return (
         <div>

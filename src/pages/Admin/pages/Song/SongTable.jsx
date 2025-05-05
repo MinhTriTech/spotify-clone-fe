@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
+
 const SongTable = () => {
     const navigate = useNavigate();
 
@@ -43,4 +44,5 @@ const SongTable = () => {
         </div>
     );
 };
+
 export default SongTable;

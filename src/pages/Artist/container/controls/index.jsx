@@ -7,6 +7,7 @@ import { useAppSelector } from '../../../../store/store';
 
 const ArtistControls = () => {
   const artist = useAppSelector((state) => state.artist.artist);
+  const artistFolowing = useAppSelector((state) => state.artist.following);
 
   return (
     <div className="playlist-controls">

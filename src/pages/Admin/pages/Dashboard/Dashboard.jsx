@@ -1,6 +1,8 @@
 import { faMusic, faUser, faFileAudio, faImages, faIdBadge } from "@fortawesome/free-solid-svg-icons";
 import { DashboardItem } from "../../components";
+
 import { useNavigate } from "react-router-dom";
+
 const Dashboard = () => {
     const navigate = useNavigate();
     const handleRowClick = () => {

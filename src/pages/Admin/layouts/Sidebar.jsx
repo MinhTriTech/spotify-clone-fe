@@ -2,6 +2,7 @@ import logo from "../../../../public/images/logoSpotify.svg";
 import { faHouse, faMusic, faUser, faUserShield, faFileAudio, faImages, faIdBadge } from "@fortawesome/free-solid-svg-icons";
 import { SidebarItem } from "../components";
 import { NavLink } from "react-router-dom";
+
 const Sidebar = () => {
     return (
         <div className="bg-black w-[20%] h-screen px-8 flex flex-col justify-between items-center">
