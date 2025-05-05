@@ -1,18 +1,37 @@
-// Import ColorThief
 import ColorThief from '../../node_modules/colorthief/dist/color-thief.mjs';
 
-/* eslint-disable eqeqeq */
+const imageCache = new Map();
+
 function loadImage(src) {
   return new Promise((resolve, reject) => {
+    if (imageCache.has(src)) {
+      return resolve(imageCache.get(src));
+    }
+
     const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.addEventListener('load', () => {
+    img.crossOrigin = 'anonymous'; 
+
+    img.onload = () => {
+      imageCache.set(src, img); 
       resolve(img);
-    });
-    img.addEventListener('error', reject);
-    img.src = `${src}?cache_buster=${Date.now()}`;
+    };
+
+    img.onerror = (err) => {
+      console.warn(`Retrying image with cache buster: ${src}`);
+      const fallbackImg = new Image();
+      fallbackImg.crossOrigin = 'anonymous';
+      fallbackImg.onload = () => {
+        imageCache.set(src, fallbackImg);
+        resolve(fallbackImg);
+      };
+      fallbackImg.onerror = reject;
+      fallbackImg.src = `${src}?_cb=${Date.now()}`;
+    };
+
+    img.src = src;
   });
 }
+
 
 function getAverageRGB(imgEl) {
   var blockSize = 5, // only visit every 5 pixels

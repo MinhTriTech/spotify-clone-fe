@@ -1,24 +1,26 @@
 import { PlayCircle } from './PlayCircle';
 import TrackActionsWrapper from '../Actions/TrackActions';
-import AlbumActionsWrapper from '../Actions/AlbumActions';
-import ArtistActionsWrapper from '../Actions/ArtistActions';
-import PlayistActionsWrapper from '../Actions/PlaylistActions';
-
-// ❌ Đã xoá useTranslation
 import { useNavigate } from 'react-router-dom';
+import { useAudio } from '../../contexts/AudioContext';
+import ArtistActionsWrapper from '../Actions/ArtistActions';
 
-// Redux
-import { useAppDispatch, useAppSelector } from '../../store/store';
-
-// Constants
-import { PLAYLIST_DEFAULT_IMAGE } from '../../constants/spotify';
-import { uiActions } from '../../store/slices/ui';
-import { useCallback } from 'react';
-
-const Card = ({ uri, title, image, rounded, description, onClick, context }) => {
-  const paused = useAppSelector((state) => state.spotify.state?.paused);
-  const contextUri = useAppSelector((state) => state.spotify.state?.context.uri);
-  const isCurrent = contextUri === uri;
+const Card = ({ title, image, rounded, description, onClick, context }) => {
+  const { isPlaying, currentTrack, playlist, currentIndex, currentPlaylistId } = useAudio();
+  
+  let isCurrent = false;
+  
+  if (context && context.type === 'playlist' && context.id) {
+    const isPlayingThisPlaylist = playlist.length > 0 && 
+                                 currentIndex >= 0 && 
+                                 currentPlaylistId === context.id;
+    
+    isCurrent = isPlayingThisPlaylist;
+  } 
+  else if (context && context.song_id) {
+    isCurrent = currentTrack?.id === context.song_id;
+  }
+  
+  const paused = !isPlaying;
 
   return (
     <div
@@ -39,7 +41,11 @@ const Card = ({ uri, title, image, rounded, description, onClick, context }) => 
         <div
           className={`circle-play-div transition translate-y-1/4 ${isCurrent && !paused ? 'active' : ''}`}
         >
-          <PlayCircle image={image} isCurrent={isCurrent} context={context} />
+          <PlayCircle 
+            image={image} 
+            isCurrent={isCurrent} 
+            context={context} 
+          />
         </div>
       </div>
       <div className='playlist-card-info'>
@@ -50,10 +56,11 @@ const Card = ({ uri, title, image, rounded, description, onClick, context }) => 
   );
 };
 
-export const ArtistCard = ({ item, onClick, getDescription }) => {
+export const ArtistCard = ({ item, onClick }) => {
+  
   const navigate = useNavigate();
+
   const title = item.name;
-  const description = getDescription ? getDescription(item) : 'Nghệ sĩ';
 
   return (
     <ArtistActionsWrapper artist={item} trigger={['contextMenu']}>
@@ -61,85 +68,36 @@ export const ArtistCard = ({ item, onClick, getDescription }) => {
         <Card
           rounded
           title={title}
-          uri={item.uri}
-          description={description}
-          image={item.images[0]?.url}
-          context={{ context_uri: item.uri }}
-          onClick={() => navigate(`/artist/${item.id}`)}
+          image={item.image}
+          context={{ 
+            id: item.artist_id,
+            image: item.image,
+            type: "artists",
+            title: title
+          }}
+          onClick={() => navigate(`/artist/${item.artist_id}`)}
         />
       </div>
     </ArtistActionsWrapper>
   );
 };
 
-export const AlbumCard = ({ item, onClick, getDescription }) => {
+export const TrackCard = ({ item, onClick }) => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
-
-  const onNavigate = useCallback(() => {
-    if (!user) {
-      return dispatch(uiActions.openLoginModal(item.images[0].url));
-    }
-    navigate(`/album/${item.id}`);
-  }, [user, navigate, item.id, item.images, dispatch]);
-
-  const title = item.name;
-  const description = item.artists?.slice(0, 3).map((artist) => artist.name).join(', ') || 'Không rõ nghệ sĩ';
-
-  return (
-    <AlbumActionsWrapper album={item} trigger={['contextMenu']}>
-      <div onClick={onClick}>
-        <Card
-          title={title}
-          uri={item.uri}
-          onClick={onNavigate}
-          description={description}
-          image={item.images[0]?.url}
-          context={{ context_uri: item.uri }}
-        />
-      </div>
-    </AlbumActionsWrapper>
-  );
-};
-
-export const PlaylistCard = ({ item, onClick, getDescription }) => {
-  const navigate = useNavigate();
-  const title = item.name;
-  const description = getDescription
-    ? getDescription(item)
-    : item.tracks?.total + (item.tracks?.total === 1 ? ' bài hát' : ' bài hát');
-
-  return (
-    <PlayistActionsWrapper playlist={item} trigger={['contextMenu']}>
-      <div onClick={onClick}>
-        <Card
-          title={title}
-          uri={item.uri}
-          description={description}
-          context={{ context_uri: item.uri }}
-          onClick={() => navigate(`/playlist/${item.id}`)}
-          image={item.images && item.images.length ? item.images[0].url : PLAYLIST_DEFAULT_IMAGE}
-        />
-      </div>
-    </PlayistActionsWrapper>
-  );
-};
-
-export const TrackCard = ({ item, getDescription, onClick }) => {
-  const navigate = useNavigate();
-  const description = getDescription ? getDescription(item) : item.album.name;
 
   return (
     <TrackActionsWrapper track={item} trigger={['contextMenu']}>
       <div onClick={onClick}>
         <Card
-          uri={item.uri}
-          title={item.name}
-          description={description}
-          context={{ uris: [item.uri] }}
-          image={item.album.images[0]?.url}
-          onClick={() => navigate(`/album/${item.album.id}`)}
+          title={item.title}
+          context={{ 
+            id: item.playlist_id,
+            image: item.image,
+            type: "playlist",
+            title: item.title
+          }}
+          image={item.image}
+          onClick={() => navigate(`/playlist/${item.playlist_id}`)}
         />
       </div>
     </TrackActionsWrapper>

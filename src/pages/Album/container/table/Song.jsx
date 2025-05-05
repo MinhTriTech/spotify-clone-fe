@@ -5,9 +5,7 @@ import SongView, { SongViewComponents } from '../../../../components/SongsTable/
 import { albumActions } from '../../../../store/slices/album';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 
-const Song = (props) => {
-  const { song, index } = props;
-
+export const Song = ({ song, index }) => {
   const dispatch = useAppDispatch();
   const view = useAppSelector((state) => state.album.view);
   const album = useAppSelector((state) => state.album.album);

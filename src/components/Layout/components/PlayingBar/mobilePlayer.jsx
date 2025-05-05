@@ -4,7 +4,7 @@ import { Col, Row } from 'antd';
 import { ListIcon, Pause, Play } from '../../../Icons';
 import tinycolor from 'tinycolor2';
 import SongDetails from './SongDetails';
-import AddSongToLibraryButton from '../../../Actions/AddSongToLibrary';
+import {AddSongToLibraryButton} from '../../../Actions/AddSongToLibrary';
 
 const PlayButton = ({ isPlaying, togglePlay }) => {
   return (

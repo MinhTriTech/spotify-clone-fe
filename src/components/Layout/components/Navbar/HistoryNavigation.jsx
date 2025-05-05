@@ -9,9 +9,8 @@ const HistoryNavigation = memo(() => {
   return (
     <Space>
       <NavigationButton
-        text="Mã nguồn"
         onClick={() => {
-          window.open('https://github.com/francoborrelli/portfolio', '_blank');
+          window.location.href = '/'
         }}
         icon={<FaSpotify size={25} fill="white" />}
       />
