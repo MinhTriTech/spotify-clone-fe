@@ -1,8 +1,7 @@
 import { Tooltip } from '../../../../Tooltip';
 import { SpeakerIcon } from '../../../../Icons';
-import AlbumActionsWrapper from '../../../../Actions/AlbumActions';
 import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
-import PlayistActionsWrapper from '../../../../Actions/PlaylistActions';
+import {PlayListActionsWrapper} from '../../../../Actions/PlaylistActions';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -12,8 +11,7 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
 
 import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../../constants/spotify';
-import { memo, useCallback } from 'react';
-import { uiActions } from '../../../../../store/slices/ui';
+import { memo } from 'react';
 
 import { useAudio } from '../../../../../contexts/AudioContext'
 
@@ -89,7 +87,6 @@ const CardList = (props) => {
     pause,
     playlist,
     currentIndex,
-    currentTrack,
     currentPlaylistId,
     setPlaylistAndPlay,
   } = useAudio();
@@ -115,8 +112,7 @@ const CardList = (props) => {
           : getSongsOfLikedSongs()
       ).unwrap();
 
-      console.log(tracks);
-      
+       
 
       if (tracks && tracks.length > 0) {
         const formattedTracks = tracks.map(track => ({
@@ -252,7 +248,7 @@ const PlaylistCardShort = memo(({ playlist }) => {
   };
 
   return (
-    <PlayistActionsWrapper
+    <PlayListActionsWrapper
       playlist={playlist}
       trigger={['contextMenu']}
       onRefresh={() => {
@@ -272,7 +268,7 @@ const PlaylistCardShort = memo(({ playlist }) => {
           }}
         />
       </div>
-    </PlayistActionsWrapper>
+    </PlayListActionsWrapper>
   );
 });
 

@@ -35,6 +35,14 @@ const addPlaylistItems = async (playlist_id, song_id) => {
   });  
 };
 
+const removePlaylistItems = async (playlist_id, song_id) => {
+  return await axios.delete('/api/music/playlists/remove-song/', {
+    data: {
+      playlist_id,
+      song_id,
+    },
+  });
+};
 
 export const playlistService = {
   fetchTopTracks,
@@ -45,4 +53,5 @@ export const playlistService = {
   createPlaylist,
   getPlaylist,
   addPlaylistItems,
+  removePlaylistItems,
 };

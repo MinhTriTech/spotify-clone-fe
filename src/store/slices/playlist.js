@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Services
 import { userService } from '../../services/users';
 import { playlistService } from '../../services/playlists';
 
@@ -22,6 +21,13 @@ export const fetchPlaylist = createAsyncThunk(
   }
 );
 
+export const refreshPlaylist = createAsyncThunk(
+  'playlist/refreshPlaylist',
+  async (id) => {
+    const response = await playlistService.getPlaylist(id);
+    return response.data;
+  }
+);
 
 export const refreshTracks = createAsyncThunk(
   'playlist/refreshTracks',
@@ -72,15 +78,6 @@ export const getNextTracks = createAsyncThunk(
   }
 );
 
-export const refreshPlaylist = createAsyncThunk(
-  'playlist/refreshPlaylist',
-  async (id) => {
-    const { data } = await playlistService.getPlaylist(id);
-    return data;
-  }
-);
-
-
 const playlistSlice = createSlice({
   name: 'playlist',
   initialState,
@@ -96,7 +93,7 @@ const playlistSlice = createSlice({
       }
     },
     removeTrack(state, action) {
-      state.tracks = state.tracks.filter((track) => track.track.id !== action.payload.id);
+      state.tracks = state.tracks.filter((track) => track.song_id !== action.payload.id);
     },
     setTrackLikeState(state, action) {
       state.tracks = state.tracks.map((track) =>
@@ -124,7 +121,7 @@ const playlistSlice = createSlice({
       state.tracks = action.payload;
     });
     builder.addCase(refreshPlaylist.fulfilled, (state, action) => {
-      state.playlist = action.payload;
+      state.playlist = action.payload.playlist;
     });
     builder.addCase(getNextTracks.fulfilled, (state, action) => {
       state.tracks = [...state.tracks, ...action.payload];

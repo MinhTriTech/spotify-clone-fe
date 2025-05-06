@@ -1,35 +1,62 @@
-import React from 'react';
-import { Dropdown, Menu } from 'antd';
+import { memo, useCallback, useMemo } from 'react';
+import { Dropdown } from 'antd';
+import { DeleteIcon, EditIcon } from '../Icons';
 
-const PlaylistActionsWrapper = ({ children, playlist, trigger = ['contextMenu'] }) => {
-  const t = (x) => x;
+import { uiActions } from '../../store/slices/ui';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import { editPlaylistModalActions } from '../../store/slices/editPlaylistModal';
 
-  const items = [
-    {
-      key: '1',
-      label: t('Play'),
-      onClick: () => console.log('Play playlist:', playlist.name),
+export const PlayListActionsWrapper = memo((props) => {
+  const { children, playlist } = props;
+
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector((state) => state.auth.user.user_info.id);
+  
+  const canEdit = useMemo(() => userId === playlist.created_by_id, [userId, playlist.created_by_id]);
+
+  const handleUserValidation = useCallback(
+    (button) => {
+      if (!userId) {
+        dispatch(button ? uiActions.openLoginButton() : uiActions.openLoginTooltip());
+        return false;
+      }
+      return true;
     },
-    {
-      key: '2',
-      label: t('Add to Library'),
-      onClick: () => console.log('Add to library:', playlist.id),
-    },
-    {
-      key: '3',
-      label: t('Share'),
-      onClick: () => console.log('Share playlist'),
-    },
-  ];
+    [dispatch, userId]
+  );
+
+  const items = useMemo(() => {
+    const items = [];
+
+    if (canEdit) {
+      items.push(
+        {
+          label: 'Chỉnh sửa thông tin',
+          key: 1,
+          icon: <EditIcon />,
+          onClick: () => {
+            if (!handleUserValidation()) return;
+            dispatch(editPlaylistModalActions.setPlaylist({ playlist }));
+          },
+        },
+        {
+          label: 'Xoá danh sách phát',
+          key: '2',
+          disabled: true,
+          icon: <DeleteIcon />,
+        },
+        {
+          type: 'divider',
+        }
+      );
+
+    }
+    return items;
+  }, [canEdit, dispatch, handleUserValidation,, playlist, props]);
 
   return (
-    <Dropdown
-      menu={{ items }}
-      trigger={trigger}
-    >
+    <Dropdown menu={{ items }} trigger={props.trigger}>
       {children}
     </Dropdown>
   );
-};
-
-export default PlaylistActionsWrapper;
+});

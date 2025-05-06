@@ -18,18 +18,18 @@ const PlayingNow = memo(() => {
   const queue = useAppSelector((state) => !state.ui.queueCollapsed);
   const details = useAppSelector((state) => !state.ui.detailsCollapsed);
 
-  useEffect(() => {
-    const interval = setTimeout(() => {
-      dispatch(fetchQueue());
-      dispatch(fetchDevices());
-    }, 1000);
+  // useEffect(() => {
+  //   const interval = setTimeout(() => {
+  //     dispatch(fetchQueue());
+  //     dispatch(fetchDevices());
+  //   }, 1000);
 
-    return () => clearTimeout(interval);
-  }, [currentSong?.id, dispatch]);
+  //   return () => clearTimeout(interval);
+  // }, [currentSong?.id, dispatch]);
 
-  if (devices) return <Devices />;
-  if (queue) return <Queue />;
-  if (details) return <Details />;
+  // if (devices) return <Devices />;
+  // if (queue) return <Queue />;
+  // if (details) return <Details />;
 
   return null;
 });

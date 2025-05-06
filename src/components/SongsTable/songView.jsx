@@ -199,7 +199,7 @@ const Actions = ({ song }) => {
   return (
     <div className='text-right actions tablet-hidden' style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
       <TrackActionsWrapper track={song} trigger={['click']}>
-        <Tooltip title={`Tuỳ chọn khác cho ${song.name}`}>
+        <Tooltip title={`Tùy chọn khác cho ${song.title}`}>
           <div>
             <MenuIcon />
           </div>
@@ -247,7 +247,7 @@ const Index = ({ index, isCurrent, isPlaying, onClick }) => {
 
 export const SongView = (props) => {
   const { size = 'normal' } = props;
-  const { activable, view, song, index, artist, fields } = props;
+  const { activable, view, song, index, artist, fields, canEdit } = props;
   const { isPlaying, currentTrack, play, pause, setSrc, updateCurrentPlaylistId, updateCurrentArtistId, updateCurrentLikedSongId } = useAudio(); 
 
   const isCurrent = useMemo(() => {
@@ -259,6 +259,7 @@ export const SongView = (props) => {
   const user = useAppSelector((state) => !!state.auth.user);
   const selectedView = isMobile ? 'LIST' : view;
   const isList = selectedView === 'LIST';
+
 
   const isThisTrackPlaying = useCallback(() => {
     if (!isPlaying || !song) return false;
@@ -279,7 +280,6 @@ export const SongView = (props) => {
     }
 
     if (!isCurrent) {
-      
       setSrc(song.file_path, {
         id: song.song_id,
         title: song.title,
@@ -292,10 +292,11 @@ export const SongView = (props) => {
       isThisTrackPlaying() ? pause() : play();
     }
 
-  }, [user, dispatch, song.image, currentTrack, pause, play, updateCurrentPlaylistId, updateCurrentArtistId, setSrc, isThisTrackPlaying, updateCurrentLikedSongId]);
+  }, [user, dispatch, song.image, currentTrack, pause, play, isThisTrackPlaying]);
 
   return (
     <TrackActionsWrapper
+      canEdit={canEdit}
       track={song}
       key={song.song_id}
       artist={artist}

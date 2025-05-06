@@ -1,17 +1,22 @@
 import { Col, Row, Space } from 'antd';
 
 import { PlayCircleButton } from './playCircle';
-import { AddPlaylistToLibraryButton } from './AddPlaylistToLibrary';
+
+import { Tooltip } from '../../../components/Tooltip';
 
 import { useAppDispatch, useAppSelector } from '../../../store/store';
+
+import { MenuDots } from '../../../components/Icons';
+
+import {PlayListActionsWrapper} from '../../../components/Actions/PlaylistActions';
 
 const PlaylistControls = () => {
   const dispatch = useAppDispatch();
 
-  const user = useAppSelector((state) => state.auth.user);
   const playlist = useAppSelector((state) => state.playlist.playlist);
-
-  const isMine = playlist?.owner?.id === user?.id;
+  const canEdit = useAppSelector((state) => state.playlist.canEdit);
+  
+  const isMine = canEdit;
 
   return (
     <div className='playlist-controls'>
@@ -20,10 +25,20 @@ const PlaylistControls = () => {
           <Space align='center'>
             <PlayCircleButton />
 
-            {!isMine ? (
-              <div className='scale' style={{ marginRight: 10 }}>
-                <AddPlaylistToLibraryButton id={playlist?.id} />
-              </div>
+            {isMine ? (
+              <PlayListActionsWrapper
+                playlist={playlist}
+                trigger={['click']}
+                onRefresh={() => {
+                  dispatch(refreshPlaylist(playlist.id));
+                }}
+              >
+                <Tooltip title={`Tùy chọn khác cho ${playlist?.title}`}>
+                  <div className="scale">
+                    <MenuDots />
+                  </div>
+                </Tooltip>
+              </PlayListActionsWrapper>
             ) : null}
           </Space>
         </Col>

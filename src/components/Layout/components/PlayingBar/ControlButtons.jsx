@@ -1,6 +1,6 @@
 import { Col, Row } from 'antd';
 import { Pause, Play, SkipBack, SkipNext, DownloadIcon } from '../../../Icons';
-import { memo, useState, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { useAudio } from '../../../../contexts/AudioContext';
 
 const SkipBackButton = memo(() => {
@@ -79,8 +79,6 @@ const DownloadButton = memo(() => {
   const disabled = !currentSrc;
 
   const handleDownload = useCallback(async () => {
-    console.log(currentSrc);
-    
     if (disabled) return;
 
     try {
@@ -88,7 +86,6 @@ const DownloadButton = memo(() => {
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
 
-      // 🧠 Tách tên file gốc từ URL (nếu có)
       const originalFilename = currentSrc.split('/').pop() || 'track';
       const hasExtension = originalFilename.includes('.');
       const fallbackExt = blob.type.split('/')[1] || 'mp3';

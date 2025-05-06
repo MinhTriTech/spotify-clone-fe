@@ -39,7 +39,6 @@ const AddToLibrary = () => {
 const DownloadVideoButton = memo(({ videoUrl }) => {
 
   const handleDownload = useCallback(async () => {
-    console.log(videoUrl);
     if (!videoUrl) return;
 
     try {
