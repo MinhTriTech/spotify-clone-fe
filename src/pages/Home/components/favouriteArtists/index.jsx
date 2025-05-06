@@ -5,7 +5,7 @@ import { memo, useMemo } from 'react';
 import { GridItemList } from '../../../../components/Lists/list';
 
 export const FavouriteArtists = memo(() => {
-  const artists = useAppSelector((state) => state.yourLibrary.myArtists);
+  const artists = useAppSelector((state) => state.home.artists);
 
   const items = useMemo(() => {
     return artists.slice(0, 12);

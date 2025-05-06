@@ -11,11 +11,13 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
 
 import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../../constants/spotify';
+
 import { memo } from 'react';
 
 import { useAudio } from '../../../../../contexts/AudioContext'
 
-import { fetchSongsOfFeaturedPlaylists, getSongsOfLikedSongs } from '../../../../../store/slices/home';
+import { getSongsOfLikedSongs } from '../../../../../store/slices/playlist';
+import { fetchSongsOfFeaturedPlaylists } from '../../../../../store/slices/playlist';
 
 const Play = (
   <svg

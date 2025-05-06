@@ -4,9 +4,14 @@ export const fetchTopTracks = async () => {
   return await axios.get('api/music/songs/');
 };
 
-const getFeaturedPlaylists = async () => {
+const fecthPlaylists = async () => {
   return await axios.get('api/music/playlistsSuggested');
 };
+
+export const fecthArtists = async () => {
+  return await axios.get('api/music/artists/suggested');
+};
+
 
 const getSongsOfFeaturedPlaylists = async (id) => {
   return await axios.get(`api/music/playlists/${id}/songs`);
@@ -46,7 +51,9 @@ const removePlaylistItems = async (playlist_id, song_id) => {
 
 export const playlistService = {
   fetchTopTracks,
-  getFeaturedPlaylists,
+  fecthPlaylists,
+  fecthArtists,
+  
   getSongsOfFeaturedPlaylists,
   getSongsOfLikedSongs,
 

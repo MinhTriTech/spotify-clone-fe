@@ -9,6 +9,8 @@ const initialState = {
   loading: true,
   canEdit: false,
   following: false,
+  songsOfFeaturePlaylists: [],
+  songsOfLikedSongs: [],
   order: 'ALL',
   view: 'LIST',
 };
@@ -28,6 +30,19 @@ export const refreshPlaylist = createAsyncThunk(
     return response.data;
   }
 );
+
+export const fetchSongsOfFeaturedPlaylists = createAsyncThunk(
+  'home/fetchSongsOfFeaturedPlaylists',
+  async (id) => {
+    const response = await playlistService.getSongsOfFeaturedPlaylists(id);
+    return response.data;
+  }
+);
+
+export const getSongsOfLikedSongs = createAsyncThunk('home/getSongsOfLikedSongs', async () => {
+  const response = await playlistService.getSongsOfLikedSongs();
+  return response.data;
+});
 
 export const refreshTracks = createAsyncThunk(
   'playlist/refreshTracks',
@@ -126,6 +141,12 @@ const playlistSlice = createSlice({
     builder.addCase(getNextTracks.fulfilled, (state, action) => {
       state.tracks = [...state.tracks, ...action.payload];
     });
+    builder.addCase(fetchSongsOfFeaturedPlaylists.fulfilled, (state, action) => {
+      state.songsOfFeaturePlaylists = action.payload;
+    });
+    builder.addCase(getSongsOfLikedSongs.fulfilled, (state, action) => {
+      state.songsOfLikedSongs = action.payload;
+    });
   },
 });
 
@@ -134,6 +155,8 @@ export const playlistActions = {
   refreshTracks,
   getNextTracks,
   refreshPlaylist,
+  fetchSongsOfFeaturedPlaylists,
+  getSongsOfLikedSongs,
   ...playlistSlice.actions,
 };
 

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
+
 const PlaylistTable = () => {
     const navigate = useNavigate();
 
@@ -43,4 +44,5 @@ const PlaylistTable = () => {
         </div>
     );
 };
+
 export default PlaylistTable;

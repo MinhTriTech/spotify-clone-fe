@@ -1,17 +1,8 @@
-// Components
 import { Col, Row } from 'antd';
 import { TopTracks } from '../components/topTracks';
-import { MadeForYou } from '../components/madeForYou';
-import { NewReleases } from '../components/newReleases';
 import { FeaturePlaylists } from '../components/featurePlaylists';
-import { RecentlyPlayed } from '../components/recentlyPlayed';
-import { TopMixes } from '../components/topMixes';
-import { Rankings } from '../components/rankings';
-import { Trending } from '../components/trending';
 import { FavouriteArtists } from '../components/favouriteArtists';
-import { YourPlaylists } from '../components/yourPlaylists';
 
-// Utils
 import { memo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../store/store';
 import useIsMobile from '../../../utils/isMobile';
@@ -22,8 +13,6 @@ const HomePageContainer = memo((props) => {
   const isMobile = useIsMobile();
   const sectionContainerRef = useRef(null);
   const user = useAppSelector((state) => !!state.auth.user);
-  const section = useAppSelector((state) => state.home.section);
-  
 
   return (
     <div ref={sectionContainerRef}>
@@ -46,11 +35,9 @@ const HomePageContainer = memo((props) => {
             <FeaturePlaylists />
           </Col>
 
-          {user && (
-            <Col span={24}>
-              <FavouriteArtists />
-            </Col>
-          )}
+          <Col span={24}>
+            <FavouriteArtists />
+          </Col>
         </Row>
       </div>
     </div>

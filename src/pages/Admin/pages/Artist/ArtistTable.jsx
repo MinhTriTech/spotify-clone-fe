@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import thumbnail from "../../../../../public/images/artist.png";
+
 const ArtistTable = () => {
     const navigate = useNavigate();
 

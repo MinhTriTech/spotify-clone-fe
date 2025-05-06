@@ -1,5 +1,6 @@
 import { faRightFromBracket, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { InputCombo, ButtonAdmin } from "../../components";
+
 const InfoUser = () => {
     return (
         <div>
