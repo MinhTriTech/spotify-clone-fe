@@ -5,6 +5,7 @@ import { DeleteIcon, EditIcon } from '../Icons';
 import { uiActions } from '../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { editPlaylistModalActions } from '../../store/slices/editPlaylistModal';
+import { deletePlaylistModalActions } from '../../store/slices/deletePlaylistModal';
 
 export const PlayListActionsWrapper = memo((props) => {
   const { children, playlist } = props;
@@ -13,7 +14,7 @@ export const PlayListActionsWrapper = memo((props) => {
   const userId = useAppSelector((state) => state.auth.user.user_info.id);
   
   const canEdit = useMemo(() => userId === playlist.created_by_id, [userId, playlist.created_by_id]);
-
+  
   const handleUserValidation = useCallback(
     (button) => {
       if (!userId) {
@@ -40,10 +41,13 @@ export const PlayListActionsWrapper = memo((props) => {
           },
         },
         {
-          label: 'Xoá danh sách phát',
+          label: 'Xóa danh sách phát',
           key: '2',
-          disabled: true,
           icon: <DeleteIcon />,
+          onClick: () => {
+            if (!handleUserValidation()) return;
+            dispatch(deletePlaylistModalActions.setPlaylist({ playlist }));
+          },
         },
         {
           type: 'divider',

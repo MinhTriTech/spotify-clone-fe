@@ -13,7 +13,6 @@ import storage from 'redux-persist/lib/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTransform } from 'redux-persist';
 
-// Reducers
 import uiReducer from './slices/ui';
 import authReducer from './slices/auth';
 import homeReducer from './slices/home';
@@ -33,6 +32,7 @@ import yourLibraryReducer from './slices/yourLibrary';
 import searchHistoryReducer from './slices/searchHistory';
 import artistDiscographyReducer from './slices/discography';
 import editPlaylistModalReducer from './slices/editPlaylistModal';
+import deletePlaylistModalReducer from './slices/deletePlaylistModal';
 import expireReducer from 'redux-persist-expire';
 
 // Combine reducers
@@ -56,12 +56,12 @@ const appReducer = combineReducers({
   searchHistory: searchHistoryReducer,
   artistDiscography: artistDiscographyReducer,
   editPlaylistModal: editPlaylistModalReducer,
+  deletePlaylistModal: deletePlaylistModalReducer,
 });
 
-// Root reducer with action to reset state on logout
 const rootReducer = (state, action) => {
   if (action.type === 'auth/removeUser') {
-    return appReducer(undefined, action); // Reset state on logout
+    return appReducer(undefined, action); 
   }
   return appReducer(state, action);
 };
@@ -77,10 +77,8 @@ const uiTransform = createTransform(
   { whitelist: ['ui'] }
 );
 
-// Whitelist for redux-persist (which states to persist)
 const whitelist = ['language', 'ui', 'searchHistory'];
 
-// Create persisted reducer with transformations (e.g., expiry for searchHistory)
 const persistedReducer = persistReducer(
   {
     storage,
@@ -93,21 +91,18 @@ const persistedReducer = persistReducer(
   rootReducer
 );
 
-// Configure Redux store with persisted reducer
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredPaths: ['spotify.player'], // Ignore specific paths from serializable check
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions
+        ignoredPaths: ['spotify.player'], 
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
 });
 
-// Exports for dispatch and selector hooks
 export const useAppDispatch = () => useDispatch();
 export const useAppSelector = useSelector;
 
-// Persistor for redux-persist to manage state persistence
 export const persistor = persistStore(store);

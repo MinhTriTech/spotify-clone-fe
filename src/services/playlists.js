@@ -29,6 +29,10 @@ const createPlaylist = async (title, image) => {
   return res.data.playlist;
 };
 
+const deletePlaylist = async (id) => {
+  return await axios.delete(`api/music/playlists/${id}/delete/`);
+};
+
 const getPlaylist = async (id) => {
   return await axios.get(`api/music/playlists/${id}/`);
 };
@@ -58,6 +62,7 @@ export const playlistService = {
   getSongsOfLikedSongs,
 
   createPlaylist,
+  deletePlaylist,
   getPlaylist,
   addPlaylistItems,
   removePlaylistItems,
