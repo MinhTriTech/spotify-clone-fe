@@ -103,3 +103,29 @@ export const TrackCard = ({ item, onClick }) => {
     </TrackActionsWrapper>
   );
 };
+
+export const AlbumCard = ({ item, onClick }) => {
+  const navigate = useNavigate();
+
+  const title = item.title;
+
+  const description = "Album";
+
+  return (
+    <div onClick={onClick}>
+      <Card
+        title={title}
+        onClick={() => navigate(`/album/${item.album_id}`)}
+        description={description}
+        image={item.image}
+        context={{ 
+          id: item.album_id,
+          image: item.image,
+          type: "album",
+          title: item.title
+        }}
+      />
+    </div>
+  );
+};
+

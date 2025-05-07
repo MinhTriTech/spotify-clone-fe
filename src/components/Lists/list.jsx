@@ -1,21 +1,23 @@
 import { Flex } from 'antd';
 import { Link } from 'react-router-dom';
-import { TrackCard, ArtistCard } from './GridCards';
+import { TrackCard, ArtistCard, AlbumCard } from './GridCards';
 import { useAppSelector } from '../../store/store';
-
 
 export function GridItemComponent(props) {
   
   const { item, onClick } = props;
-
-    if (item.playlist_id) {
+  
+    if (item.playlist_id && !item.album_id) {
       return <TrackCard item={item} onClick={onClick} />;
     }
 
-    if (item.artist_id) {
+    if (item.artist_id && !item.album_id) {
       return <ArtistCard item={item} onClick={onClick} />;
     }
 
+    if (item.album_id && item.artist_id) {
+      return <AlbumCard item={item} onClick={onClick} />;
+    }
   return null;
 }
 
@@ -34,12 +36,6 @@ export function GridItemList(props) {
               </Link>
           ) : null}
         </div>
-
-        <Link>
-          <button className='showMore'>
-            <span>Xem thêm</span>
-          </button>
-        </Link>
       </Flex>
 
       {chips}
@@ -56,14 +52,25 @@ export function GridItemList(props) {
         {(items || [])
           .filter((i) => i)
           .map((item) => {
-            return (
-              <div key={String(item.playlist_id)} style={{ position: 'relative' }}>
-                <GridItemComponent
-                  item={item}
-                  onClick={onItemClick ? () => onItemClick(item) : undefined}
-                />
-              </div>
-            );
+            if (item.album_id) {
+              return (
+                <div key={String(item.album_id)} style={{ position: 'relative' }}>
+                  <GridItemComponent
+                    item={item}
+                    onClick={onItemClick ? () => onItemClick(item) : undefined}
+                  />
+                </div>
+              );
+            } else {
+              return (
+                <div key={String(item.playlist_id)} style={{ position: 'relative' }}>
+                  <GridItemComponent
+                    item={item}
+                    onClick={onItemClick ? () => onItemClick(item) : undefined}
+                  />
+                </div>
+              );
+            }
           })} 
       </div>
     </div>

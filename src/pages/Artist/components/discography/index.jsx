@@ -1,15 +1,9 @@
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Space } from 'antd';
 import Chip from '../../../../components/Chip';
 import { GridItemList } from '../../../../components/Lists/list';
 
-// Utils
-import { orderBy } from 'lodash';
-import { getAlbumDescription } from '../../../../utils/getDescription';
-
-// Redux
 import { useAppSelector } from '../../../../store/store';
 
 const ChipsSection = memo((props) => {
@@ -52,29 +46,18 @@ const ChipsSection = memo((props) => {
 });
 
 export const Discography = memo(() => {
-  const artist = useAppSelector((state) => state.artist.artist);
   const albums = useAppSelector((state) => state.artist.albums);
 
-  const [activeKey, setActiveKey] = useState('Phát hành phổ biến');
-
-  const items = useMemo(() => {
-    switch (activeKey) {
-      case 'Album':
-        return albums;
-      default:
-        return orderBy([...albums, ...singles, ...compilations], 'release_date', 'desc');
-    }
-  }, [activeKey, albums, singles, compilations]);
+  const items = albums;
 
   return (
     <div>
       <GridItemList
         items={items}
-        title="Danh sách phát hành"
-        getDescription={getAlbumDescription}
-        moreUrl={`/artist/${artist?.id}/discography`}
-        chips={<ChipsSection activeKey={activeKey} setActiveKey={setActiveKey} />}
+        title="Albums"
+        chips={<ChipsSection activeKey="Albums" setActiveKey={() => {}} />}
       />
     </div>
   );
 });
+
