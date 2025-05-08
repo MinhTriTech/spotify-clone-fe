@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 
-// Components
 import { AlbumList } from './table';
 import { AlbumHeader } from './header';
 
-// Utils
 import { getImageAnalysis2 } from '../../../utils/imageAnyliser';
 
-// Redux
-import { useAppSelector } from '../../../store/store';
+import { useAppSelector, useAppDispatch } from '../../../store/store';
 
-// Constants
 import { DEFAULT_PAGE_COLOR } from '../../../constants/spotify';
+
+import { artistActions } from '../../../store/slices/artist';
+
 import tinycolor from 'tinycolor2';
 
 const AlbumPageContainer = ({ container }) => {
@@ -20,9 +19,22 @@ const AlbumPageContainer = ({ container }) => {
   const album = useAppSelector((state) => state.album.album);
   const [color, setColor] = useState(DEFAULT_PAGE_COLOR);
 
+  const artist = useAppSelector((state) => state.album.artist);
+
+  const dispatch = useAppDispatch();
+  
   useEffect(() => {
-    if (album && album.images?.length) {
-      getImageAnalysis2(album.images[0].url).then((r) => {
+      if (artist) {
+        dispatch(artistActions.getInfoArtist(artist));
+      }
+      return () => {
+        dispatch(artistActions.setArtist({ artist: null }));
+      };
+    }, [dispatch, artist]);
+  
+  useEffect(() => {
+    if (album && album.image) {
+      getImageAnalysis2(album.image).then((r) => {
         let color = tinycolor(r);
         while (color.isLight()) {
           color = color.darken(10);

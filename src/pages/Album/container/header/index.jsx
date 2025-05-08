@@ -4,30 +4,26 @@ import { AlbumTableHeader } from '../table/header';
 import { PlayCircleButton } from '../../components/controls/playCircle';
 import ArtistActionsWrapper from '../../../../components/Actions/ArtistActions';
 
-// Redux
 import { useAppSelector } from '../../../../store/store';
 import { isRightLayoutOpen } from '../../../../store/slices/ui';
 
-// Utils
 import dayjs from 'dayjs';
 import tinycolor from 'tinycolor2';
-// import { sumTracksLength } from '../../../../utils/spotify/sumTracksLength';
 
-// Constants
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
 
 import { useEffect, useState, useRef } from 'react';
 
 export const AlbumHeader = ({ container, sectionContainer, color }) => {
   const album = useAppSelector((state) => state.album.album);
-  const artist = useAppSelector((state) => state.album.artist);
-
+  const tracks = useAppSelector((state) => state.album.tracks);
+  const artist = useAppSelector((state) => state.artist.artist);
+  
   const [headerWidth, setHeaderWidth] = useState(0);
   const [activeTable, setActiveTable] = useState(false);
   const [activeHeader, setActiveHeader] = useState(false);
 
   const rightLayoutOpen = useAppSelector(isRightLayoutOpen);
-  const tracks = useAppSelector((state) => state.album.tracks);
   const libraryCollapsed = useAppSelector((state) => state.ui.libraryCollapsed);
 
   useEffect(() => {
@@ -76,7 +72,7 @@ export const AlbumHeader = ({ container, sectionContainer, color }) => {
         <div className='nav-header-content' style={{ opacity: !activeHeader ? 0 : 1 }}>
           <Space>
             <PlayCircleButton size={20} />
-            <h1 className='nav-header-playlist-title'>{album?.name}</h1>
+            <h1 className='nav-header-playlist-title'>{album?.title}</h1>
           </Space>
           <div
             style={{ padding: '0px 20px', opacity: !activeTable ? 0 : 1 }}
@@ -91,24 +87,24 @@ export const AlbumHeader = ({ container, sectionContainer, color }) => {
         <Row gutter={[24, 24]} align={'middle'}>
           <Col xs={24} sm={6} lg={5}>
             <div>
-              <img src={album?.images[0].url} alt={album?.name} className='playlist-img' />
+              <img src={album?.image} alt={album?.title} className='playlist-img' />
             </div>
           </Col>
           <Col xs={24} sm={18} lg={19}>
             <Row justify='space-between'>
               <Col span={24}>
                 <p className='text-white'>Album</p>
-                <h1 className='playlist-title'>{album?.name}</h1>
+                <h1 className='playlist-title'>{album?.title}</h1>
               </Col>
               <Col span={24}>
                 <Space className='owner'>
                   {artist ? (
-                    <Link to='/profile'>
+                    <Link to={`/artist/${artist.artist_id}`}>
                       <img
                         id='user-avatar'
                         alt='User Avatar'
                         className='playlist-avatar'
-                        src={artist.images[0]?.url || ARTISTS_DEFAULT_IMAGE}
+                        src={artist.image || ARTISTS_DEFAULT_IMAGE}
                       />
                     </Link>
                   ) : null}
@@ -116,7 +112,7 @@ export const AlbumHeader = ({ container, sectionContainer, color }) => {
                   <h3 className='text-sm font-semibold text-white'>
                     {artist ? (
                       <ArtistActionsWrapper artist={artist} trigger={['contextMenu']}>
-                        <Link to={`/artist/${artist.id}`} className='link-text'>
+                        <Link to={`/artist/${artist.artist_id}`} className='link-text'>
                           {artist.name}
                         </Link>
                       </ArtistActionsWrapper>
@@ -125,9 +121,8 @@ export const AlbumHeader = ({ container, sectionContainer, color }) => {
                     )}
                     <span className='songs-number'>
                       {' '}
-                      • {dayjs(album?.release_date).format('YYYY')} • {album?.total_tracks}{' '}
-                      {album?.total_tracks === 1 ? 'song' : 'songs'},{' '}
-                      {/* {sumTracksLength(tracks)} */}
+                      • {dayjs(album?.created_at).format('YYYY')} • {tracks?.length}{' '}
+                      {tracks?.length === 1 ? 'song' : 'songs'},{' '}
                     </span>
                   </h3>
                 </Space>

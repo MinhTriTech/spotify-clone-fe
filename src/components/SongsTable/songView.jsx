@@ -248,7 +248,7 @@ const Index = ({ index, isCurrent, isPlaying, onClick }) => {
 export const SongView = (props) => {
   const { size = 'normal' } = props;
   const { activable, view, song, index, artist, fields, canEdit } = props;
-  const { isPlaying, currentTrack, play, pause, setSrc, updateCurrentPlaylistId, updateCurrentArtistId, updateCurrentLikedSongId } = useAudio(); 
+  const { isPlaying, currentTrack, play, pause, setSrc, updateCurrentPlaylistId, updateCurrentArtistId, updateCurrentLikedSongId, updateCurrentAlbumId } = useAudio(); 
 
   const isCurrent = useMemo(() => {
     return song && song.song_id && currentTrack?.id === song.song_id;
@@ -275,6 +275,7 @@ export const SongView = (props) => {
     updateCurrentPlaylistId(null);
     updateCurrentArtistId(null);
     updateCurrentLikedSongId(null);
+    updateCurrentAlbumId(null);
     if (!user) {
       return dispatch(uiActions.openLoginModal(song.image));
     }

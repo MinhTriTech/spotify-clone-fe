@@ -13,16 +13,12 @@ export const fecthArtists = async () => {
 };
 
 
-const getSongsOfFeaturedPlaylist = async (id) => {
+const getSongsOfPlaylist = async (id) => {
   return await axios.get(`api/music/playlists/${id}/songs`);
 };
 
 const getSongsOfLikedSong = async () => {
   return await axios.get(`api/music/songs/favorites`);
-};
-
-const getSongsOfAlbum = async (id) => {
-  return await axios.get(`api/music/albums/${id}`);
 };
 
 const createPlaylist = async (title, image) => {
@@ -63,12 +59,11 @@ export const playlistService = {
   fecthArtists,
   
   getSongsOfLikedSong,
-  getSongsOfFeaturedPlaylist,
+  getSongsOfPlaylist,
 
   createPlaylist,
   deletePlaylist,
   getPlaylist,
   addPlaylistItems,
   removePlaylistItems,
-  getSongsOfAlbum,
 };

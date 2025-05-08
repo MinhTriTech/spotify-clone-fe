@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { uiActions } from '../../store/slices/ui';
 import { useAudio } from '../../contexts/AudioContext';
-import { getSongsOfFeaturedPlaylist, getSongsOfAlbum } from '../../store/slices/playlist';
+import { getSongsOfPlaylist } from '../../store/slices/playlist';
+import { getSongsOfAlbum } from '../../store/slices/album'; 
 import { fetchArtist } from '../../store/slices/artist';
 import { fetchLikeSongs } from '../../store/slices/likedSongs';
 
@@ -113,7 +114,7 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
 
       if (isPlaylist && context?.id) {
         try {
-          const tracks = await dispatch(getSongsOfFeaturedPlaylist(context.id)).unwrap();
+          const tracks = await dispatch(getSongsOfPlaylist(context.id)).unwrap();
 
           if (tracks && tracks.length > 0) {
             const formattedTracks = tracks.map(track => ({
@@ -171,10 +172,9 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
       } else if (isAlbum && context?.id) {
         try {
           const tracks = await dispatch(getSongsOfAlbum(context.id)).unwrap();
-          console.log(tracks);
           
-          if (tracks.songs && tracks.songs.length > 0) {
-            const formattedTracks = tracks.songs.map(track => ({
+          if (tracks && tracks.length > 0) {
+            const formattedTracks = tracks.map(track => ({
               id: track.song_id,
               title: track.title,
               artists: track.artists,

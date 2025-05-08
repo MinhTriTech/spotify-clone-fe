@@ -1,9 +1,7 @@
 import { memo } from 'react';
 
-// Components
 import TableHeader, { TableHeaderComponents } from '../../../../components/SongsTable/header';
 
-// Redux
 import { useAppSelector } from '../../../../store/store';
 
 export const AlbumTableHeader = memo(() => {
@@ -16,8 +14,6 @@ export const AlbumTableHeader = memo(() => {
         TableHeaderComponents.Index,
         TableHeaderComponents.Title,
         TableHeaderComponents.Artists,
-        TableHeaderComponents.Space,
-        TableHeaderComponents.Time,
         TableHeaderComponents.Space,
       ]}
     />

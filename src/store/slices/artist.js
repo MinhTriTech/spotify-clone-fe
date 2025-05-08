@@ -17,6 +17,14 @@ export const fetchArtist = createAsyncThunk(
   }
 );
 
+export const getInfoArtist = createAsyncThunk(
+  'artist/getInfoArtist',
+  async (id) => {
+    const data = await artistService.fetchArtist(id);
+    return data;
+  }
+);
+
 const artistSlice = createSlice({
   name: 'artist',
   initialState,
@@ -41,11 +49,15 @@ const artistSlice = createSlice({
       state.albums = action.payload.albums;
       state.following = action.payload.is_following;
     });
+    builder.addCase(getInfoArtist.fulfilled, (state, action) => {
+      state.artist = action.payload.artist;
+    });
   },
 });
 
 export const artistActions = {
   fetchArtist,
+  getInfoArtist,
   ...artistSlice.actions,
 };
 

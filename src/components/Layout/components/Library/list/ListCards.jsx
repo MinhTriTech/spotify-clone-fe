@@ -16,8 +16,7 @@ import { memo } from 'react';
 
 import { useAudio } from '../../../../../contexts/AudioContext'
 
-import { getSongsOfLikedSong } from '../../../../../store/slices/playlist';
-import { getSongsOfFeaturedPlaylist } from '../../../../../store/slices/playlist';
+import { getSongsOfLikedSong, getSongsOfPlaylist } from '../../../../../store/slices/playlist';
 
 const Play = (
   <svg
@@ -110,7 +109,7 @@ const CardList = (props) => {
     try {
       const tracks = await dispatch(
         typeof context.id === 'number'
-          ? getSongsOfFeaturedPlaylist(context.id)
+          ? getSongsOfPlaylist(context.id)
           : getSongsOfLikedSong()
       ).unwrap();
 

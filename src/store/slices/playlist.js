@@ -8,7 +8,6 @@ const initialState = {
   canEdit: false,
   songsOfFeaturePlaylist: [],
   songsOfLikedSong: [],
-  songsOfAlbum: [],
   view: 'LIST',
 };
 
@@ -28,21 +27,16 @@ export const refreshPlaylist = createAsyncThunk(
   }
 );
 
-export const getSongsOfFeaturedPlaylist = createAsyncThunk(
-  'playlist/getSongsOfFeaturedPlaylist',
+export const getSongsOfPlaylist = createAsyncThunk(
+  'playlist/getSongsOfPlaylist',
   async (id) => {
-    const response = await playlistService.getSongsOfFeaturedPlaylist(id);
+    const response = await playlistService.getSongsOfPlaylist(id);
     return response.data;
   }
 );
 
 export const getSongsOfLikedSong = createAsyncThunk('playlist/getSongsOfLikedSong', async () => {
   const response = await playlistService.getSongsOfLikedSong();
-  return response.data;
-});
-
-export const getSongsOfAlbum = createAsyncThunk('playlist/getSongsOfAlbum', async (id) => {
-  const response = await playlistService.getSongsOfAlbum(id);
   return response.data;
 });
 
@@ -73,16 +67,12 @@ const playlistSlice = createSlice({
       state.playlist = action.payload.playlist;
     });
 
-    builder.addCase(getSongsOfFeaturedPlaylist.fulfilled, (state, action) => {
+    builder.addCase(getSongsOfPlaylist.fulfilled, (state, action) => {
       state.songsOfFeaturePlaylist = action.payload;
     });
     builder.addCase(getSongsOfLikedSong.fulfilled, (state, action) => {
       state.songsOfLikedSong = action.payload;
     });
-    builder.addCase(getSongsOfAlbum.fulfilled, (state, action) => {
-      state.songsOfAlbum = action.payload;
-    });
-    
   },
 });
 
@@ -90,9 +80,8 @@ export const playlistActions = {
   fetchPlaylist,
   refreshPlaylist,
 
-  getSongsOfFeaturedPlaylist,
+  getSongsOfPlaylist,
   getSongsOfLikedSong,
-  getSongsOfAlbum,
   
   ...playlistSlice.actions,
 };
