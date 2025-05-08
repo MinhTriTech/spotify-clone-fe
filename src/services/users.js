@@ -66,7 +66,7 @@ export const checkFollowingUsers = async (ids) => {
 };
 
 export const getUser = async (id) => {
-  return await axios.get(`/users/${id}`);
+  return await axios.get(`api/music/users/${id}`);
 };
 
 export const unfollowPlaylist = async (playlistId) => {
