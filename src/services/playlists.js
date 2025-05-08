@@ -21,6 +21,10 @@ const getSongsOfLikedSongs = async () => {
   return await axios.get(`api/music/songs/favorites`);
 };
 
+const getSongsOfAlbum = async (id) => {
+  return await axios.get(`api/music/albums/${id}`);
+};
+
 const createPlaylist = async (title, image) => {
   const res = await axios.post('api/music/playlists/create/', {
     title: title,
@@ -66,4 +70,5 @@ export const playlistService = {
   getPlaylist,
   addPlaylistItems,
   removePlaylistItems,
+  getSongsOfAlbum,
 };
