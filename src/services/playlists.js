@@ -13,11 +13,11 @@ export const fecthArtists = async () => {
 };
 
 
-const getSongsOfFeaturedPlaylists = async (id) => {
+const getSongsOfPlaylist = async (id) => {
   return await axios.get(`api/music/playlists/${id}/songs`);
 };
 
-const getSongsOfLikedSongs = async () => {
+const getSongsOfLikedSong = async () => {
   return await axios.get(`api/music/songs/favorites`);
 };
 
@@ -27,6 +27,10 @@ const createPlaylist = async (title, image) => {
     image: image,
   });
   return res.data.playlist;
+};
+
+const deletePlaylist = async (id) => {
+  return await axios.delete(`api/music/playlists/${id}/delete/`);
 };
 
 const getPlaylist = async (id) => {
@@ -40,16 +44,26 @@ const addPlaylistItems = async (playlist_id, song_id) => {
   });  
 };
 
+const removePlaylistItems = async (playlist_id, song_id) => {
+  return await axios.delete('/api/music/playlists/remove-song/', {
+    data: {
+      playlist_id,
+      song_id,
+    },
+  });
+};
 
 export const playlistService = {
   fetchTopTracks,
   fecthPlaylists,
   fecthArtists,
   
-  getSongsOfFeaturedPlaylists,
-  getSongsOfLikedSongs,
+  getSongsOfLikedSong,
+  getSongsOfPlaylist,
 
   createPlaylist,
+  deletePlaylist,
   getPlaylist,
   addPlaylistItems,
+  removePlaylistItems,
 };

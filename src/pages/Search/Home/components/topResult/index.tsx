@@ -3,7 +3,7 @@ import { PlayCircle } from '../../../../../components/Lists/PlayCircle';
 import { AlbumActionsWrapper } from '../../../../../components/Actions/AlbumActions';
 import { TrackActionsWrapper } from '../../../../../components/Actions/TrackActions';
 import { ArtistActionsWrapper } from '../../../../../components/Actions/ArtistActions';
-import PlayistActionsWrapper from '../../../../../components/Actions/PlaylistActions';
+import {PlayListActionsWrapper} from '../../../../../components/Actions/PlaylistActions';
 
 // Utils
 import { useTranslation } from 'react-i18next';
@@ -132,7 +132,7 @@ const TrackCard = memo(({ item }: { item: Track }) => {
 const PlaylistCard = ({ item }: { item: Playlist }) => {
   const dispatch = useAppDispatch();
   return (
-    <PlayistActionsWrapper playlist={item} trigger={['contextMenu']}>
+    <PlayListActionsWrapper playlist={item} trigger={['contextMenu']}>
       <div>
         <Card
           uri={item.uri}
@@ -144,7 +144,7 @@ const PlaylistCard = ({ item }: { item: Playlist }) => {
           image={item.images && item.images.length ? item.images[0].url : PLAYLIST_DEFAULT_IMAGE}
         />
       </div>
-    </PlayistActionsWrapper>
+    </PlayListActionsWrapper>
   );
 };
 

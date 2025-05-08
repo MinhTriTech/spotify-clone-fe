@@ -4,6 +4,8 @@ import { ListItemComponent } from './ListCards';
 import { memo, useMemo } from 'react';
 import { LibraryLoginInfo } from './loginInfo';
 
+import { LibraryFilters } from '../Filters';
+
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { getLibraryItems } from '../../../../../store/slices/yourLibrary';
 import { getLibraryCollapsed, uiActions } from '../../../../../store/slices/ui';
@@ -29,6 +31,8 @@ const YourLibrary = () => {
   return (
     <div className={`Navigation-section library ${!collapsed ? 'open' : ''}`}>
       <LibraryTitle />
+
+      {!collapsed && user ? <LibraryFilters /> : null}
 
       <div className='library-list-container'>
         <Col style={collapsed ? {} : COLLAPSED_STYLE}>

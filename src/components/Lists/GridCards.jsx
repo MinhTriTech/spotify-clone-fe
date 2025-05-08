@@ -5,7 +5,7 @@ import { useAudio } from '../../contexts/AudioContext';
 import ArtistActionsWrapper from '../Actions/ArtistActions';
 
 const Card = ({ title, image, rounded, description, onClick, context }) => {
-  const { isPlaying, currentTrack, playlist, currentIndex, currentPlaylistId } = useAudio();
+  const { isPlaying, currentTrack, playlist, currentIndex, currentPlaylistId, currentAlbumId, currentArtistId } = useAudio();
   
   let isCurrent = false;
   
@@ -15,8 +15,19 @@ const Card = ({ title, image, rounded, description, onClick, context }) => {
                                  currentPlaylistId === context.id;
     
     isCurrent = isPlayingThisPlaylist;
-  } 
-  else if (context && context.song_id) {
+  } else if (context && context.type === 'album' && context.id) {
+    const isPlayingThisAlbum = playlist.length > 0 && 
+                                 currentIndex >= 0 && 
+                                 currentAlbumId === context.id;
+    
+    isCurrent = isPlayingThisAlbum;
+  } else if (context && context.type === 'artist' && context.id) {
+    const isPlayingThisArtist = playlist.length > 0 && 
+                                 currentIndex >= 0 && 
+                                 currentArtistId === context.id;
+    
+    isCurrent = isPlayingThisArtist;
+  } else if (context && context.song_id) {
     isCurrent = currentTrack?.id === context.song_id;
   }
   
@@ -72,7 +83,7 @@ export const ArtistCard = ({ item, onClick }) => {
           context={{ 
             id: item.artist_id,
             image: item.image,
-            type: "artists",
+            type: "artist",
             title: title
           }}
           onClick={() => navigate(`/artist/${item.artist_id}`)}
@@ -103,3 +114,29 @@ export const TrackCard = ({ item, onClick }) => {
     </TrackActionsWrapper>
   );
 };
+
+export const AlbumCard = ({ item, onClick }) => {
+  const navigate = useNavigate();
+
+  const title = item.title;
+
+  const description = "Album";
+
+  return (
+    <div onClick={onClick}>
+      <Card
+        title={title}
+        onClick={() => navigate(`/album/${item.album_id}`)}
+        description={description}
+        image={item.image}
+        context={{ 
+          id: item.album_id,
+          image: item.image,
+          type: "album",
+          title: item.title
+        }}
+      />
+    </div>
+  );
+};
+

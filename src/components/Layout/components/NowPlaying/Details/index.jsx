@@ -13,8 +13,6 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 
 import { memo, useEffect, useMemo } from 'react';
 
-// Redux
-import { fetchArtist } from '../../../../../store/slices/playingNow';
 
 const Container = memo(({ song }) => {
   const dispatch = useAppDispatch();
@@ -115,10 +113,6 @@ const Details = memo(() => {
   );
 
   const artistId = useMemo(() => song?.artists[0].uri.split(':')[2], [song]);
-
-  useEffect(() => {
-    if (artistId) dispatch(fetchArtist(artistId));
-  }, [artistId, dispatch]);
 
   if (!song) return null;
 

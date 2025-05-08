@@ -1,7 +1,7 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
-// Initial state for the UI slice
 const initialState = {
+  loading: false,
   queueCollapsed: true,
   devicesCollapsed: true,
   detailsCollapsed: true,
@@ -16,6 +16,9 @@ const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
     toggleLoginModalMain(state) {
       state.loginModalMain = !state.loginModalMain;
     },

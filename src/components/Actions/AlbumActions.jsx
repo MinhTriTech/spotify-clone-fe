@@ -6,7 +6,6 @@ import { playerService } from '../../services/player';
 import { albumsService } from '../../services/albums';
 import { playlistService } from '../../services/playlists';
 
-import { fetchQueue } from '../../store/slices/queue';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { fetchMyPlaylists, yourLibraryActions } from '../../store/slices/yourLibrary';
 import { uiActions } from '../../store/slices/ui';
@@ -127,7 +126,6 @@ const AlbumActionsWrapper = memo((props) => {
         onClick: () => {
           if (!handleUserValidation()) return;
           playerService.addToQueue(album.uri).then(() => {
-            dispatch(fetchQueue());
             message.open({
               type: 'success',
               content: 'Đã thêm vào hàng đợi',

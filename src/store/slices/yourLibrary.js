@@ -8,7 +8,6 @@ const initialState = {
   myLikeSongs: [],
   myArtists: [],
   myPlaylists: [],
-  search: '',
   view: 'LIST',
   orderBy: 'default',
   filter: 'ALL',
@@ -35,15 +34,6 @@ const yourLibrarySlice = createSlice({
   reducers: {
     setFilter(state, action) {
       state.filter = action.payload.filter;
-    },
-    setSearch(state, action) {
-      state.search = action.payload.search;
-    },
-    setView(state, action) {
-      state.view = action.payload.view;
-    },
-    setOrderBy(state, action) {
-      state.orderBy = action.payload.orderBy;
     },
   },
   extraReducers: (builder) => {

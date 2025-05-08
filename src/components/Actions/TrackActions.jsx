@@ -1,44 +1,30 @@
 import { memo, useCallback, useMemo } from 'react';
-import { Dropdown, message } from 'antd';
+import { Dropdown } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 import {
-  AlbumIcon,
-  ArtistIcon,
   DeleteIcon,
   AddToPlaylist,
-  AddToQueueIcon,
-  AddToLibrary,
-  AddedToLibrary,
 } from '../Icons';
 
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { playlistActions } from '../../store/slices/playlist';
-import fetchLikeSongs from '../../store/slices/likedSongs';
 import { yourLibraryActions, fetchMyPlaylists, getUserPlaylists } from '../../store/slices/yourLibrary';
-import { spotifyActions } from '../../store/slices/spotify';
-import { albumActions } from '../../store/slices/album';
-import { artistActions } from '../../store/slices/artist';
 import { uiActions } from '../../store/slices/ui';
-import { fetchQueue } from '../../store/slices/queue';
 
-import { playerService } from '../../services/player';
-import { libraryService } from '../../services/library';
 import { playlistService } from '../../services/playlists';
-import { userService } from '../../services/users';
-import { useAudio } from '../../contexts/AudioContext';
 
 const TrackActionsWrapper = memo((props) => {
-  const { children, artist, track, playlist, canEdit, album, saved, onSavedToggle, trigger } = props;
-  
-  const { currentPlaylistId } = useAudio();
+  const { children, track, canEdit, trigger } = props;
 
+  const playlistCurrent = useAppSelector((state) => state.playlist.playlist);
+  
   const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
   const myPlaylists = useAppSelector(getUserPlaylists);
   
   const userId = useAppSelector((state) => state.auth.user?.user_info.id);
-  const currentSongId = useAppSelector((state) => state.spotify.state?.track_window?.current_track?.id);
   
   const handleUserValidation = useCallback((button = false) => {
     if (!userId) {
@@ -50,7 +36,7 @@ const TrackActionsWrapper = memo((props) => {
 
   const playlistOptions = useMemo(() => {
     return myPlaylists
-      .filter((p) => p.playlist_id !== currentPlaylistId)
+      .filter((p) => p.playlist_id !== playlistCurrent?.playlist_id)
       .map((p) => ({
         key: p.playlist_id,
         label: p.title,
@@ -58,10 +44,11 @@ const TrackActionsWrapper = memo((props) => {
           if (!handleUserValidation()) return;
             await playlistService.addPlaylistItems(p.playlist_id, track.song_id).then(() => {
             dispatch(playlistActions.fetchPlaylist(p.playlist_id));
+            navigate(`/playlist/${p.playlist_id}`);
           });
         },
       }));
-  }, [myPlaylists, currentPlaylistId, handleUserValidation, track.song_id, dispatch]);  
+  }, [ myPlaylists, playlistCurrent, handleUserValidation, track.song_id, dispatch]);  
 
   const getItems = () => {
     const items = [
@@ -76,7 +63,7 @@ const TrackActionsWrapper = memo((props) => {
             onClick: () => {
               if (!handleUserValidation()) return;
               playlistService.createPlaylist("Danh sách phát của tôi").then((res) => {
-                const newPlaylist = res.playlist;
+                const newPlaylist = res;
                 playlistService.addPlaylistItems(newPlaylist.playlist_id, track.song_id).then(() => {
                   dispatch(yourLibraryActions.fetchMyPlaylists());
                 });
@@ -88,86 +75,19 @@ const TrackActionsWrapper = memo((props) => {
         ],
       },
     ];
-
-    if (typeof saved !== 'undefined') {
-      items.push({
-        label: saved ? 'Xóa khỏi Bài hát đã thích' : 'Lưu vào Bài hát đã thích',
-        key: 'like-song',
-        icon: saved ? (
-          <AddedToLibrary style={{ height: 18, width: 18, marginInlineEnd: 0 }} />
-        ) : (
-          <AddToLibrary style={{ height: 18, width: 18, marginInlineEnd: 0 }} />
-        ),
-        onClick: () => {
-          if (!handleUserValidation(true)) return;
-          if (saved) {
-            userService.deleteTracks([track.id]).then(() => {
-              dispatch(albumActions.updateTrackLikeState({ id: track.id, saved: false }));
-              dispatch(artistActions.setTopSongLikeState({ id: track.id, saved: false }));
-              dispatch(playlistActions.setTrackLikeState({ id: track.id, saved: false }));
-              if (currentSongId === track.id) {
-                dispatch(spotifyActions.setLiked({ liked: false }));
-              }
-              if (onSavedToggle) onSavedToggle();
-              message.success('Đã xóa khỏi Bài hát đã thích');
-            });
-          } else {
-            userService.saveTracks([track.id]).then(() => {
-              dispatch(fetchLikeSongs());
-              dispatch(albumActions.updateTrackLikeState({ id: track.id, saved: true }));
-              dispatch(artistActions.setTopSongLikeState({ id: track.id, saved: true }));
-              dispatch(playlistActions.setTrackLikeState({ id: track.id, saved: true }));
-              if (currentSongId === track.id) {
-                dispatch(spotifyActions.setLiked({ liked: true }));
-              }
-              if (onSavedToggle) onSavedToggle();
-              message.success('Đã lưu vào Bài hát đã thích');
-            });
-          }
-        },
-      });
-    }
-
-    if (canEdit && currentPlaylistId) {
+    
+    if (canEdit) {
       items.push({
         label: 'Xóa khỏi playlist này',
         key: 'remove-from-playlist',
         icon: <DeleteIcon />,
         onClick: () => {
           if (!handleUserValidation()) return;
-          playlistService.removePlaylistItems(playlist.id, [track.uri], playlist.snapshot_id).then(() => {
-            dispatch(playlistActions.refreshPlaylist(playlist.id));
-            dispatch(playlistActions.removeTrack({ id: track.uri }));
+          playlistService.removePlaylistItems(playlistCurrent.playlist_id, track.song_id).then(() => {
+            dispatch(playlistActions.refreshPlaylist(playlistCurrent.playlist_id));
+            dispatch(playlistActions.removeTrack({ id: track.song_id }));
             dispatch(yourLibraryActions.fetchMyPlaylists());
-            message.success('Đã xóa khỏi playlist');
           });
-        },
-      });
-    }
-
-    if (!artist && track.artists?.length > 0) {
-      items.push({
-        label: 'Đi tới nghệ sĩ',
-        key: 'go-to-artist',
-        icon: <ArtistIcon />,
-        onClick: () => {
-          const artistId = track.artists[0]?.id || (track.artists[0]?.uri?.split(':').reverse()[0]);
-          if (artistId) navigate(`/artist/${artistId}`);
-        },
-      });
-    }
-
-    if (!album && track.album) {
-      items.push({
-        label: 'Đi tới album',
-        key: 'go-to-album',
-        icon: <AlbumIcon />,
-        onClick: () => {
-          if (!userId) {
-            return dispatch(uiActions.openLoginModal(track.album?.images?.[0]?.url));
-          }
-          const albumId = track.album?.id || (track.album?.uri?.split(':').reverse()[0]);
-          if (albumId) navigate(`/album/${albumId}`);
         },
       });
     }

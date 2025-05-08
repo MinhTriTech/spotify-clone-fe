@@ -1,7 +1,7 @@
 import { Tooltip } from '../../../../Tooltip';
 import { SpeakerIcon } from '../../../../Icons';
 import ArtistActionsWrapper from '../../../../Actions/ArtistActions';
-import PlayistActionsWrapper from '../../../../Actions/PlaylistActions';
+import {PlayListActionsWrapper} from '../../../../Actions/PlaylistActions';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -11,12 +11,12 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
 
 import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../../constants/spotify';
-import { memo, useCallback } from 'react';
+
+import { memo } from 'react';
 
 import { useAudio } from '../../../../../contexts/AudioContext'
 
-import { getSongsOfLikedSongs } from '../../../../../store/slices/playlist';
-import { fetchSongsOfFeaturedPlaylists } from '../../../../../store/slices/playlist';
+import { getSongsOfLikedSong, getSongsOfPlaylist } from '../../../../../store/slices/playlist';
 
 const Play = (
   <svg
@@ -88,7 +88,6 @@ const CardList = (props) => {
     pause,
     playlist,
     currentIndex,
-    currentTrack,
     currentPlaylistId,
     setPlaylistAndPlay,
   } = useAudio();
@@ -110,12 +109,11 @@ const CardList = (props) => {
     try {
       const tracks = await dispatch(
         typeof context.id === 'number'
-          ? fetchSongsOfFeaturedPlaylists(context.id)
-          : getSongsOfLikedSongs()
+          ? getSongsOfPlaylist(context.id)
+          : getSongsOfLikedSong()
       ).unwrap();
 
-      console.log(tracks);
-      
+       
 
       if (tracks && tracks.length > 0) {
         const formattedTracks = tracks.map(track => ({
@@ -251,7 +249,7 @@ const PlaylistCardShort = memo(({ playlist }) => {
   };
 
   return (
-    <PlayistActionsWrapper
+    <PlayListActionsWrapper
       playlist={playlist}
       trigger={['contextMenu']}
       onRefresh={() => {
@@ -271,7 +269,7 @@ const PlaylistCardShort = memo(({ playlist }) => {
           }}
         />
       </div>
-    </PlayistActionsWrapper>
+    </PlayListActionsWrapper>
   );
 });
 

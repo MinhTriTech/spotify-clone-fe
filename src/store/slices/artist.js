@@ -3,14 +3,22 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { artistService } from '../../services/artist';
 
 const initialState = {
-  topTracks: [],
   artist: null,
-  loading: true,
+  topTracks: [],
   following: false,
+  albums: [],
 };
 
 export const fetchArtist = createAsyncThunk(
   'artist/fetchArtist',
+  async (id) => {
+    const data = await artistService.fetchArtist(id);
+    return data;
+  }
+);
+
+export const getInfoArtist = createAsyncThunk(
+  'artist/getInfoArtist',
   async (id) => {
     const data = await artistService.fetchArtist(id);
     return data;
@@ -27,33 +35,29 @@ const artistSlice = createSlice({
     setArtist(state, action) {
       state.artist = action.payload.artist;
       if (!action.payload.artist) {
-        state.topTracks = [];
-        state.following = false;
-        state.loading = true;
         state.artist = null;
+        state.topTracks = [];
+        state.albums = [];
+        state.following = false;
       }
-    },
-    setTopSongLikeState(state, action) {
-      state.topTracks = state.topTracks.map((track) =>
-        track.id === action.payload.id ? { ...track, saved: action.payload.saved } : track
-      );
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchArtist.pending, (state) => {
-      state.loading = true;
-    });
     builder.addCase(fetchArtist.fulfilled, (state, action) => {
       state.artist = action.payload.artist;
-      state.following = action.payload.is_following;
       state.topTracks = action.payload.songs;
-      state.loading = false;
+      state.albums = action.payload.albums;
+      state.following = action.payload.is_following;
+    });
+    builder.addCase(getInfoArtist.fulfilled, (state, action) => {
+      state.artist = action.payload.artist;
     });
   },
 });
 
 export const artistActions = {
   fetchArtist,
+  getInfoArtist,
   ...artistSlice.actions,
 };
 

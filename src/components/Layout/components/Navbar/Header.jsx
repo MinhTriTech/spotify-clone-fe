@@ -6,13 +6,10 @@ import WhiteButton from '../../../Button';
 import { useDispatch } from 'react-redux';
 import { handleLogout } from '../../../../store/slices/auth';
 
-// Redux
 import { uiActions } from '../../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 
-// Constants
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
-import useIsMobile from '../../../../utils/isMobile';
 
 const LoginButton = () => {
   const dispatch = useAppDispatch();
@@ -73,14 +70,14 @@ const Header = ({ opacity }) => {
 
           {user ? (
             <div className="avatar-container">
-              <Link to={`/users/${user.id}`}>
+              <Link to={`/users/${user.user_info.id}`}>
                 <img
                   className="avatar"
                   id="user-avatar"
                   alt="Ảnh đại diện người dùng"
                   style={{ marginTop: -1 }}
                   src={
-                    user?.images && user.images.length ? user.images[0].url : ARTISTS_DEFAULT_IMAGE
+                    ARTISTS_DEFAULT_IMAGE
                   }
                 />
               </Link>

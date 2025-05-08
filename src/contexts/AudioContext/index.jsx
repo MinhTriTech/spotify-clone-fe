@@ -21,6 +21,8 @@ export const AudioProvider = ({ children }) => {
   const [currentArtistId, setCurrentArtistId] = useState(null);
 
   const [currentLikedSongId, setCurrentLikedSongId] = useState(null);
+
+  const [currentAlbumId, setCurrentAlbumId] = useState(null);
   
   const volumeRef = useRef(1);
   const syncingRef = useRef(false);
@@ -225,16 +227,21 @@ export const AudioProvider = ({ children }) => {
     setCurrentArtistId(temp);
   }, []);  
 
+  const updateCurrentAlbumId = useCallback((temp) => {
+    setCurrentAlbumId(temp);
+  }, []);  
+
   const updateCurrentLikedSongId = useCallback((temp) => {
     setCurrentLikedSongId(temp);
   }, []);  
 
-  const setPlaylistAndPlay = useCallback(async (tracks, index = 0, playlistId = null, artistId = null, likedSongId = null) => {
+  const setPlaylistAndPlay = useCallback(async (tracks, index = 0, playlistId = null, artistId = null, likedSongId = null, albumId = null) => {
     if (!tracks || tracks.length === 0 || index < 0 || index >= tracks.length) return;
   
     setPlaylist(tracks);
     setCurrentPlaylistId(playlistId);
     setCurrentArtistId(artistId)
+    setCurrentAlbumId(albumId)
     setCurrentLikedSongId(likedSongId)
     setCurrentIndex(index);
   
@@ -340,6 +347,9 @@ export const AudioProvider = ({ children }) => {
 
         currentLikedSongId,
         updateCurrentLikedSongId,
+
+        currentAlbumId,
+        updateCurrentAlbumId,
       }}
     >
       {children}

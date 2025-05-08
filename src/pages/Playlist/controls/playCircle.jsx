@@ -1,17 +1,12 @@
-// Components
 import { PlayCircle } from '../../../components/Lists/PlayCircle';
 
-// Redux
 import { useAppSelector } from '../../../store/store';
 
-// React
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 
 export const PlayCircleButton = memo(({ size = 30 }) => {
   const playlist = useAppSelector((state) => state.playlist.playlist);
   const track = useAppSelector((state) => state.playlist.tracks);
-
-  console.log(playlist);
 
   const context={ 
     id: playlist.playlist_id,

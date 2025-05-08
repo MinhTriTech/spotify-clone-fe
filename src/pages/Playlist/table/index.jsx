@@ -1,34 +1,22 @@
-// Components
 import { Divider } from 'antd';
 import SongView from './Song';
 import { PlaylistTableHeader } from './header';
 import PlaylistControls from '../controls';
 import ReactDragListView from 'react-drag-listview';
-import { PlaylistRecommendations } from '../recommendations';
 
-// Services
-import { playlistService } from '../../../services/playlists';
+import { useAppSelector } from '../../../store/store';
 
-// Redux
-import { playlistActions } from '../../../store/slices/playlist';
-import { useAppDispatch, useAppSelector } from '../../../store/store';
-
-// Constants
 import { DEFAULT_PAGE_COLOR } from '../../../constants/spotify';
 
-// React
 import { memo } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 export const PlaylistList = memo(({ color }) => {
-  const dispatch = useAppDispatch();
   const tracks = useAppSelector((state) => state.playlist.tracks);
   const canEdit = useAppSelector((state) => state.playlist.canEdit);
-  const playlist = useAppSelector((state) => state.playlist.playlist);
   
-
   const hasTracks = !!tracks?.length;
-
+  
   return (
     <div
       className='playlist-list'
