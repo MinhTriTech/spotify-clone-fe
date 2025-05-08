@@ -13,11 +13,11 @@ export const fecthArtists = async () => {
 };
 
 
-const getSongsOfFeaturedPlaylists = async (id) => {
+const getSongsOfFeaturedPlaylist = async (id) => {
   return await axios.get(`api/music/playlists/${id}/songs`);
 };
 
-const getSongsOfLikedSongs = async () => {
+const getSongsOfLikedSong = async () => {
   return await axios.get(`api/music/songs/favorites`);
 };
 
@@ -62,8 +62,8 @@ export const playlistService = {
   fecthPlaylists,
   fecthArtists,
   
-  getSongsOfFeaturedPlaylists,
-  getSongsOfLikedSongs,
+  getSongsOfLikedSong,
+  getSongsOfFeaturedPlaylist,
 
   createPlaylist,
   deletePlaylist,

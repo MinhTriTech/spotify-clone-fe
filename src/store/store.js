@@ -17,20 +17,14 @@ import uiReducer from './slices/ui';
 import authReducer from './slices/auth';
 import homeReducer from './slices/home';
 import albumReducer from './slices/album';
-import queueReducer from './slices/queue';
-import genreReducer from './slices/genre';
 import searchReducer from './slices/search';
-import browseReducer from './slices/browse';
 import artistReducer from './slices/artist';
 import profileReducer from './slices/profile';
 import spotifyReducer from './slices/spotify';
-import languageReducer from './slices/language';
 import playlistReducer from './slices/playlist';
 import likedSongsReducer from './slices/likedSongs';
-import playingNowReducer from './slices/playingNow';
 import yourLibraryReducer from './slices/yourLibrary';
 import searchHistoryReducer from './slices/searchHistory';
-import artistDiscographyReducer from './slices/discography';
 import editPlaylistModalReducer from './slices/editPlaylistModal';
 import deletePlaylistModalReducer from './slices/deletePlaylistModal';
 import expireReducer from 'redux-persist-expire';
@@ -41,20 +35,14 @@ const appReducer = combineReducers({
   auth: authReducer,
   home: homeReducer,
   album: albumReducer,
-  queue: queueReducer,
-  genre: genreReducer,
   search: searchReducer,
   artist: artistReducer,
-  browse: browseReducer,
   profile: profileReducer,
   spotify: spotifyReducer,
-  language: languageReducer,
   playlist: playlistReducer,
-  playingNow: playingNowReducer,
   likedSongs: likedSongsReducer,
   yourLibrary: yourLibraryReducer,
   searchHistory: searchHistoryReducer,
-  artistDiscography: artistDiscographyReducer,
   editPlaylistModal: editPlaylistModalReducer,
   deletePlaylistModal: deletePlaylistModalReducer,
 });

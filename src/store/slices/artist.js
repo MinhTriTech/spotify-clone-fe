@@ -7,7 +7,6 @@ const initialState = {
   topTracks: [],
   following: false,
   albums: [],
-  loading: true,
 };
 
 export const fetchArtist = createAsyncThunk(
@@ -32,20 +31,15 @@ const artistSlice = createSlice({
         state.topTracks = [];
         state.albums = [];
         state.following = false;
-        state.loading = true;
       }
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchArtist.pending, (state) => {
-      state.loading = true;
-    });
     builder.addCase(fetchArtist.fulfilled, (state, action) => {
       state.artist = action.payload.artist;
       state.topTracks = action.payload.songs;
       state.albums = action.payload.albums;
       state.following = action.payload.is_following;
-      state.loading = false;
     });
   },
 });

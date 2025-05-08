@@ -3,7 +3,6 @@ import { Details } from './Details';
 
 // Redux
 import { memo, useEffect } from 'react';
-import { fetchQueue } from '../../../../store/slices/queue';
 import { fetchDevices } from '../../../../store/slices/spotify';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 

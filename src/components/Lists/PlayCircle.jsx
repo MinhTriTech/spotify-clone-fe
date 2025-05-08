@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { uiActions } from '../../store/slices/ui';
 import { useAudio } from '../../contexts/AudioContext';
-import { fetchSongsOfFeaturedPlaylists, getSongsOfAlbum } from '../../store/slices/playlist';
+import { getSongsOfFeaturedPlaylist, getSongsOfAlbum } from '../../store/slices/playlist';
 import { fetchArtist } from '../../store/slices/artist';
 import { fetchLikeSongs } from '../../store/slices/likedSongs';
 
@@ -113,7 +113,7 @@ export const PlayCircle = ({ size = 20, big, isCurrent, context }) => {
 
       if (isPlaylist && context?.id) {
         try {
-          const tracks = await dispatch(fetchSongsOfFeaturedPlaylists(context.id)).unwrap();
+          const tracks = await dispatch(getSongsOfFeaturedPlaylist(context.id)).unwrap();
 
           if (tracks && tracks.length > 0) {
             const formattedTracks = tracks.map(track => ({

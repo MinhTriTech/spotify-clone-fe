@@ -133,10 +133,9 @@ const RootComponent = () => {
   const { user, role, loading, loginModalMain } = useAppSelector((state) => ({
     user: state.auth.user,
     role: state.auth.role,
-    loading: state.auth.loading,
+    loading: state.ui.loading,
     loginModalMain: state.ui.loginModalMain,
   }));
-  
 
   useEffect(() => {
     if (!user) {
@@ -156,7 +155,7 @@ const RootComponent = () => {
     };
   }, [user]);
 
-  if (loading) return <Spinner loading={loading}/>;
+  if (loading) return <Spinner loading={loading} />;
 
   if (!loginModalMain && !user) return <LoginPage />;
 
