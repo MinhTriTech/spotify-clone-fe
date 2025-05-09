@@ -20,7 +20,7 @@ const SearchAlbumsPage = memo((props) => {
 
   if (loading) return null;
 
-  if (!albums) {
+  if (albums.length < 1) {
     return <NoSearchResults searchValue={params.search || ''} />;
   }
 

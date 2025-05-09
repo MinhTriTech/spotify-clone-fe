@@ -21,7 +21,7 @@ const SearchSongsPage = memo((props) => {
 
   if (loading) return null;
 
-  if (!songs) {
+  if (songs.length < 1) {
     return <NoSearchResults searchValue={params.search || ''} />;
   }
 

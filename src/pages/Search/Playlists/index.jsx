@@ -18,7 +18,7 @@ const SearchPlaylistPage = memo((props) => {
     dispatch(searchActions.setSection('PLAYLISTS'));
   }, [dispatch]);
 
-  if (!playlists) {
+  if (playlists.length < 1) {
     return <NoSearchResults searchValue={params.search || ''} />;
   }
 
