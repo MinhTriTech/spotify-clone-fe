@@ -30,9 +30,6 @@ const PlaylistView = lazy(() => import('./pages/Playlist'));
 const ArtistDiscographyPage = lazy(() => import('./pages/Discography'));
 
 const Profile = lazy(() => import('./pages/User/Home'));
-const ProfileTracks = lazy(() => import('./pages/User/Songs'));
-const ProfileArtists = lazy(() => import('./pages/User/Artists'));
-const ProfilePlaylists = lazy(() => import('./pages/User/Playlists'));
 
 const SearchPage = lazy(() => import('./pages/Search/Home'));
 const SearchTracks = lazy(() => import('./pages/Search/Songs'));
@@ -88,9 +85,6 @@ const RoutesComponent = memo(() => {
       { path: '/message/:idUser/:idChatRoom', element: <MessView container={container} /> },
       { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
-      { path: '/users/:userId/artists', element: <ProfileArtists container={container} /> },
-      { path: '/users/:userId/playlists', element: <ProfilePlaylists container={container} /> },
-      { path: '/users/:userId/tracks', element: <ProfileTracks container={container} /> },
       { path: '/users/:userId', element: <Profile container={container} /> },
       { public: true, path: '/genre/:genreId', element: <GenrePage /> },
       { path: '/recent-searches', element: <RecentlySearched /> },
@@ -99,10 +93,10 @@ const RoutesComponent = memo(() => {
         path: '/search/:search',
         element: <SearchContainer container={container} />,
         children: [
+          { path: 'tracks', element: <SearchTracks container={container} /> },
           { path: 'artists', element: <SearchPageArtists container={container} /> },
           { path: 'albums', element: <SearchAlbums container={container} /> },
           { path: 'playlists', element: <SearchPlaylist container={container} /> },
-          { path: 'tracks', element: <SearchTracks container={container} /> },
           { path: '', element: <SearchPage container={container} /> },
         ],
       },

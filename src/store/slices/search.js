@@ -1,74 +1,63 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { userService } from '../../services/users';
+import { searchService } from '../../services/search';
+
 const initialState = {
-  top: null,
   songs: [],
+  playlists: [],
   artists: [],
   albums: [],
-  playlists: [],
   loading: true,
   section: 'ALL',
   songsTotal: 0,
 };
 
-// 🔍 Mock data generators
-const mockTrack = (id) => ({
-  id: `track-${id}`,
-  name: `Mock Song ${id}`,
-  saved: false,
-  artists: [{ name: `Artist ${id}` }],
-  album: { images: [{ url: 'https://via.placeholder.com/150' }] },
+const fetchArtists = createAsyncThunk('search/fetchArtists', async (query) => {
+  const response = await querySearch({ q: query, type: 'artist', limit: 50 });
+  return response.data.artists.items;
 });
 
-const mockArtist = (id) => ({
-  id: `artist-${id}`,
-  name: `Mock Artist ${id}`,
-  images: [{ url: 'https://via.placeholder.com/150' }],
+const fetchAlbums = createAsyncThunk('search/fetchAlbums', async (query) => {
+  const response = await querySearch({ q: query, type: 'album', limit: 50 });
+  return response.data.albums.items;
 });
 
-const mockAlbum = (id) => ({
-  id: `album-${id}`,
-  name: `Mock Album ${id}`,
-  images: [{ url: 'https://via.placeholder.com/150' }],
+const fetchPlaylists = createAsyncThunk('search/fetchPlaylists', async (query) => {
+  const response = await querySearch({ q: query, type: 'playlist', limit: 50 });
+  return response.data.playlists.items;
 });
 
-const mockPlaylist = (id) => ({
-  id: `playlist-${id}`,
-  name: `Mock Playlist ${id}`,
-  images: [{ url: 'https://via.placeholder.com/150' }],
+const fetchMoreSongs = createAsyncThunk('search/fetchMoreSongs', async (query, { getState }) => {
+  const state = getState();
+  const { songs } = state.search;
+
+  const response = await querySearch({
+    q: query,
+    limit: 50,
+    type: 'track',
+    offset: songs.length,
+  });
+
+  const tracks = response.data.tracks.items;
+
+  const extraRequests = [
+    userService.checkSavedTracks(tracks.map((t) => t.id)).catch(() => ({ data: [] })),
+  ];
+
+  await Promise.all(extraRequests);
+
+  const saves = (await extraRequests[0]).data;
+
+  return tracks.map((track, index) => ({
+    ...track,
+    saved: saves[index],
+  }));
 });
 
-export const fetchSearch = createAsyncThunk('search/fetchSearch', async (query) => {
-  const songs = Array.from({ length: 5 }, (_, i) => mockTrack(i + 1));
-  const artists = Array.from({ length: 5 }, (_, i) => mockArtist(i + 1));
-  const albums = Array.from({ length: 5 }, (_, i) => mockAlbum(i + 1));
-  const playlists = Array.from({ length: 5 }, (_, i) => mockPlaylist(i + 1));
-  const top = songs[0];
-
-  return [top, [songs, 50], artists, albums, playlists];
-});
-
-export const fetchArtists = createAsyncThunk('search/fetchArtists', async (query) => {
-  return Array.from({ length: 10 }, (_, i) => mockArtist(i + 10));
-});
-
-export const fetchAlbums = createAsyncThunk('search/fetchAlbums', async (query) => {
-  return Array.from({ length: 10 }, (_, i) => mockAlbum(i + 10));
-});
-
-export const fetchPlaylists = createAsyncThunk('search/fetchPlaylists', async (query) => {
-  return Array.from({ length: 10 }, (_, i) => mockPlaylist(i + 10));
-});
-
-export const fetchSongs = createAsyncThunk('search/fetchSongs', async (query) => {
-  const songs = Array.from({ length: 10 }, (_, i) => mockTrack(i + 10));
-  return [songs, 100];
-});
-
-export const fetchMoreSongs = createAsyncThunk('search/fetchMoreSongs', async (query, { getState }) => {
-  const { songs } = getState().search;
-  const newSongs = Array.from({ length: 5 }, (_, i) => mockTrack(songs.length + i + 1));
-  return newSongs;
+const fetchSearch = createAsyncThunk('search/fetchSearch', async (query) => {
+  const response = await searchService.fetchSearch(query);
+  return response;
 });
 
 const searchSlice = createSlice({
@@ -79,9 +68,10 @@ const searchSlice = createSlice({
       state.section = action.payload;
     },
     setSavedStateForTrack(state, action) {
-      const track = state.songs.find((t) => t.id === action.payload.id);
+      const { id, saved } = action.payload;
+      const track = state.songs.find((t) => t.id === id);
       if (track) {
-        track.saved = action.payload.saved;
+        track.saved = saved;
       }
     },
   },
@@ -90,12 +80,11 @@ const searchSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(fetchSearch.fulfilled, (state, action) => {
-      state.top = action.payload[0];
-      state.songs = action.payload[1][0];
-      state.songsTotal = action.payload[1][1];
-      state.artists = action.payload[2];
-      state.albums = action.payload[3];
-      state.playlists = action.payload[4];
+      state.songs = action.payload.songs?.length > 0 ? action.payload.songs : [];
+      state.artists = action.payload.artists.length > 0 ? action.payload.artists : [];
+      state.albums = action.payload.albums.length > 0 ? action.payload.albums : [];
+      state.playlists = action.payload.playlists.length > 0 ? action.payload.playlists : [];
+      state.songsTotal = action.payload.songs?.length;
       state.loading = false;
     });
     builder.addCase(fetchSearch.rejected, (state) => {
@@ -113,11 +102,6 @@ const searchSlice = createSlice({
       state.playlists = action.payload;
       state.loading = false;
     });
-    builder.addCase(fetchSongs.fulfilled, (state, action) => {
-      state.songs = action.payload[0];
-      state.songsTotal = action.payload[1];
-      state.loading = false;
-    });
     builder.addCase(fetchMoreSongs.fulfilled, (state, action) => {
       state.songs = [...state.songs, ...action.payload];
       state.loading = false;
@@ -130,7 +114,6 @@ export const searchActions = {
   fetchArtists,
   fetchAlbums,
   fetchPlaylists,
-  fetchSongs,
   fetchMoreSongs,
   ...searchSlice.actions,
 };

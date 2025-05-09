@@ -1,25 +1,23 @@
-import { FC, memo, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import SearchPageContainer from './container';
-import NoSearchResults from '../NoResults';
 
-// Utils
 import { useParams } from 'react-router-dom';
 
-// Redux
 import { searchActions } from '../../../store/slices/search';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 
-interface SearchPageProps {
-  container: React.RefObject<HTMLDivElement | null>;
-}
+import NoSearchResults from '../NoResults';
 
-export const SearchPage: FC<SearchPageProps> = memo((props) => {
+export const SearchPage = memo((props) => {
   const dispatch = useAppDispatch();
-  const params = useParams<{ search: string }>();
-
-  const topResult = useAppSelector((state) => state.search.top);
+  const params = useParams();
+  
   const loading = useAppSelector((state) => state.search.loading);
+  const songs = useAppSelector((state) => state.search.songs);
+  const artists = useAppSelector((state) => state.search.artists);
+  const playlists = useAppSelector((state) => state.search.playlists);
+  const albums = useAppSelector((state) => state.search.albums);
 
   useEffect(() => {
     dispatch(searchActions.setSection('ALL'));
@@ -33,7 +31,7 @@ export const SearchPage: FC<SearchPageProps> = memo((props) => {
 
   if (loading) return null;
 
-  if (!topResult) {
+  if (songs.length < 1 && artists.length < 1 && playlists.length < 1 && albums.length < 1) {
     return <NoSearchResults searchValue={params.search || ''} />;
   }
 

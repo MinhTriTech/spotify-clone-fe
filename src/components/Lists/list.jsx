@@ -61,7 +61,17 @@ export function GridItemList(props) {
                   />
                 </div>
               );
-            } else {
+            } else if (item.artist_id) {
+              return (
+                <div key={String(item.artist_id)} style={{ position: 'relative' }}>
+                  <GridItemComponent
+                    item={item}
+                    onClick={onItemClick ? () => onItemClick(item) : undefined}
+                  />
+                </div>
+              );
+            }
+            else {
               return (
                 <div key={String(item.playlist_id)} style={{ position: 'relative' }}>
                   <GridItemComponent
