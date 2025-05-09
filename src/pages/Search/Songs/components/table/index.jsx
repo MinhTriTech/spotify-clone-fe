@@ -1,17 +1,14 @@
-// Components
 import SongView from './Song';
 import { Divider } from 'antd';
 import { SearchSearchTableHeader } from './header';
 
-// Redux
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 
-// Interfaces
 import { memo } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { searchActions } from '../../../../../store/slices/search';
 
-export const SearchTracksTable = memo((props: { query: string }) => {
+const SearchTracksTable = memo((props) => {
   const dispatch = useAppDispatch();
   const tracks = useAppSelector((state) => state.search.songs);
   const total = useAppSelector((state) => state.search.songsTotal);
@@ -42,7 +39,7 @@ export const SearchTracksTable = memo((props: { query: string }) => {
           >
             <div>
               {tracks.map((song, index) => (
-                <SongView song={song} key={song.id} index={index} />
+                <SongView song={song} key={song.song_id} index={index} />
               ))}
             </div>
           </InfiniteScroll>
@@ -51,3 +48,5 @@ export const SearchTracksTable = memo((props: { query: string }) => {
     </div>
   );
 });
+
+export default SearchTracksTable;

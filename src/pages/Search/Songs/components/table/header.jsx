@@ -1,8 +1,6 @@
 import TableHeader, { TableHeaderComponents } from '../../../../../components/SongsTable/header';
 import { useAppSelector } from '../../../../../store/store';
 
-// Redux
-
 export const SearchSearchTableHeader = () => {
   const view = useAppSelector((state) => state.playlist.view);
 

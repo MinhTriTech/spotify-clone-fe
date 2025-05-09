@@ -2,7 +2,6 @@ import { Input, Space } from 'antd';
 import NavigationButton from './NavigationButton';
 import { ActiveMessageIcon, ActiveHomeIcon, BrowseIcon, HomeIcon, MessageIcon, SearchIcon } from '../../../Icons';
 
-// ❌ Đã xoá useTranslation
 import { useLocation, useNavigate } from 'react-router-dom';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useDebounce } from 'use-debounce';
