@@ -1,11 +1,8 @@
 import { memo } from 'react';
 import { useAppSelector } from '../../../../../store/store';
 import { GridItemList } from '../../../../../components/Lists/list';
-import useIsMobile from '../../../../../utils/isMobile';
 
 export const MyPlaylistsSection = memo(() => {
-  const isMobile = useIsMobile();
-
   const user = useAppSelector((state) => state.profile.user);
   const playlists = useAppSelector((state) => state.profile.playlists);
 
@@ -18,7 +15,7 @@ export const MyPlaylistsSection = memo(() => {
       <GridItemList
         items={playlists}
         title="Playlist công khai"
-        moreUrl={playlists.length > (isMobile ? 2 : 6) ? `/users/${user.id}/playlists` : undefined}
+        moreUrl={playlists.length > 6 ? `/users/${user.id}/playlists` : undefined}
       />
     </div>
   );

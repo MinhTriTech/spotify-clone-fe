@@ -4,7 +4,6 @@ import { Popconfirm } from 'antd';
 import WhiteButton from '../../../../Button';
 import { DetailsCard } from '../../NowPlaying/Details/card';
 
-// Redux
 import { uiActions } from '../../../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 

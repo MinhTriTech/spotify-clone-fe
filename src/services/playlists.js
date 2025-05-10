@@ -1,127 +1,86 @@
 import axios from '../axios';
 
-/**
- * @description Get a playlist owned by a Spotify user.
- * @param playlistId The Spotify ID for the playlist.
- */
-const getPlaylist = async (playlistId) => {
-  return axios.get(`/playlists/${playlistId}`);
+export const fetchTopTracks = async () => {
+  return await axios.get('api/music/songs/');
 };
 
-/**
- * @description Get full details of the items of a playlist owned by a Spotify user.
- */
-const getPlaylistItems = async (playlistId, params = { limit: 50 }) => {
-  return axios.get(`/playlists/${playlistId}/tracks`, { params });
+const fecthPlaylists = async () => {
+  return await axios.get('api/music/playlistsSuggested');
 };
 
-/**
- * @description Get a list of the playlists owned or followed by the current Spotify user.
- */
-const getMyPlaylists = async (params = {}) => {
-  return axios.get('/me/playlists', { params });
+export const fecthArtists = async () => {
+  return await axios.get('api/music/artists/suggested');
 };
 
-/**
- * @description Get a list of Spotify featured playlists (shown, for example, on a Spotify player's 'Browse' tab).
- */
-const getFeaturedPlaylists = async (params = {}) => {
-  return axios.get('/browse/featured-playlists', { params });
+const getSongsOfLikedSong = async () => {
+  return await axios.get(`api/music/songs/favorites`);
 };
 
-/**
- * @description Add one or more items to a user's playlist.
- */
-const addPlaylistItems = async (playlistId, uris, snapshot_id) => {
-  return axios.post(`/playlists/${playlistId}/tracks`, {
-    uris,
-    snapshot_id,
+const getSongsOfPlaylist = async (id) => {
+  return await axios.get(`api/music/playlists/${id}/songs`);
+};
+
+const createPlaylist = async (title, image) => {
+  const res = await axios.post('api/music/playlists/create/', {
+    title: title,
+    image: image,
   });
+  return res.data.playlist;
 };
 
-/**
- * @description Remove one or more items from a user's playlist.
- */
-const removePlaylistItems = async (playlistId, uris, snapshot_id) => {
-  return axios.delete(`/playlists/${playlistId}/tracks`, {
+const deletePlaylist = async (id) => {
+  return await axios.delete(`api/music/playlists/${id}/delete/`);
+};
+
+const getPlaylist = async (id) => {
+  return await axios.get(`api/music/playlists/${id}/`);
+};
+
+const addPlaylistItems = async (playlist_id, song_id) => {
+  return await axios.post('/api/music/playlists/add-song/', {
+    playlist_id,
+    song_id,
+  });  
+};
+
+const removePlaylistItems = async (playlist_id, song_id) => {
+  return await axios.delete('/api/music/playlists/remove-song/', {
     data: {
-      tracks: uris.map((uri) => ({ uri })),
-      snapshot_id,
+      playlist_id,
+      song_id,
     },
   });
 };
 
-/**
- * @description Either reorder or replace items in a playlist depending on the request's parameters. 
- */
-const reorderPlaylistItems = async (
-  playlistId,
-  uris,
-  rangeStart,
-  insertBefore,
-  rangeLength,
-  snapshotId
-) => {
-  return axios.put(
-    `/playlists/${playlistId}/tracks`,
-    {
-      range_start: rangeStart,
-      insert_before: insertBefore,
-      range_length: rangeLength,
-      snapshot_id: snapshotId,
+const changePlaylistDetails = async (playlist_id, data) => {
+  const formData = new FormData();
+
+  for (const key in data) {
+    if (data[key] !== undefined && data[key] !== null) {
+      formData.append(key, data[key]);
+    }
+  }
+
+  return await axios.put(`/api/music/playlists/${playlist_id}/update/`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
     },
-    { params: { uris } }
-  );
-};
-
-/**
- * @description Change a playlist's name and public/private state.
- */
-const changePlaylistDetails = async (playlistId, data) => {
-  return axios.put(`/playlists/${playlistId}`, data);
-};
-
-/**
- * @description Replace the image used to represent a specific playlist.
- */
-const changePlaylistImage = async (playlistId, image, content) => {
-  return axios.put(`/playlists/${playlistId}/images`, image, {
-    headers: { 'Content-Type': content },
   });
 };
 
-/**
- * @description Create a playlist for a Spotify user.
- */
-const createPlaylist = async (userId, data) => {
-  return axios.post(`/users/${userId}/playlists`, data);
-};
-
-/**
- * @description Recommendations are generated based on the available information for a given seed entity.
- */
-const getRecommendations = async (params) => {
-  return axios.get('/recommendations', { params });
-};
-
-/**
- * @description Get a list of the playlists owned or followed by a Spotify user.
- */
-const getPlaylists = async (userId, params) => {
-  return axios.get(`/users/${userId}/playlists`, { params });
-};
 
 export const playlistService = {
-  getPlaylist,
-  getPlaylists,
-  getMyPlaylists,
+  fetchTopTracks,
+  fecthPlaylists,
+  fecthArtists,
+  
+  getSongsOfLikedSong,
+  getSongsOfPlaylist,
+
   createPlaylist,
-  getPlaylistItems,
+  deletePlaylist,
+  getPlaylist,
   addPlaylistItems,
-  getRecommendations,
-  changePlaylistImage,
   removePlaylistItems,
-  getFeaturedPlaylists,
-  reorderPlaylistItems,
-  changePlaylistDetails,
+  changePlaylistDetails
 };

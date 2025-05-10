@@ -13,7 +13,7 @@ export const TopTracks = (props) => {
   return (
     <Row
       gutter={[16, 16]}
-      style={{ margin: '20px 0px', marginTop: isMobile ? 20 : 70 }}
+      style={{ margin: '20px 0px', marginTop: '20px' }}
       justify="space-between"
     >
       {topTracks.slice(0, isMobile ? 4 : undefined).map((item) => (

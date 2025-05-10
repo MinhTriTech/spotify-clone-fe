@@ -7,62 +7,12 @@ import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 
 // Icons
 import {
-  DetailsIcon,
-  DeviceIcon,
   ExpandIcon,
-  ListIcon,
-  MicrophoneIcon,
-  PhoneIcon,
 } from '../../../Icons';
-
-// ❌ Đã gỡ useTranslation
 
 // Redux
 import { uiActions } from '../../../../store/slices/ui';
-import { languageActions } from '../../../../store/slices/language';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
-
-const DetailsButton = () => {
-  const dispatch = useAppDispatch();
-  const active = useAppSelector((state) => !state.ui.detailsCollapsed);
-
-  return (
-    <Tooltip title="Xem bài hát đang phát">
-      <button
-        className={active ? 'active-icon-button tablet-hidden' : 'tablet-hidden'}
-        onClick={() => dispatch(uiActions.toggleDetails())}
-        style={{
-          marginLeft: 5,
-          marginRight: 10,
-          cursor: 'pointer',
-        }}
-      >
-        <DetailsIcon active={active} />
-      </button>
-    </Tooltip>
-  );
-};
-
-const QueueButton = () => {
-  const dispatch = useAppDispatch();
-  const queueCollapsed = useAppSelector((state) => state.ui.queueCollapsed);
-
-  return (
-    <Tooltip title="Hàng đợi">
-      <button
-        onClick={() => dispatch(uiActions.toggleQueue())}
-        className={!queueCollapsed ? 'active-icon-button' : ''}
-        style={{
-          marginLeft: 10,
-          marginRight: 5,
-          cursor: queueCollapsed ? 'pointer' : 'not-allowed',
-        }}
-      >
-        <ListIcon active={!queueCollapsed} />
-      </button>
-    </Tooltip>
-  );
-};
 
 const ExpandButton = () => {
   const handle = useFullScreenHandle();
@@ -94,13 +44,9 @@ const ExtraControlButtons = () => {
   return (
     <div>
       <Row gutter={18} align="middle">
-        <DetailsButton />
-        <QueueButton />
-
         <Col>
           <VolumeControls />
         </Col>
-
         <Col>
           <ExpandButton />
         </Col>

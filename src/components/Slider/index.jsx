@@ -1,4 +1,5 @@
 import { Slider } from '@mui/material';
+import { useAudio } from '../../contexts/AudioContext';
 
 const ModernSlider = ({
   isEnabled = true,
@@ -8,7 +9,7 @@ const ModernSlider = ({
   step = 0.01,
   onChange,
   onChangeComplete,
-  controlType = 'default', // Thêm prop này để phân biệt loại control
+  controlType = 'default',
   ...otherProps
 }) => {
   const handleChange = (event, newValue) => {
@@ -23,10 +24,13 @@ const ModernSlider = ({
     }
   };
 
+  const { currentSrc } = useAudio();
+    const disabled = !currentSrc;
+
   return (
     <div className="modern-slider-container" data-control-type={controlType}>
       <Slider
-        disabled={!isEnabled}
+        disabled={disabled}
         value={value}
         min={min}
         max={max}

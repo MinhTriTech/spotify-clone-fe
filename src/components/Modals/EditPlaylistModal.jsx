@@ -1,20 +1,14 @@
-/* eslint-disable jsx-a11y/alt-text */
-import { Col, message, Modal, Row } from 'antd';
+import { Col, Modal, Row } from 'antd';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import ProForm, { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import ProForm, { ProFormText } from '@ant-design/pro-form';
 
-// Redux
 import { refreshPlaylist } from '../../store/slices/playlist';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { yourLibraryActions } from '../../store/slices/yourLibrary';
 import { editPlaylistModalActions } from '../../store/slices/editPlaylistModal';
 
-// ❌ Đã xoá useTranslation
-
-// Services
 import { playlistService } from '../../services/playlists';
 
-// Constants
 import { PLAYLIST_DEFAULT_IMAGE } from '../../constants/spotify';
 
 const toBase64 = (file) =>
@@ -34,7 +28,7 @@ export const EditPlaylistModal = memo(() => {
   const [file, setFile] = useState(null);
   const [fileUrl, setFileUrl] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  
   function handleChange(e) {
     if (!e.target.files.length) {
       setFileUrl('');
@@ -49,8 +43,7 @@ export const EditPlaylistModal = memo(() => {
   useEffect(() => {
     if (playlist) {
       formRef.current?.setFieldsValue({
-        name: playlist.name,
-        description: playlist.description,
+        title: playlist.title,
       });
     }
   }, [playlist]);
@@ -86,29 +79,23 @@ export const EditPlaylistModal = memo(() => {
         onFinish={async (values) => {
           try {
             setLoading(true);
-            const promises = [playlistService.changePlaylistDetails(playlist.id, values)];
-            if (file) {
-              const base64File = await toBase64(file);
-              const contentType = file.type;
-              const fileWithoutPrefix = base64File.split(',')[1];
-              promises.push(
-                playlistService.changePlaylistImage(playlist.id, fileWithoutPrefix, contentType)
-              );
-            }
-            await Promise.all(promises);
-            message.success('Cập nhật playlist thành công');
+            await playlistService.changePlaylistDetails(playlist.playlist_id, {
+              ...values,
+              image: file || null,
+            });
+
             setLoading(false);
 
-            if (currentPlaylist && playlist.id === currentPlaylist.id) {
-              dispatch(refreshPlaylist(currentPlaylist.id));
+            if (currentPlaylist && playlist.playlist_id === currentPlaylist.playlist_id) {
+              dispatch(refreshPlaylist(currentPlaylist.playlist_id));
             }
+
             dispatch(yourLibraryActions.fetchMyPlaylists());
             dispatch(editPlaylistModalActions.setPlaylist({ playlist: null }));
 
             return true;
           } catch (error) {
             setLoading(false);
-            message.error('Cập nhật playlist thất bại');
             return false;
           }
         }}
@@ -117,7 +104,7 @@ export const EditPlaylistModal = memo(() => {
             <div style={{ textAlign: 'right' }}>
               <button
                 disabled={loading}
-                className='edit-playlist-submit-button'
+                className="edit-playlist-submit-button"
                 onClick={props.submit || props.onSubmit}
               >
                 <span>Lưu</span>
@@ -154,8 +141,8 @@ export const EditPlaylistModal = memo(() => {
                 src={
                   fileUrl
                     ? fileUrl
-                    : playlist?.images?.length
-                    ? playlist.images[0].url
+                    : playlist?.image
+                    ? playlist.image
                     : PLAYLIST_DEFAULT_IMAGE
                 }
                 className='playlist-img'
@@ -165,13 +152,8 @@ export const EditPlaylistModal = memo(() => {
           <Col span={16}>
             <ProFormText
               placeholder='Thêm tên playlist'
-              name='name'
+              name='title'
               rules={[{ required: true, message: '' }]}
-            />
-            <ProFormTextArea
-              name='description'
-              placeholder='Thêm mô tả (không bắt buộc)'
-              fieldProps={{ autoSize: { minRows: 4 } }}
             />
           </Col>
         </Row>

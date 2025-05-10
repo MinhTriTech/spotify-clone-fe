@@ -26,13 +26,14 @@ const BodyContent = () => {
 
                 <Route path="/admin/song" element={<Song />} />
                 <Route path="/admin/song/create" element={<SongCreate />} />
-                <Route path="/admin/song/:id/detail" element={<SongDetail />} />
-                <Route path="/admin/song/:id/update" element={<SongUpdate />} />
+                  
+                <Route path="/admin/song/detail" element={<SongDetail />} />
+                <Route path="/admin/song/update" element={<SongUpdate />} />
 
                 <Route path="/admin/playlist" element={<Playlist />} />
                 <Route path="/admin/playlist/create" element={<PlaylistCreate />} />
-                <Route path="/admin/playlist/:id/detail" element={<PlaylistDetail />} />
-                <Route path="/admin/playlist/:id/update" element={<PlaylistUpdate />} />
+                <Route path="/admin/playlist/detail" element={<PlaylistDetail />} />
+                <Route path="/admin/playlist/update" element={<PlaylistUpdate />} />
 
                 <Route path="/admin/user" element={<User />} />
                 <Route path="/admin/user/create" element={<UserCreate />} />

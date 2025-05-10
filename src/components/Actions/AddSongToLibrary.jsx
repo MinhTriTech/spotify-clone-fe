@@ -1,16 +1,31 @@
-// AddSongToLibraryButton (mocked, cleaned)
-import React from 'react';
 import { Tooltip } from '../Tooltip';
+import { userService } from '../../services/users';
 import { AddedToLibrary, AddToLibrary } from '../Icons';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import { uiActions } from '../../store/slices/ui';
 
-const AddSongToLibrary = ({ id, size, onToggle }) => {
-  const handleAddToLibrary = () => {
-    console.log(`Mock add song ${id} to library`);
-    onToggle();
+const AddSongToLibrary = ({ id, onToggle, size }) => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => !!state.auth.user);
+
+  const handleAddToLibrary = async () => {
+
+    if (!user) {
+      dispatch(uiActions.openLoginButton());
+      return;
+    }
+  
+    try {
+      await userService.saveTracks(id); 
+      onToggle(); 
+    } catch (error) {
+      console.error('Lỗi khi thêm bài hát:', error);
+    }
   };
+  
 
   return (
-    <Tooltip title={'Add to Liked Songs'}>
+    <Tooltip title="Thêm vào Bài hát đã thích">
       <button className="actions" onClick={handleAddToLibrary}>
         <AddToLibrary height={size} width={size} />
       </button>
@@ -18,14 +33,26 @@ const AddSongToLibrary = ({ id, size, onToggle }) => {
   );
 };
 
-const DeleteSongFromLibrary = ({ id, size, onToggle }) => {
-  const handleDeleteFromLibrary = () => {
-    console.log(`Mock remove song ${id} from library`);
-    onToggle();
+const DeleteSongFromLibrary = ({ id, onToggle, size }) => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => !!state.auth.user);
+
+  const handleDeleteFromLibrary = async () => {
+    if (!user) {
+      dispatch(uiActions.openLoginButton());
+      return;
+    }
+
+    try {
+      await userService.deleteTracks(id); 
+      onToggle(); 
+    } catch (error) {
+      console.error('Lỗi khi xóa bài hát:', error);
+    }
   };
 
   return (
-    <Tooltip title={'Remove from Liked Songs'}>
+    <Tooltip title="Xóa khỏi Bài hát đã thích">
       <button onClick={handleDeleteFromLibrary}>
         <AddedToLibrary height={size} width={size} />
       </button>
@@ -33,12 +60,10 @@ const DeleteSongFromLibrary = ({ id, size, onToggle }) => {
   );
 };
 
-const AddSongToLibraryButton = ({ id, isSaved, onToggle, size = 24 }) => {
+export const AddSongToLibraryButton = ({ id, isSaved, onToggle, size = 24 }) => {
   return isSaved ? (
     <DeleteSongFromLibrary size={size} id={id} onToggle={onToggle} />
   ) : (
     <AddSongToLibrary size={size} id={id} onToggle={onToggle} />
   );
 };
-
-export default AddSongToLibraryButton;

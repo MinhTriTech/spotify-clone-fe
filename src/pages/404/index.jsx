@@ -8,10 +8,10 @@ const Page404 = memo(() => {
   return (
     <div className="wrapper">
       <div className="container">
-        <h3>Page not available</h3>
-        <p>Something went wrong, please try again later.</p>
+        <h3>Trang không khả dụng</h3>
+        <p>Có điều gì đó đã sai, vui lòng thử lại sau.</p>
 
-        <button onClick={() => navigate('/')}>Home</button>
+        <button onClick={() => navigate('/')}>Trang chủ</button>
       </div>
     </div>
   );
