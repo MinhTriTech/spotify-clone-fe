@@ -84,6 +84,7 @@ const RoutesComponent = memo(() => {
       { path: '/album/:albumId', element: <AlbumView container={container} /> },
       { path: '/message', element: <Message container={container} /> },
       { path: '/message/:idUser/:idChatRoom', element: <MessView container={container} /> },
+      { path: '/message/:idUser', element: <MessView container={container} /> },
       { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
       { path: '/users/:userId', element: <Profile container={container} /> },

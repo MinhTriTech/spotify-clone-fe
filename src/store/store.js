@@ -27,9 +27,9 @@ import yourLibraryReducer from './slices/yourLibrary';
 import searchHistoryReducer from './slices/searchHistory';
 import editPlaylistModalReducer from './slices/editPlaylistModal';
 import deletePlaylistModalReducer from './slices/deletePlaylistModal';
+import messageReducer from './slices/message';
 import expireReducer from 'redux-persist-expire';
 
-// Combine reducers
 const appReducer = combineReducers({
   ui: uiReducer,
   auth: authReducer,
@@ -45,6 +45,7 @@ const appReducer = combineReducers({
   searchHistory: searchHistoryReducer,
   editPlaylistModal: editPlaylistModalReducer,
   deletePlaylistModal: deletePlaylistModalReducer,
+  message: messageReducer,
 });
 
 const rootReducer = (state, action) => {
