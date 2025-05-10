@@ -4,7 +4,7 @@ import Chip from '../../../../components/Chip';
 import { PageHeader } from '../../../../components/Layout/components/Header';
 import { useAppSelector } from '../../../../store/store';
 
-const SECTIONS = ['ALL', 'ARTISTS', 'TRACKS', 'ALBUMS', 'PLAYLISTS'];
+const SECTIONS = ['ALL', 'ARTISTS', 'TRACKS', 'ALBUMS', 'PLAYLISTS', 'USERS'];
 
 const sectionLabels = {
   ALL: 'TẤT CẢ',
@@ -12,6 +12,7 @@ const sectionLabels = {
   TRACKS: 'BÀI HÁT',
   ALBUMS: 'ALBUM',
   PLAYLISTS: 'DANH SÁCH PHÁT',
+  USERS: 'NGƯỜI DÙNG',
 };
 
 export const SearchHeader = (props) => {

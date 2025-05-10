@@ -1,10 +1,10 @@
-import React from 'react';
 import { Col, Row } from 'antd';
 
 import { SearchedSongs } from '../components/songs';
 import { AlbumsSearchSection } from '../components/albums';
 import { ArtistsSearchSection } from '../components/artists';
 import { PlaylistsSearchSection } from '../components/playlists';
+import { UsersSearchSection } from '../components/users';
 
 export const SearchPageContainer = (props) => {
   return (
@@ -23,6 +23,10 @@ export const SearchPageContainer = (props) => {
 
       <Col span={24}>
         <PlaylistsSearchSection />
+      </Col>
+
+      <Col span={24}>
+        <UsersSearchSection />
       </Col>
     </Row>
   );

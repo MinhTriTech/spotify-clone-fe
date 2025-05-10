@@ -35,8 +35,9 @@ const SearchPage = lazy(() => import('./pages/Search/Home'));
 const SearchTracks = lazy(() => import('./pages/Search/Songs'));
 const LikedSongsPage = lazy(() => import('./pages/LikedSongs'));
 const SearchAlbums = lazy(() => import('./pages/Search/Albums'));
-const SearchPlaylist = lazy(() => import('./pages/Search/Playlists'));
-const SearchPageArtists = lazy(() => import('./pages/Search/Artists'));
+const SearchPlaylists = lazy(() => import('./pages/Search/Playlists'));
+const SearchArtists = lazy(() => import('./pages/Search/Artists'));
+const SearchUsers = lazy(() => import('./pages/Search/Users'));
 const RecentlySearched = lazy(() => import('./pages/Search/RecentlySearched'));
 
 window.addEventListener('resize', () => {
@@ -94,9 +95,10 @@ const RoutesComponent = memo(() => {
         element: <SearchContainer container={container} />,
         children: [
           { path: 'tracks', element: <SearchTracks container={container} /> },
-          { path: 'artists', element: <SearchPageArtists container={container} /> },
+          { path: 'artists', element: <SearchArtists container={container} /> },
           { path: 'albums', element: <SearchAlbums container={container} /> },
-          { path: 'playlists', element: <SearchPlaylist container={container} /> },
+          { path: 'playlists', element: <SearchPlaylists container={container} /> },
+          { path: 'users', element: <SearchUsers container={container} /> },
           { path: '', element: <SearchPage container={container} /> },
         ],
       },
