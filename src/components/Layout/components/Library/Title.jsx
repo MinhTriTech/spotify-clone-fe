@@ -1,15 +1,11 @@
-// Components
 import { AddPlaylistButton } from './AddPlaylistButton';
 import { CloseIcon, LibraryCollapsedIcon, LibraryIcon } from '../../../Icons';
 
-// Utils
 import { memo } from 'react';
 
-// Components
 import { Flex, Space } from 'antd';
 import { Tooltip } from '../../../Tooltip';
 
-// Redux
 import { getLibraryCollapsed, uiActions } from '../../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 

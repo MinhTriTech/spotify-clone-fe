@@ -34,5 +34,11 @@ export const sendMessage = async ({ content, recipient_id, chatroom_id }) => {
   }
 };
 
+export const messageService = {
+  fetchChatRooms,
+  fetchMessages,
+  sendMessage,
+};
+
 
 

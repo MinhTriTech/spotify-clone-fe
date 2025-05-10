@@ -18,6 +18,10 @@ export function GridItemComponent(props) {
     if (item.album_id && item.artist_id) {
       return <AlbumCard item={item} onClick={onClick} />;
     }
+
+    if (item.id && item.username) {
+      return <ArtistCard item={item} onClick={onClick} />;
+    }
   return null;
 }
 
@@ -64,6 +68,15 @@ export function GridItemList(props) {
             } else if (item.artist_id) {
               return (
                 <div key={String(item.artist_id)} style={{ position: 'relative' }}>
+                  <GridItemComponent
+                    item={item}
+                    onClick={onItemClick ? () => onItemClick(item) : undefined}
+                  />
+                </div>
+              );
+            } else if (item.id && item.username) {
+              return (
+                <div key={String(item.id)} style={{ position: 'relative' }}>
                   <GridItemComponent
                     item={item}
                     onClick={onItemClick ? () => onItemClick(item) : undefined}

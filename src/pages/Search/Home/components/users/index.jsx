@@ -4,10 +4,10 @@ import { GridItemList } from '../../../../../components/Lists/list';
 
 import { useAppSelector } from '../../../../../store/store';
 
-export const ArtistsSearchSection = memo(() => {
-  const artists = useAppSelector((state) => state.search.artists);
+export const UsersSearchSection = memo(() => {
+  const users = useAppSelector((state) => state.search.users);
 
-  if (!artists || !artists.length) {
+  if (!users || !users.length) {
     return null;
   }
 
@@ -15,8 +15,8 @@ export const ArtistsSearchSection = memo(() => {
     <div>
       <div>
         <GridItemList
-          items={artists}
-          title="Nghệ sĩ"
+          items={users}
+          title="Người dùng"
         />
       </div>
     </div>

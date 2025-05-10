@@ -218,7 +218,7 @@ const ArtistCardShort = ({ artist }) => {
   const navigate = useNavigate();
 
   const onClick = () => {
-    navigate(`/artist/${artist.id}`);
+    navigate(`/artist/${artist.artist_id}`);
   };
 
   return (

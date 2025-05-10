@@ -12,6 +12,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 import { fetchUser } from './store/slices/auth';
 
+import { initSocket } from './services/socket';
+
 import { AudioProvider, useAudio } from './contexts/AudioContext';
 
 import SearchContainer from './pages/Search/Container';
@@ -24,10 +26,8 @@ const Page404 = lazy(() => import('./pages/404'));
 const AlbumView = lazy(() => import('./pages/Album'));
 const Message = lazy(() => import('./pages/Message'));
 const MessView = lazy(() => import('./pages/Message/components/MessView'));
-const GenrePage = lazy(() => import('./pages/Genre'));
 const ArtistPage = lazy(() => import('./pages/Artist'));
 const PlaylistView = lazy(() => import('./pages/Playlist'));
-const ArtistDiscographyPage = lazy(() => import('./pages/Discography'));
 
 const Profile = lazy(() => import('./pages/User/Home'));
 
@@ -35,9 +35,9 @@ const SearchPage = lazy(() => import('./pages/Search/Home'));
 const SearchTracks = lazy(() => import('./pages/Search/Songs'));
 const LikedSongsPage = lazy(() => import('./pages/LikedSongs'));
 const SearchAlbums = lazy(() => import('./pages/Search/Albums'));
-const SearchPlaylist = lazy(() => import('./pages/Search/Playlists'));
-const SearchPageArtists = lazy(() => import('./pages/Search/Artists'));
-const RecentlySearched = lazy(() => import('./pages/Search/RecentlySearched'));
+const SearchPlaylists = lazy(() => import('./pages/Search/Playlists'));
+const SearchArtists = lazy(() => import('./pages/Search/Artists'));
+const SearchUsers = lazy(() => import('./pages/Search/Users'));
 
 window.addEventListener('resize', () => {
   const vh = window.innerWidth;
@@ -83,20 +83,19 @@ const RoutesComponent = memo(() => {
       { path: '/album/:albumId', element: <AlbumView container={container} /> },
       { path: '/message', element: <Message container={container} /> },
       { path: '/message/:idUser/:idChatRoom', element: <MessView container={container} /> },
-      { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
+      { path: '/message/:idUser', element: <MessView container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
       { path: '/users/:userId', element: <Profile container={container} /> },
-      { public: true, path: '/genre/:genreId', element: <GenrePage /> },
-      { path: '/recent-searches', element: <RecentlySearched /> },
       {
         public: true,
         path: '/search/:search',
         element: <SearchContainer container={container} />,
         children: [
           { path: 'tracks', element: <SearchTracks container={container} /> },
-          { path: 'artists', element: <SearchPageArtists container={container} /> },
+          { path: 'artists', element: <SearchArtists container={container} /> },
           { path: 'albums', element: <SearchAlbums container={container} /> },
-          { path: 'playlists', element: <SearchPlaylist container={container} /> },
+          { path: 'playlists', element: <SearchPlaylists container={container} /> },
+          { path: 'users', element: <SearchUsers container={container} /> },
           { path: '', element: <SearchPage container={container} /> },
         ],
       },
@@ -165,6 +164,10 @@ const RootComponent = () => {
 };
 
 function App() {
+  useEffect(() => {
+    initSocket();
+  }, []);
+
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
       <AntdApp> 

@@ -1,62 +1,54 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { List, Avatar, Space } from 'antd';
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
-import { fetchChatRooms } from '../../../../services/message';
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { subscribeToSocket } from '../../../../services/socket';
+import { messageActions } from '../../../../store/slices/message';
 
 const MessageList = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [conversations, setConversations] = useState([]);
-  const [sockets, setSockets] = useState({});
 
+  const message = useAppSelector((state) => state.message.messList);
+   
   useEffect(() => {
-    fetchChatRooms()
-      .then(data => {
-        const parsed = data.map(item => ({
-          id: item.id,
-          idUser: item.other_user_id,
-          user: item.other_user_name,
-          lastMessage: item.last_message?.content || 'No messages yet',
-          time: item.last_message?.timestamp
-            ? new Date(item.last_message.timestamp).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })
-            : '',
-        }));
+    const unsubscribe = subscribeToSocket((data) => {
+      const room = message.find(item => item.id === data.room_id);
+      if (room) {
+          dispatch(messageActions.updateMessageList(data));
+      } else {
+          dispatch(messageActions.fetchChatRooms());
+      }
+    });
 
-        setConversations(parsed);
+    return () => unsubscribe();
+  }, [message]);
+  
+  useEffect(() => {
+    if (!message || message.length === 0) {
+      setConversations([]);
+      return;
+    }
 
-        // parsed.forEach(conversation => {
-        //   const ws = new WebSocket(`ws://localhost:8000/ws/chat/${conversation.id}/`); 
+    const parsed = message.map(item => ({
+      id: item.id,
+      idUser: item.other_user_id,
+      user: item.other_user_name,
+      lastMessage: item.last_message?.content,
+      time: item.last_message?.timestamp
+        ? new Date(item.last_message.timestamp).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : '',
+    }));
 
-        //   ws.onmessage = (event) => {
-        //     const data = JSON.parse(event.data);
-        //     setConversations((prevConversations) => {
-        //       const updatedConversations = prevConversations.map(conversation => {
-        //         if (conversation.id === data.id) {
-        //           return { ...conversation, lastMessage: data.message, time: new Date().toLocaleTimeString() };
-        //         }
-        //         return conversation;
-        //       });
-        //       return updatedConversations;
-        //     });
-        //   };
+    setConversations(parsed);
+  }, [message]);
 
-        //   setSockets(prevSockets => ({ ...prevSockets, [conversation.id]: ws }));
-        // });
-      })
-      .catch((err) => {
-        console.error('❌ Failed to fetch conversations:', err);
-        setConversations([]);
-      });
-
-    return () => {
-      Object.values(sockets).forEach(ws => ws.close());
-    };
-  }, []);
-
-  const handleClick = (id, idUser, user) => navigate(`/message/${idUser}/${id}`, { state: {user, id} });
+  const handleClick = (id, idUser) => navigate(`/message/${idUser}/${id}`);
 
   return (
     <div className="message-list">

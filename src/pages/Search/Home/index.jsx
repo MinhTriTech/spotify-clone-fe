@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import { memo, useEffect } from 'react';
 
 import SearchPageContainer from './container';
 
@@ -18,6 +18,7 @@ export const SearchPage = memo((props) => {
   const artists = useAppSelector((state) => state.search.artists);
   const playlists = useAppSelector((state) => state.search.playlists);
   const albums = useAppSelector((state) => state.search.albums);
+  const users = useAppSelector((state) => state.search.users);
 
   useEffect(() => {
     dispatch(searchActions.setSection('ALL'));
@@ -31,7 +32,7 @@ export const SearchPage = memo((props) => {
 
   if (loading) return null;
 
-  if (songs.length < 1 && artists.length < 1 && playlists.length < 1 && albums.length < 1) {
+  if (songs.length < 1 && artists.length < 1 && playlists.length < 1 && albums.length < 1 && users.length < 1) {
     return <NoSearchResults searchValue={params.search || ''} />;
   }
 
