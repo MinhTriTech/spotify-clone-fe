@@ -1,5 +1,5 @@
 let socket = null;
-let listeners = [];
+let listeners = new Set();
 
 export const initSocket = () => {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
@@ -19,9 +19,9 @@ export const initSocket = () => {
 export const getSocket = () => socket;
 
 export const subscribeToSocket = (callback) => {
-  listeners.push(callback);
+  listeners.add(callback); 
   return () => {
-    listeners = listeners.filter((cb) => cb !== callback);
+    listeners.delete(callback); 
   };
 };
 
@@ -32,4 +32,3 @@ export const sendToSocket = (data) => {
     console.warn('⚠️ WebSocket is not connected. Message not sent.');
   }
 };
-

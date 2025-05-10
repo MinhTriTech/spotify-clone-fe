@@ -26,10 +26,8 @@ const Page404 = lazy(() => import('./pages/404'));
 const AlbumView = lazy(() => import('./pages/Album'));
 const Message = lazy(() => import('./pages/Message'));
 const MessView = lazy(() => import('./pages/Message/components/MessView'));
-const GenrePage = lazy(() => import('./pages/Genre'));
 const ArtistPage = lazy(() => import('./pages/Artist'));
 const PlaylistView = lazy(() => import('./pages/Playlist'));
-const ArtistDiscographyPage = lazy(() => import('./pages/Discography'));
 
 const Profile = lazy(() => import('./pages/User/Home'));
 
@@ -40,7 +38,6 @@ const SearchAlbums = lazy(() => import('./pages/Search/Albums'));
 const SearchPlaylists = lazy(() => import('./pages/Search/Playlists'));
 const SearchArtists = lazy(() => import('./pages/Search/Artists'));
 const SearchUsers = lazy(() => import('./pages/Search/Users'));
-const RecentlySearched = lazy(() => import('./pages/Search/RecentlySearched'));
 
 window.addEventListener('resize', () => {
   const vh = window.innerWidth;
@@ -87,11 +84,8 @@ const RoutesComponent = memo(() => {
       { path: '/message', element: <Message container={container} /> },
       { path: '/message/:idUser/:idChatRoom', element: <MessView container={container} /> },
       { path: '/message/:idUser', element: <MessView container={container} /> },
-      { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
       { path: '/users/:userId', element: <Profile container={container} /> },
-      { public: true, path: '/genre/:genreId', element: <GenrePage /> },
-      { path: '/recent-searches', element: <RecentlySearched /> },
       {
         public: true,
         path: '/search/:search',

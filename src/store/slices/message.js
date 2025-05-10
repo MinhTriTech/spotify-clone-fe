@@ -21,7 +21,18 @@ const messageSlice = createSlice({
   name: 'message',
   initialState,
   reducers: {
+      updateMessageList: (state, action) => {
+        const { message, room_id, sender_id } = action.payload;
+        const updatedTime = new Date().toISOString();
 
+        const index = state.messList.findIndex(item => item.id === parseInt(room_id));
+
+        if (index !== -1) {
+          state.messList[index].last_message.content = message;
+          state.messList[index].last_message.timestamp = updatedTime;
+          state.messList[index].last_message.sender_id = sender_id;
+        }
+      },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchChatRooms.pending, (state) => {

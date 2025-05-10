@@ -2,13 +2,24 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { List, Avatar, Space } from 'antd';
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
-import { useAppSelector } from '../../../../store/store';
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { subscribeToSocket } from '../../../../services/socket';
+import { messageActions } from '../../../../store/slices/message';
 
 const MessageList = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [conversations, setConversations] = useState([]);
 
   const message = useAppSelector((state) => state.message.messList);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToSocket((data) => {
+      dispatch(messageActions.updateMessageList(data));
+    });
+
+    return () => unsubscribe();
+  }, [message]);
   
   useEffect(() => {
     if (!message || message.length === 0) {
