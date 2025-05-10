@@ -13,6 +13,17 @@ export const fetchAlbums = async () => {
     }
 };
 
+// Hàm lấy nghệ sĩ theo ID
+export const fetchAlbumById = async (id) => {
+    try {
+      const response = await axios.get(`${API_URL}${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error(`Fetch album by ID ${id} error:`, error);
+      throw error;
+    }
+  };
+
 // Hàm thêm album
 export const addAlbum = async (albumData) => {
     try {
@@ -31,7 +42,11 @@ export const addAlbum = async (albumData) => {
 // Hàm cập nhật album
 export const updateAlbum = async (id, albumData) => {
     try {
-        const response = await axios.put(`${API_URL}${id}/update/`, albumData);
+        const response = await axios.put(`${API_URL}${id}/update/`, albumData, {
+            headers: {
+                "Content-Type": "multipart/form-data", // Để hỗ trợ upload file nếu có
+            },
+        });
         return response.data;
     } catch (error) {
         console.error('Update album error:', error);
@@ -46,6 +61,25 @@ export const deleteAlbum = async (id) => {
         return response.data;
     } catch (error) {
         console.error('Delete album error:', error);
+        throw error;
+    }
+};
+
+
+
+// Hàm tìm kiếm albums theo title (có phân trang)
+export const searchAlbums = async (title, page = 1, pageSize = 6) => {
+    try {
+        const response = await axios.get(`${API_URL}search/`, {
+            params: {
+                title,
+                page,
+                page_size: pageSize,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error(`Search albums error:`, error);
         throw error;
     }
 };
