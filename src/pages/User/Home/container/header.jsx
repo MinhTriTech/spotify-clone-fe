@@ -1,6 +1,7 @@
 import { useAppSelector } from '../../../../store/store';
 import { memo } from 'react';
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
+import { MessageUserButton } from './messageButton';
 
 export const UserHeader = memo((props) => {
   const user = useAppSelector((state) => state.profile.user);
@@ -42,6 +43,10 @@ export const UserHeader = memo((props) => {
           <span className='profile-header-name-container'>
             <h1>{user?.username}</h1>
           </span>
+        </div>
+
+        <div style={{ marginRight: 25 }}>
+          <MessageUserButton id={user.id} />
         </div>
       </div>
     </div>
