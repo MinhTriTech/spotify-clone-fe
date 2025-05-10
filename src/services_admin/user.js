@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/api/manager/users/';
@@ -65,4 +66,5 @@ export const resetPassword = async (id, newPassword = '123456') => {
     password: newPassword,
   });
   return response.data;
+
 };

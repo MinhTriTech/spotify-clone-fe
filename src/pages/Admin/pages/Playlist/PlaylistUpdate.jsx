@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { updatePlaylist } from "../../../../services_admin/playlist";
 import { ButtonAdmin } from "../../components";
-
+import { deletePlaylistSong } from "../../../../services_admin/playlistSong";
 const PlaylistUpdate = () => {
     const navigate = useNavigate();
     const { id } = useParams();

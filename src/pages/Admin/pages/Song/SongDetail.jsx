@@ -8,6 +8,8 @@ import { deleteSong, fetchSongById } from "../../../../services_admin/song";
 import { fetchSongs } from "../../../../services_admin/song";
 import axios from "axios";
 import { fetchAlbums } from "../../../../services_admin/album";
+import { deleteAlbumSong } from "../../../../services_admin/albumSong";
+import { set } from "lodash";
 
 const SongDetail = () => {
     const { id } = useParams();
@@ -90,6 +92,8 @@ const SongDetail = () => {
         const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa bài hát này? (Thao tác này không thể hoàn tác)");
         if (confirmDelete) {
             try {
+                await axios.delete(`http://127.0.0.1:8000/api/manager/artist_songs/delete_by_song/?song_id=${id}`);
+                await axios.delete(`http://127.0.0.1:8000/api/manager/album_songs/delete_by_song/?song_id=${id}`);
                 await deleteSong(id);
                 alert("Đã xóa bài hát thành công!");
                 await loadSongs();
