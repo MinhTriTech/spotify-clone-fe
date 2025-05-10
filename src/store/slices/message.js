@@ -32,6 +32,8 @@ const messageSlice = createSlice({
           state.messList[index].last_message.timestamp = updatedTime;
           state.messList[index].last_message.sender_id = sender_id;
         }
+
+        state.messList.sort((a, b) => new Date(b.last_message.timestamp) - new Date(a.last_message.timestamp));
       },
   },
   extraReducers: (builder) => {

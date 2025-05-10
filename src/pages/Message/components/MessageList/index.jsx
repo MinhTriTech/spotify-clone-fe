@@ -12,10 +12,15 @@ const MessageList = () => {
   const [conversations, setConversations] = useState([]);
 
   const message = useAppSelector((state) => state.message.messList);
-
+   
   useEffect(() => {
     const unsubscribe = subscribeToSocket((data) => {
-      dispatch(messageActions.updateMessageList(data));
+      const room = message.find(item => item.id === data.room_id);
+      if (room) {
+          dispatch(messageActions.updateMessageList(data));
+      } else {
+          dispatch(messageActions.fetchChatRooms());
+      }
     });
 
     return () => unsubscribe();

@@ -27,7 +27,7 @@ const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
     });
 
     return () => unsubscribe();
-  }, [conversationId, recipientId, idUser.user_info.id]);
+  }, [conversationId, recipientId]);
 
 
   useEffect(() => {
