@@ -2,42 +2,31 @@ import { useState, useEffect, useRef } from 'react';
 import { Avatar } from 'antd';
 import { sendMessage } from '../../../../services/message';
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { subscribeToSocket, sendToSocket } from '../../../../services/socket';
 
 const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const chatBodyRef = useRef(null);
-  const socketRef = useRef(null);
   const navigate = useNavigate();
+  const { idUser } = useParams();
 
   useEffect(() => {
-    socketRef.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/`);
+    const unsubscribe = subscribeToSocket((data) => {
+      if (data.room_id === conversationId) {
+        const msg = {
+          text: data.message,
+          sender: data.sender_id === parseInt(recipientId) ? 'other' : 'user',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages((prev) => [...prev, msg]);
+      }
+    });
 
-    socketRef.current.onopen = () => {
-      console.log('🔌 WebSocket connected');
-    };
-
-    socketRef.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      const incomingMsg = {
-        text: data.message,
-        sender: data.sender_id === parseInt(recipientId) ? 'other' : 'user',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-
-      setMessages((prev) => [...prev, incomingMsg]);
-    };
-
-    socketRef.current.onclose = () => {
-      console.log('❌ WebSocket disconnected');
-    };
-
-    return () => {
-      socketRef.current?.close();
-    };
+    return () => unsubscribe();
   }, [conversationId, recipientId]);
+
 
   useEffect(() => {
     if (chatBodyRef.current) {
@@ -55,15 +44,11 @@ const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
 
     setInput('');
 
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(
-        JSON.stringify({
-          message: text,
-          sender_id: recipientId,
-          room_id: conversationId,
-        })
-      );
-    }
+    sendToSocket({
+      message: text,
+      sender_id: idUser,
+      room_id: conversationId,
+    });
 
     try {
       const response = await sendMessage({
@@ -72,7 +57,7 @@ const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
         chatroom_id: conversationId,
       });
 
-      if (conversationId === null) {
+      if (!conversationId) {
         const newChatRoomId = response.chatroom_id;
         navigate(`/message/${recipientId}/${newChatRoomId}`);
       }

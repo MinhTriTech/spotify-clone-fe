@@ -12,6 +12,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 import { fetchUser } from './store/slices/auth';
 
+import { initSocket } from './services/socket';
+
 import { AudioProvider, useAudio } from './contexts/AudioContext';
 
 import SearchContainer from './pages/Search/Container';
@@ -168,6 +170,10 @@ const RootComponent = () => {
 };
 
 function App() {
+  useEffect(() => {
+    initSocket();
+  }, []);
+
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
       <AntdApp> 
