@@ -5,8 +5,6 @@ import {PlayListActionsWrapper} from '../../../../Actions/PlaylistActions';
 
 import { useNavigate } from 'react-router-dom';
 
-import { playerService } from '../../../../../services/player';
-
 import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { yourLibraryActions } from '../../../../../store/slices/yourLibrary';
 
@@ -113,8 +111,6 @@ const CardList = (props) => {
           : getSongsOfLikedSong()
       ).unwrap();
 
-       
-
       if (tracks && tracks.length > 0) {
         const formattedTracks = tracks.map(track => ({
           id: track.song_id,
@@ -204,14 +200,10 @@ const CardList = (props) => {
 const Card = memo((props) => {
   const collapsed = useAppSelector((state) => state.ui.libraryCollapsed);
 
-  const onDoubleClick = () => {
-    playerService.startPlayback({ context_uri: props.uri });
-  };
-
   if (collapsed) {
-    return <CollapsedCard {...props} onDoubleClick={onDoubleClick} />;
+    return <CollapsedCard {...props} />;
   }
-  return <CardList {...props} onDoubleClick={onDoubleClick} />;
+  return <CardList {...props} />;
 });
 
 const ArtistCardShort = ({ artist }) => {

@@ -12,13 +12,12 @@ export const fecthArtists = async () => {
   return await axios.get('api/music/artists/suggested');
 };
 
+const getSongsOfLikedSong = async () => {
+  return await axios.get(`api/music/songs/favorites`);
+};
 
 const getSongsOfPlaylist = async (id) => {
   return await axios.get(`api/music/playlists/${id}/songs`);
-};
-
-const getSongsOfLikedSong = async () => {
-  return await axios.get(`api/music/songs/favorites`);
 };
 
 const createPlaylist = async (title, image) => {
@@ -53,6 +52,23 @@ const removePlaylistItems = async (playlist_id, song_id) => {
   });
 };
 
+const changePlaylistDetails = async (playlist_id, data) => {
+  const formData = new FormData();
+
+  for (const key in data) {
+    if (data[key] !== undefined && data[key] !== null) {
+      formData.append(key, data[key]);
+    }
+  }
+
+  return await axios.put(`/api/music/playlists/${playlist_id}/update/`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
+
 export const playlistService = {
   fetchTopTracks,
   fecthPlaylists,
@@ -66,4 +82,5 @@ export const playlistService = {
   getPlaylist,
   addPlaylistItems,
   removePlaylistItems,
+  changePlaylistDetails
 };

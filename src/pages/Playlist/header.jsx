@@ -9,15 +9,11 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../constants/spotify';
 
 import tinycolor from 'tinycolor2';
-import { getPlaylistDescription } from '../../utils/getDescription';
 
-import { isRightLayoutOpen } from '../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
 const PlaylistHeader = ({ container, color, sectionContainer }) => {
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
-  const owner = useAppSelector((state) => state.playlist.user);
   const playlist = useAppSelector((state) => state.playlist.playlist);
   const tracks = useAppSelector((state) => state.playlist.tracks);
   const isMineCheck = useAppSelector((state) => state.playlist.canEdit);

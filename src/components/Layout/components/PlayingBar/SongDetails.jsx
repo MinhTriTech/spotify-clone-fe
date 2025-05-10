@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { spotifyActions } from '../../../../store/slices/spotify';
 import {AddSongToLibraryButton} from '../../../Actions/AddSongToLibrary';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 import { uiActions } from '../../../../store/slices/ui';
@@ -40,12 +39,7 @@ const SongDetails = memo((props) => {
   const dispatch = useAppDispatch();
   const { currentTrack } = useAudio();
 
-  const isLiked = useAppSelector((state) => state.spotify.liked);
   const detailsOpen = useAppSelector((state) => !state.ui.detailsCollapsed);
-
-  const handleToggle = () => {
-    dispatch(spotifyActions.setLiked({ liked: !isLiked }));
-  };
 
   if (!currentTrack) return <div className="mobile-hidden" style={{ minWidth: 295 }}></div>;
 
@@ -53,10 +47,8 @@ const SongDetails = memo((props) => {
     <div className="flex flex-row items-center playing-container">
       <div style={{ marginRight: 15 }}>
         <TrackActionsWrapper
-          saved={isLiked}
           track={currentTrack}
           trigger={['contextMenu']}
-          onSavedToggle={handleToggle}
         >
           <div className="playing-cover-container">
             <img
@@ -79,10 +71,8 @@ const SongDetails = memo((props) => {
 
       <div id="song-and-artist-name">
         <TrackActionsWrapper
-          saved={isLiked}
           track={currentTrack}
           trigger={['contextMenu']}
-          onSavedToggle={handleToggle}
         >
           <p className="text-white font-bold song-title" title={currentTrack?.title}>
             {currentTrack?.title}
@@ -109,9 +99,7 @@ const SongDetails = memo((props) => {
       {!props.isMobile && (
         <AddSongToLibraryButton
           size={17}
-          isSaved={isLiked}
           id={currentTrack?.id}
-          onToggle={handleToggle}
         />
       )}
     </div>

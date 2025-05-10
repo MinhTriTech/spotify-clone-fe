@@ -20,7 +20,6 @@ export const Song = ({ song }) => {
       size='small'
       context={{ uris }}
       fields={[
-        SongViewComponents.ClickeableCover,
         SongViewComponents.Title,
         SongViewComponents.Album,
         () => (

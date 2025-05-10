@@ -5,12 +5,10 @@ import { FavouriteArtists } from '../components/favouriteArtists';
 
 import { memo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../store/store';
-import useIsMobile from '../../../utils/isMobile';
 
 const HomePageContainer = memo((props) => {
   const [color, setColor] = useState('rgb(66, 32, 35)');
 
-  const isMobile = useIsMobile();
   const sectionContainerRef = useRef(null);
   const user = useAppSelector((state) => !!state.auth.user);
 
@@ -19,7 +17,7 @@ const HomePageContainer = memo((props) => {
       <div
         className="Home-seccion"
         style={{
-          paddingTop: isMobile ? 50 : 0,
+          paddingTop: 0,
           transition: 'background 5s',
           background: `linear-gradient(180deg, ${color} 2%, rgb(18, 18, 18) 18%)`,
         }}

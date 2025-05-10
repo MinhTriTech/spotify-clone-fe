@@ -1,9 +1,7 @@
 import { memo, useLayoutEffect, useState } from 'react';
 
-// Components
 import { Drawer } from 'antd';
 
-// Redux
 import { useAppSelector } from '../../store/store';
 import YourLibrary from '../Layout/components/Library/list';
 

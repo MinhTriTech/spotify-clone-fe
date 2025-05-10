@@ -1,13 +1,8 @@
 import { Tooltip } from '../Tooltip';
 import { userService } from '../../services/users';
 import { AddedToLibrary, AddToLibrary } from '../Icons';
-import { message } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/store';
-import { albumActions } from '../../store/slices/album';
-import { artistActions } from '../../store/slices/artist';
-import { playlistActions } from '../../store/slices/playlist';
 import { uiActions } from '../../store/slices/ui';
-import React from 'react';
 
 const AddSongToLibrary = ({ id, onToggle, size }) => {
   const dispatch = useAppDispatch();

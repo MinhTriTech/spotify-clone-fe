@@ -1,19 +1,13 @@
 import { Tooltip } from 'antd';
-import ReactTimeAgo from 'react-time-ago';
 import { useCallback, useMemo } from 'react';
 import { MenuIcon, Pause, Play } from '../Icons';
 import TrackActionsWrapper from '../Actions/TrackActions';
 
-import { msToTime } from '../../utils';
-
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ArtistActionsWrapper from '../Actions/ArtistActions';
-import { AddSongToLibraryButton } from '../Actions/AddSongToLibrary';
 
-import { spotifyActions } from '../../store/slices/spotify';
-import useIsMobile from '../../utils/isMobile';
 import { EQUILISER_IMAGE } from '../../constants/spotify';
 import { uiActions } from '../../store/slices/ui';
 
@@ -30,35 +24,6 @@ const getArtists = (artists) => {
       {i < artists.slice(0, 3).length - 1 ? ', ' : ''}
     </span>
   ));
-};
-
-const ClickeableCover = (props) => {
-  const { song, onPlay, isCurrent, isPlaying } = props;
-
-  const button = (
-    <button className='image-button' onClick={onPlay}>
-      {isPlaying && isCurrent ? <Pause /> : <Play />}
-    </button>
-  );
-
-  const imageUrl = (song?.album?.images || [])[0]?.url;
-  if (!imageUrl) return null;
-
-  return (
-    <div className={`image p-2 h-full items-center`}>
-      <div style={{ position: 'relative' }}>
-        <div>
-          <img
-            src={imageUrl}
-            alt={song.album.name}
-            className='rounded-md'
-            style={{ width: 40, height: 40 }}
-          />
-        </div>
-        {button}
-      </div>
-    </div>
-  );
 };
 
 const Title = (props) => {
@@ -134,67 +99,6 @@ const Artists = ({ song, isList }) => {
   );
 };
 
-const Album = ({ song }) => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
-
-  const onNavigate = useCallback(
-    (e) => {
-      if (e) e.stopPropagation();
-      if (e) e.preventDefault();
-      if (!user) {
-        return dispatch(uiActions.openLoginModal(song.album.images[0].url));
-      }
-      navigate(`/album/${song.album.id}`);
-    },
-    [user, navigate, song.album.id, song.album.images, dispatch]
-  );
-
-  return (
-    <p className='text-left tablet-hidden' style={{ flex: 5 }}>
-      <Link to={`/album/${song.album.id}`} onClick={onNavigate}>
-        {song.album.name}
-      </Link>
-    </p>
-  );
-};
-
-const AddedAt = ({ addedAt }) => {
-  const language = useAppSelector((state) => state.language.language);
-  if (!addedAt) return null;
-  return (
-    <p className='text-left tablet-hidden' style={{ flex: 3 }}>
-      <ReactTimeAgo date={new Date(addedAt)} locale={language === 'es' ? 'es-AR' : undefined} />
-    </p>
-  );
-};
-
-const AddToLiked = ({
-  song,
-  saved,
-  onLikeRefresh,
-}) => {
-  const dispatch = useAppDispatch();
-  const currentSong = useAppSelector(
-    (state) => state.spotify.state?.track_window.current_track.id
-  );
-
-  return (
-    <p className='text-right tablet-hidden' style={{ flex: 1, display: 'flex', justifyContent: 'end' }}>
-      <AddSongToLibraryButton
-        size={18}
-        id={song.id}
-        isSaved={!!saved}
-        onToggle={() => {
-          if (onLikeRefresh) onLikeRefresh(song.id);
-          if (currentSong === song.id) dispatch(spotifyActions.setLiked({ liked: !saved }));
-        }}
-      />
-    </p>
-  );
-};
-
 const Actions = ({ song }) => {
   return (
     <div className='text-right actions tablet-hidden' style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
@@ -206,14 +110,6 @@ const Actions = ({ song }) => {
         </Tooltip>
       </TrackActionsWrapper>
     </div>
-  );
-};
-
-const Time = ({ song }) => {
-  return (
-    <p className='text-right' style={{ flex: 1, display: 'flex', justifyContent: 'end' }}>
-      {msToTime(song.duration_ms)}
-    </p>
   );
 };
 
@@ -244,7 +140,6 @@ const Index = ({ index, isCurrent, isPlaying, onClick }) => {
   );
 };
 
-
 export const SongView = (props) => {
   const { size = 'normal' } = props;
   const { activable, view, song, index, artist, fields, canEdit } = props;
@@ -254,10 +149,9 @@ export const SongView = (props) => {
     return song && song.song_id && currentTrack?.id === song.song_id;
   }, [song, currentTrack]);
   
-  const isMobile = useIsMobile();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => !!state.auth.user);
-  const selectedView = isMobile ? 'LIST' : view;
+  const selectedView = view;
   const isList = selectedView === 'LIST';
 
 
@@ -304,8 +198,6 @@ export const SongView = (props) => {
       trigger={['contextMenu']}
     >
       <button
-        onClick={isMobile ? onClick : undefined}
-        onDoubleClick={!isMobile ? onClick : undefined}
         className={`flex flex-col w-full hover:bg-spotify-gray-lightest items-center ${
           size === 'normal' ? 'p-2' : ''
         } rounded-lg ${activable ? 'activable-song' : ''}`}
@@ -336,13 +228,8 @@ export default SongView;
 
 export const SongViewComponents = {
   Title,
-  ClickeableCover,
   TitleWithCover,
   Artists,
   Cover,
-  Album,
-  AddedAt,
-  AddToLiked,
   Actions,
-  Time,
 };
