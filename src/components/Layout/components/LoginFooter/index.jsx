@@ -1,15 +1,11 @@
 import { memo, useCallback } from 'react';
 import WhiteButton from '../../../Button';
-import useIsMobile from '../../../../utils/isMobile';
 
 import { uiActions } from '../../../../store/slices/ui';
 import { useAppDispatch } from '../../../../store/store';
 
 export const LoginFooter = memo(() => {
   const dispatch = useAppDispatch();
-  const isMobile = useIsMobile();
-
-  if (isMobile) return null;
 
   const handleLogin = useCallback(() => {
       dispatch(uiActions.toggleLoginModalMain());

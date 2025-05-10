@@ -98,9 +98,9 @@ export const getLibraryItems = createSelector(
 );
 
 export const getUserPlaylists = createSelector(
-  [(state) => state.yourLibrary.myPlaylists, (state) => state.auth.user],
-  (playlists, user) => {
-    return playlists.filter((playlist) => playlist.owner?.id === user?.id);
+  [(state) => state.yourLibrary.myPlaylists],
+  (playlists) => {
+    return playlists;
   }
 );
 

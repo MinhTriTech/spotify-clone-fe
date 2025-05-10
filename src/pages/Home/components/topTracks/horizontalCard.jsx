@@ -1,21 +1,16 @@
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
 import TrackActionsWrapper from '../../../../components/Actions/TrackActions';
 
-// Utils
 import tinycolor from 'tinycolor2';
-import useIsMobile from '../../../../utils/isMobile';
 import { getImageAnalysis2 } from '../../../../utils/imageAnyliser';
 
-// Contexts
 import { useAudio } from '../../../../contexts/AudioContext';
 
-// Constants
 import { EQUILISER_IMAGE } from '../../../../constants/spotify';
 
 export const HorizontalCard = memo(({ item, setColor }) => {
-  const isMobile = useIsMobile();
   const { currentSrc, isPlaying } = useAudio(); 
 
   const isCurrent = currentSrc.includes(item.file_path);
@@ -55,13 +50,9 @@ export const HorizontalCard = memo(({ item, setColor }) => {
         <div className="text-container">
           <div className="text-section">
             <div>
-              {isMobile ? (
+              <Link title={item.title}>
                 <p>{item.title}</p>
-              ) : (
-                <Link title={item.title}>
-                  <p>{item.title}</p>
-                </Link>
-              )}
+              </Link>
             </div>
           </div>
 

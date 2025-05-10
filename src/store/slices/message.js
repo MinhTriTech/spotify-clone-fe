@@ -16,7 +16,6 @@ export const fetchChatRooms = createAsyncThunk(
   }
 );
 
-
 const messageSlice = createSlice({
   name: 'message',
   initialState,

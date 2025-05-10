@@ -21,17 +21,7 @@ const profileSlice = createSlice({
   reducers: {
     removeUser: (state) => {
       state.user = null;
-      state.following = false;
       state.playlists = [];
-      state.artists = [];
-      state.songs = [];
-    },
-    setLinkedStateForTrack: (state, action) => {
-      state.songs = state.songs.map((track) =>
-        track.id === action.payload.id
-          ? { ...track, saved: action.payload.saved }
-          : track
-      );
     },
   },
   extraReducers: (builder) => {

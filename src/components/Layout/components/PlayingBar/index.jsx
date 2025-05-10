@@ -4,7 +4,6 @@ import PlayControls from './PlayControls';
 import ExtraControlButtons from './ExtraButtons';
 import NowPlayingBarMobile from './mobilePlayer';
 import { MobileMenu } from './mobileMenu';
-import { OtherDeviceAlert } from './otherDevice';
 
 const PlayingBar = () => {
   return (
@@ -15,8 +14,6 @@ const PlayingBar = () => {
           <PlayControls />
           <ExtraControlButtons />
         </div>
-
-        <OtherDeviceAlert />
       </div>
 
       <div className="mobile-bar">

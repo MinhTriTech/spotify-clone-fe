@@ -8,7 +8,6 @@ const getSongsOfAlbum = async (id) => {
   return await axios.get(`api/music/albums/${id}/songs/`);
 };
 
-
 export const albumsService = {
   getAlbum,
   getSongsOfAlbum,
