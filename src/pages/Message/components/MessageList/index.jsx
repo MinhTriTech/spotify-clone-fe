@@ -32,7 +32,7 @@ const MessageList = () => {
     setConversations(parsed);
   }, [message]);
 
-  const handleClick = (id, idUser, user) => navigate(`/message/${idUser}/${id}`, { state: {user, id} });
+  const handleClick = (id, idUser) => navigate(`/message/${idUser}/${id}`);
 
   return (
     <div className="message-list">

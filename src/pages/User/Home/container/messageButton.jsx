@@ -1,27 +1,68 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
-import { artistActions } from '../../../../store/slices/artist';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 import { uiActions } from '../../../../store/slices/ui';
-
-import { userService } from '../../../../services/users';
+import { messageActions } from '../../../../store/slices/message';
+import { useNavigate } from 'react-router-dom';
 
 const MessageUser = ({ id }) => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector(
     (state) => !!state.auth.user,
     (prev, next) => prev === next
   );
+  
+  const messageList = useAppSelector((state) => state.message.messList);
+  const statusMess = useAppSelector((state) => state.message.status);
+
+  const [shouldHandleMessage, setShouldHandleMessage] = useState(false);
+
+  useEffect(() => {
+  if (shouldHandleMessage && statusMess === "succeeded") {
+    if (messageList.length === 0) {
+      navigate(`/message/${id}`);
+    } else {
+      const existingRoom = messageList.find(
+        (room) => room.other_user_id === id
+      );
+
+      if (existingRoom) {
+        navigate(`/message/${id}/${existingRoom.id}`);
+      } else {
+        navigate(`/message/${id}`);
+      }
+    }
+    setShouldHandleMessage(false); 
+  }
+}, [shouldHandleMessage, statusMess, messageList]);
+
 
   const handleMessage = useCallback(() => {
     if (!user) {
       return dispatch(uiActions.openLoginTooltip());
     }
-    userService.followArtists(id).then(() => {
-      dispatch(artistActions.setFollowing({ following: true }));
-      onToggle();
-    });
-  }, [dispatch, id, user]);
+
+    if (statusMess === "succeeded") {
+      if (messageList.length === 0) {
+        navigate(`/message/${id}`);
+      } else {
+        const existingRoom = messageList.find(
+          (room) => room.other_user_id === id
+        );
+
+        if (existingRoom) {
+          navigate(`/message/${id}/${existingRoom.id}`);
+        } else {
+          navigate(`/message/${id}`);
+        }
+      }
+    } else {
+      setShouldHandleMessage(true);
+      dispatch(messageActions.fetchChatRooms());
+    }
+  }, [dispatch, statusMess, messageList, user]);
+
 
   return (
     <button className="transparent-button" onClick={handleMessage}>

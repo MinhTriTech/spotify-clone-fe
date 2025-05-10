@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Avatar } from 'antd';
 import { sendMessage } from '../../../../services/message';
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
+import { useNavigate } from 'react-router-dom';
 
 const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const chatBodyRef = useRef(null);
   const socketRef = useRef(null);
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     socketRef.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/`);
 
@@ -50,16 +52,6 @@ const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
     if (e.key !== 'Enter' || !input.trim()) return;
 
     const text = input.trim();
-    const timeNow = new Date().toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    const newMessage = {
-      text,
-      sender: 'user',
-      time: timeNow,
-    };
 
     setInput('');
 
@@ -74,16 +66,21 @@ const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
     }
 
     try {
-      await sendMessage({
+      const response = await sendMessage({
         content: text,
         recipient_id: recipientId,
         chatroom_id: conversationId,
       });
+
+      if (conversationId === null) {
+        const newChatRoomId = response.chatroom_id;
+        navigate(`/message/${recipientId}/${newChatRoomId}`);
+      }
     } catch (err) {
       console.error('❌ Failed to send message via service:', err);
     }
   };
-  
+
   return (
     <div className="chat-box">
       <div className="chat-box__body" ref={chatBodyRef}>
