@@ -2,6 +2,7 @@ import axios from "axios";
 
 const API_URL = "http://127.0.0.1:8000/api/manager/songs/";
 
+
 export const fetchSongs = async (params = {}) => {
     try {
         const response = await axios.get(`${API_URL}search`, {
@@ -20,18 +21,20 @@ export const fetchSongs = async (params = {}) => {
     }
 };
 
+// Lấy bài hát theo ID
 export const fetchSongById = async (id) => {
-    try {
-        const response = await axios.get(`${API_URL}${id}`);
-        return response.data;
-    } catch (error) {
-        console.error("Fetch song by id: " + id + "error", error);
-        throw error;
-    }
+  try {
+    const response = await axios.get(`${API_URL}${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Fetch song by ID ${id} error:`, error);
+    throw error;
+  }
 };
 
-// Hàm thêm bài hát
+// Thêm bài hát
 export const addSong = async (songData) => {
+
     try {
         const response = await axios.post(`${API_URL}add/`, songData, {
             headers: {
@@ -45,8 +48,9 @@ export const addSong = async (songData) => {
     }
 };
 
-// Hàm cập nhật bài hát
+// Cập nhật bài hát
 export const updateSong = async (id, songData) => {
+
     try {
         const response = await axios.put(`${API_URL}${id}/update/`, songData, {
             headers: {
@@ -58,9 +62,10 @@ export const updateSong = async (id, songData) => {
         console.error("Update song error:", error);
         throw error;
     }
+
 };
 
-// Hàm xóa bài hát
+// Xóa bài hát
 export const deleteSong = async (id) => {
     try {
         const response = await axios.delete(`${API_URL}${id}/delete/`);
