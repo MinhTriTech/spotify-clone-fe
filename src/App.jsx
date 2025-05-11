@@ -6,6 +6,8 @@ import { App as AntdApp, ConfigProvider } from 'antd';
 import AppLayout from './components/Layout';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 
+import {GoogleOAuthProvider} from '@react-oauth/google';
+
 import { Provider } from 'react-redux';
 import { uiActions } from './store/slices/ui';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -170,15 +172,17 @@ function App() {
 
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
-      <AntdApp> 
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <AudioProvider>
-              <GlobalMedia />
-              <RootComponent />
-            </AudioProvider>
-          </PersistGate>
-        </Provider>
+      <AntdApp>
+        <GoogleOAuthProvider clientId="674163388601-d7dk6m8us1j3duai1cp1ipejcoce3339.apps.googleusercontent.com">
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <AudioProvider>
+                <GlobalMedia />
+                <RootComponent />
+              </AudioProvider>
+            </PersistGate>
+          </Provider>
+        </GoogleOAuthProvider>; 
       </AntdApp> 
     </ConfigProvider>
   );
