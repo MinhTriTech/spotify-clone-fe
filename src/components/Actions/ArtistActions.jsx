@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { Dropdown, message } from 'antd';
+import { Dropdown } from 'antd';
 import { FollowIcon, UnfollowIcon } from '../Icons';
 
 import { useAppDispatch, useAppSelector } from '../../store/store';

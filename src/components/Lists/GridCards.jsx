@@ -146,23 +146,18 @@ export const ArtistCard = ({ item, onClick }) => {
 
 export const TrackCard = ({ item, onClick }) => {
   const navigate = useNavigate();
-
   return (
-    <TrackActionsWrapper track={item} trigger={['contextMenu']}>
-      <div onClick={onClick}>
-        <Card
-          title={item.title}
-          context={{ 
-            id: item.playlist_id,
-            image: item.image,
-            type: "playlist",
-            title: item.title
-          }}
-          image={item.image}
-          onClick={() => navigate(`/playlist/${item.playlist_id}`)}
-        />
-      </div>
-    </TrackActionsWrapper>
+    <Card
+      title={item.title}
+      context={{ 
+        id: item.playlist_id,
+        image: item.image,
+        type: "playlist",
+        title: item.title
+      }}
+      image={item.image}
+      onClick={() => navigate(`/playlist/${item.playlist_id}`)}
+    />
   );
 };
 

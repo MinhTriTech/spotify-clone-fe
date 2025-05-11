@@ -10,8 +10,6 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 import { getLibraryItems } from '../../../../../store/slices/yourLibrary';
 import { getLibraryCollapsed, uiActions } from '../../../../../store/slices/ui';
 
-import useIsMobile from '../../../../../utils/isMobile';
-
 const COLLAPSED_STYLE = {
   overflowY: 'scroll',
   height: '100%',
@@ -64,7 +62,6 @@ const getItemKey = (item) => {
 };
 
 const LoggedContent = memo(() => {
-  const isMobile = useIsMobile();
   const dispatch = useAppDispatch();
   const items = useAppSelector(getLibraryItems);
   const collapsed = useAppSelector(getLibraryCollapsed);
@@ -85,7 +82,6 @@ const LoggedContent = memo(() => {
         return (
           <div
             key={key}
-            onClick={isMobile ? () => dispatch(uiActions.collapseLibrary()) : undefined}
           >
             {view === 'LIST' && <ListItemComponent item={item} />}
           </div>

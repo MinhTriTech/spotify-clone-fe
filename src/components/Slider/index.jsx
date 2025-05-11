@@ -9,7 +9,7 @@ const ModernSlider = ({
   step = 0.01,
   onChange,
   onChangeComplete,
-  controlType = 'default', // Thêm prop này để phân biệt loại control
+  controlType = 'default',
   ...otherProps
 }) => {
   const handleChange = (event, newValue) => {

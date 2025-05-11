@@ -25,13 +25,6 @@ const searchSlice = createSlice({
     setSection(state, action) {
       state.section = action.payload;
     },
-    setSavedStateForTrack(state, action) {
-      const { id, saved } = action.payload;
-      const track = state.songs.find((t) => t.id === id);
-      if (track) {
-        track.saved = saved;
-      }
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchSearch.pending, (state) => {

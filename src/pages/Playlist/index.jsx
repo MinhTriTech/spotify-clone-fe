@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from 'react';
 import { playlistActions } from '../../store/slices/playlist';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
-// Constants
 import { DEFAULT_PAGE_COLOR } from '../../constants/spotify';
 import tinycolor from 'tinycolor2';
 

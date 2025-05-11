@@ -1,21 +1,14 @@
-// Components
 import { Dropdown, message } from 'antd';
 import { AddIcon, NewPlaylistIcon } from '../../../Icons';
 
-// Utils
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Services
 import { playlistService } from '../../../../services/playlists';
 
-// Redux
 import { fetchMyPlaylists } from '../../../../store/slices/yourLibrary';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 import { uiActions } from '../../../../store/slices/ui';
-
-// Constants
-import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../../../constants/spotify'
 
 export const AddPlaylistButton = memo(() => {
   const dispatch = useAppDispatch();

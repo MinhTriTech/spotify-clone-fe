@@ -24,7 +24,7 @@ export const EditPlaylistModal = memo(() => {
   const formRef = useRef(null);
   const currentPlaylist = useAppSelector((state) => state.playlist.playlist);
   const playlist = useAppSelector((state) => state.editPlaylistModal.playlist);
-  
+
   const [file, setFile] = useState(null);
   const [fileUrl, setFileUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,7 +43,7 @@ export const EditPlaylistModal = memo(() => {
   useEffect(() => {
     if (playlist) {
       formRef.current?.setFieldsValue({
-        name: playlist.title,
+        title: playlist.title,
       });
     }
   }, [playlist]);
@@ -79,21 +79,17 @@ export const EditPlaylistModal = memo(() => {
         onFinish={async (values) => {
           try {
             setLoading(true);
-            const promises = [playlistService.changePlaylistDetails(playlist.id, values)];
-            if (file) {
-              const base64File = await toBase64(file);
-              const contentType = file.type;
-              const fileWithoutPrefix = base64File.split(',')[1];
-              promises.push(
-                playlistService.changePlaylistImage(playlist.id, fileWithoutPrefix, contentType)
-              );
-            }
-            await Promise.all(promises);
+            await playlistService.changePlaylistDetails(playlist.playlist_id, {
+              ...values,
+              image: file || null,
+            });
+
             setLoading(false);
 
-            if (currentPlaylist && playlist.id === currentPlaylist.id) {
-              dispatch(refreshPlaylist(currentPlaylist.id));
+            if (currentPlaylist && playlist.playlist_id === currentPlaylist.playlist_id) {
+              dispatch(refreshPlaylist(currentPlaylist.playlist_id));
             }
+
             dispatch(yourLibraryActions.fetchMyPlaylists());
             dispatch(editPlaylistModalActions.setPlaylist({ playlist: null }));
 
@@ -108,7 +104,7 @@ export const EditPlaylistModal = memo(() => {
             <div style={{ textAlign: 'right' }}>
               <button
                 disabled={loading}
-                className='edit-playlist-submit-button'
+                className="edit-playlist-submit-button"
                 onClick={props.submit || props.onSubmit}
               >
                 <span>Lưu</span>
@@ -156,7 +152,7 @@ export const EditPlaylistModal = memo(() => {
           <Col span={16}>
             <ProFormText
               placeholder='Thêm tên playlist'
-              name='name'
+              name='title'
               rules={[{ required: true, message: '' }]}
             />
           </Col>

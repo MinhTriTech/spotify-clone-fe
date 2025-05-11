@@ -5,9 +5,6 @@ import VolumeControls from '../Layout/components/PlayingBar/Volume';
 import ControlButtons from '../Layout/components/PlayingBar/ControlButtons';
 import SongProgressBar from '../Layout/components/PlayingBar/SongProgressBar';
 import { Tooltip } from '../Tooltip';
-import {AddSongToLibraryButton} from '../Actions/AddSongToLibrary';
-import { useAppDispatch, useAppSelector } from '../../store/store';
-import { spotifyActions } from '../../store/slices/spotify';
 import { useAudio } from '../../contexts/AudioContext';
 import { useEffect, useRef, memo, useCallback } from 'react';
 
@@ -18,23 +15,6 @@ const ExpandOutButton = ({ onExit }) => (
     </button>
   </Tooltip>
 );
-
-const AddToLibrary = () => {
-  const dispatch = useAppDispatch();
-  const song = useAppSelector(
-    (state) => state.spotify.state?.track_window.current_track,
-    (a, b) => a?.id === b?.id
-  );
-  const isLiked = useAppSelector((state) => state.spotify.liked);
-
-  const handleToggle = () => {
-    dispatch(spotifyActions.setLiked({ liked: !isLiked }));
-  };
-
-  return (
-    <AddSongToLibraryButton size={20} isSaved={isLiked} id={song?.id} onToggle={handleToggle} />
-  );
-};
 
 const DownloadVideoButton = memo(({ videoUrl }) => {
 
@@ -192,7 +172,7 @@ export const FullScreenPlayer = ({ onExit }) => {
             <SongProgressBar />
           </Col>
           <Col span={8}>
-            <AddToLibrary />
+            
           </Col>
           <Col span={8}>
             <ControlButtons />

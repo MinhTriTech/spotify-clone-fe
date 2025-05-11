@@ -2,8 +2,12 @@ import logo from "../../../../public/images/logoSpotify.svg";
 import { faHouse, faMusic, faUser, faUserShield, faFileAudio, faImages, faIdBadge } from "@fortawesome/free-solid-svg-icons";
 import { SidebarItem } from "../components";
 import { NavLink } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 const Sidebar = () => {
+    const user = useSelector((state) => state.auth.user?.user_info);
+    const userUsername = user?.username;
+    const firstUsername = userUsername.charAt(0).toUpperCase();
+
     return (
         <div className="bg-black w-[20%] h-screen px-8 flex flex-col justify-between items-center">
             <div className="w-full flex flex-col items-center">
@@ -26,8 +30,8 @@ const Sidebar = () => {
                 }
             >
                 <div className="w-full flex items-center">
-                    <div className="h-8 w-8 rounded-full bg-violet-400 border border-white flex justify-center items-center text-white">T</div>
-                    <span className="ml-4 text-base">Dailata123@</span>
+                    <div className="h-8 w-8 rounded-full bg-violet-400 border border-white flex justify-center items-center text-white">{firstUsername}</div>
+                    <span className="ml-4 text-base">{userUsername}</span>
                 </div>
             </NavLink>
         </div>

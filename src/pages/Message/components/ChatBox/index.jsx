@@ -4,22 +4,24 @@ import { sendMessage } from '../../../../services/message';
 import { ARTISTS_DEFAULT_IMAGE } from '../../../../constants/spotify';
 import { useNavigate, useParams } from 'react-router-dom';
 import { subscribeToSocket, sendToSocket } from '../../../../services/socket';
+import { useAppSelector } from '../../../../store/store';
 
 const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const chatBodyRef = useRef(null);
   const navigate = useNavigate();
-  const { idUser } = useParams();
+  const idUser = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     const unsubscribe = subscribeToSocket((data) => {
-      if (data.room_id === conversationId) {
-        const msg = {
-          text: data.message,
-          sender: data.sender_id === parseInt(recipientId) ? 'other' : 'user',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        };
+      if (
+        String(data.room_id) === String(conversationId)) {
+          const msg = {
+            text: data.message,
+            sender: data.sender_id === parseInt(recipientId) ? 'other' : 'user',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
         setMessages((prev) => [...prev, msg]);
       }
     });
@@ -44,17 +46,17 @@ const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
 
     setInput('');
 
-    sendToSocket({
-      message: text,
-      sender_id: idUser,
-      room_id: conversationId,
-    });
-
     try {
       const response = await sendMessage({
         content: text,
         recipient_id: recipientId,
         chatroom_id: conversationId,
+      });
+      
+      sendToSocket({
+        message: text,
+        sender_id: idUser.user_info.id,
+        room_id: conversationId,
       });
 
       if (!conversationId) {
@@ -76,9 +78,9 @@ const ChatBox = ({ conversationId, recipientId, initialMessages = [] }) => {
           <div
             key={index}
             className={`chat-box__message ${
-              msg.sender === 'user'
-                ? 'chat-box__message--user'
-                : 'chat-box__message--other'
+              msg.sender === 'other'
+                ? 'chat-box__message--other'
+                : 'chat-box__message--user'
             }`}
           >
             {msg.sender === 'other' && (

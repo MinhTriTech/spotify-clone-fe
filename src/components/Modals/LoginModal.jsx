@@ -2,21 +2,16 @@ import { Modal } from 'antd';
 import { memo, useCallback, useEffect, useState } from 'react';
 import WhiteButton from '../Button';
 
-// Redux
 import { uiActions } from '../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
-// Constants
 import { DEFAULT_PAGE_COLOR } from '../../constants/spotify';
 
-// Utils
 import tinycolor from 'tinycolor2';
 import { getImageAnalysis2 } from '../../utils/imageAnyliser';
-import useIsMobile from '../../utils/isMobile';
 
 const LoginModal = memo(() => {
   const dispatch = useAppDispatch();
-  const isMobile = useIsMobile();
 
   const [open, setOpen] = useState(false);
   const [color, setColor] = useState(DEFAULT_PAGE_COLOR);
@@ -63,7 +58,7 @@ const LoginModal = memo(() => {
         style={{
           display: 'flex',
           justifyContent: 'center',
-          flexDirection: isMobile ? 'column' : 'row',
+          flexDirection: 'row',
         }}
       >
         <div className='img-container'>

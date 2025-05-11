@@ -20,11 +20,9 @@ import albumReducer from './slices/album';
 import searchReducer from './slices/search';
 import artistReducer from './slices/artist';
 import profileReducer from './slices/profile';
-import spotifyReducer from './slices/spotify';
 import playlistReducer from './slices/playlist';
 import likedSongsReducer from './slices/likedSongs';
 import yourLibraryReducer from './slices/yourLibrary';
-import searchHistoryReducer from './slices/searchHistory';
 import editPlaylistModalReducer from './slices/editPlaylistModal';
 import deletePlaylistModalReducer from './slices/deletePlaylistModal';
 import messageReducer from './slices/message';
@@ -38,11 +36,9 @@ const appReducer = combineReducers({
   search: searchReducer,
   artist: artistReducer,
   profile: profileReducer,
-  spotify: spotifyReducer,
   playlist: playlistReducer,
   likedSongs: likedSongsReducer,
   yourLibrary: yourLibraryReducer,
-  searchHistory: searchHistoryReducer,
   editPlaylistModal: editPlaylistModalReducer,
   deletePlaylistModal: deletePlaylistModalReducer,
   message: messageReducer,
