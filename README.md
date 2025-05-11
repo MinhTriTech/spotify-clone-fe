@@ -2,16 +2,22 @@
 
 Đây là phần **Frontend** của dự án Spotify Clone, được xây dựng bằng **React** và **Vite**.
 
-> 💡 Lưu ý: Repository này chỉ chứa phần frontend. Để kết nối backend, hãy tham khảo repository `spotify-clone-be`.
+> 💡 Lưu ý: Repository này chỉ chứa phần frontend.
 
 ---
 
 ## 🚀 Công nghệ sử dụng
 
-- React
-- Vite
-
-*(Sẽ bổ sung thêm công nghệ khi dự án phát triển)*
+- ⚛️ **React 19**, **React Router DOM** – Xây dựng giao diện và điều hướng SPA
+- ⚡ **Vite** – Công cụ build nhanh, hiện đại
+- 🎨 **Ant Design**, **Material UI**, **Tailwind CSS**, **@ant-design/pro-form** – Thư viện UI
+- 💅 **Emotion**, **SASS (sass-embedded)**, **PostCSS**, **Autoprefixer** – Styling
+- 🧠 **Redux Toolkit**, **React Redux**, **Redux Persist** – Quản lý state toàn cục
+- 🔁 **Axios**, **use-debounce** – Giao tiếp API và xử lý debounce
+- 🕒 **React Time Ago**, **javascript-time-ago** – Hiển thị thời gian tự nhiên
+- 🎨 **FontAwesome**, **React Icons**, **ColorThief**, **TinyColor2** – Icon và xử lý màu
+- ⚙️ **React Drag ListView**, **React Resizable Panels**, **React Full Screen** – Tương tác UI nâng cao
+- ✅ **ESLint**, **eslint-plugin-react-hooks**, **eslint-plugin-react-refresh** – Kiểm tra chất lượng mã
 
 ---
 
