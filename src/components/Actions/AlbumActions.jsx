@@ -2,18 +2,21 @@ import { memo, useCallback, useMemo } from 'react';
 import { Dropdown, message } from 'antd';
 import { AddToQueueIcon, AddedToLibrary, AddToLibrary, AddToPlaylist } from '../Icons';
 
-// ❌ Đã xoá useTranslation từ react-i18next
+import { playerService } from '../../services/player';
+import { albumsService } from '../../services/albums';
+import { playlistService } from '../../services/playlists';
+
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import { fetchMyPlaylists, yourLibraryActions } from '../../store/slices/yourLibrary';
+import { uiActions } from '../../store/slices/ui';
 
 const AlbumActionsWrapper = memo((props) => {
   const { children, album } = props;
 
-  // ✅ MOCK DATA
-  const user = 'mock-user-id';
-  const myAlbums = [{ id: '1' }, { id: album.id }];
-  const myPlaylists = [
-    { id: '101', name: 'Chill Mix', snapshot_id: 'abc123' },
-    { id: '102', name: 'Workout', snapshot_id: 'xyz789' },
-  ];
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user?.id);
+  const myAlbums = useAppSelector((state) => state.yourLibrary.myAlbums);
+  const myPlaylists = useAppSelector((state) => state.yourLibrary.myPlaylists);
 
   const inLibrary = useMemo(() => {
     return myAlbums.some((p) => p.id === album.id);
@@ -22,76 +25,112 @@ const AlbumActionsWrapper = memo((props) => {
   const handleUserValidation = useCallback(
     (button) => {
       if (!user) {
-        console.warn('Mock: Không có token – mở login UI nếu cần');
+        dispatch(button ? uiActions.openLoginButton() : uiActions.openLoginTooltip());
+        return false;
       }
       return true;
     },
-    [user]
+    [dispatch, user]
   );
 
   const options = useMemo(() => {
-    const items = myPlaylists.map((p) => ({
-      key: p.id,
-      label: p.name,
-      onClick: async () => {
-        if (!handleUserValidation()) return;
-        console.log(`Mock: add album ${album.id} to playlist ${p.id}`);
-        message.success('Đã thêm vào playlist');
-      },
-    }));
+    const items = myPlaylists.map((p) => {
+      return {
+        key: p.id,
+        label: p.name,
+        onClick: async () => {
+          if (!handleUserValidation()) return;
+          const {
+            data: { items: tracks },
+          } = await albumsService.fetchAlbumTracks(album.id);
+          const uris = tracks.map((t) => t.uri);
+          playlistService.addPlaylistItems(p.id, uris, p.snapshot_id).then(() => {
+            message.open({
+              type: 'success',
+              content: 'Đã thêm vào playlist',
+            });
+          });
+        },
+      };
+    });
 
-    if (myPlaylists.length) items.unshift({ type: 'divider' });
+    if (myPlaylists.length) {
+      items.unshift({ type: 'divider' });
+    }
 
     items.unshift({
       label: 'Playlist mới',
       key: 'new',
       onClick: async () => {
         if (!handleUserValidation()) return;
-        console.log(`Mock: create playlist from album ${album.id}`);
-        message.success('Đã thêm vào playlist');
+        const {
+          data: { items: tracks },
+        } = await albumsService.fetchAlbumTracks(album.id);
+        const uris = tracks.map((t) => t.uri);
+        return playlistService.createPlaylist(user, { name: album.name }).then((response) => {
+          const playlist = response.data;
+          playlistService.addPlaylistItems(playlist.id, uris, playlist.snapshot_id).then(() => {
+            dispatch(fetchMyPlaylists());
+            message.success('Đã thêm vào playlist');
+          });
+        });
       },
     });
 
     return items;
-  }, [album.id, myPlaylists, handleUserValidation]);
+  }, [myPlaylists, handleUserValidation, album.id, album.name, user, dispatch]);
 
   const items = useMemo(() => {
     const items = [];
 
     if (inLibrary) {
       items.push({
-        label: 'Xoá khỏi Thư viện của bạn',
+        label: 'Xóa khỏi thư viện của bạn',
         key: 9,
         icon: <AddedToLibrary style={{ height: 16, width: 16, marginInlineEnd: 0 }} />,
         onClick: () => {
           if (!handleUserValidation(true)) return;
-          console.log(`Mock: removed album ${album.id} from library`);
-          message.success('Đã xoá khỏi Thư viện');
+          albumsService.deleteAlbums([album.id]).then(() => {
+            dispatch(yourLibraryActions.fetchMyAlbums());
+            message.open({
+              type: 'success',
+              content: 'Đã xóa khỏi thư viện',
+            });
+          });
         },
       });
     } else {
       items.push({
-        label: 'Thêm vào Thư viện của bạn',
+        label: 'Thêm vào thư viện của bạn',
         key: 8,
         icon: <AddToLibrary style={{ height: 16, width: 16, marginInlineEnd: 0 }} />,
         onClick: () => {
           if (!handleUserValidation(true)) return;
-          console.log(`Mock: added album ${album.id} to library`);
-          message.success('Đã lưu vào Thư viện');
+          albumsService.saveAlbums([album.id]).then(() => {
+            dispatch(yourLibraryActions.fetchMyAlbums());
+            message.open({
+              type: 'success',
+              content: 'Đã lưu vào thư viện',
+            });
+          });
         },
       });
     }
 
     items.push(
       {
-        label: 'Thêm vào hàng chờ',
+        label: 'Thêm vào hàng đợi',
         key: '3',
         disabled: true,
         icon: <AddToQueueIcon />,
         onClick: () => {
           if (!handleUserValidation()) return;
-          console.log(`Mock: added album ${album.uri} to queue`);
-          message.success('Đã thêm vào hàng chờ');
+          playerService.addToQueue(album.uri).then(() => {
+            message.open({
+              type: 'success',
+              content: 'Đã thêm vào hàng đợi',
+            });
+          });
         },
       },
       { type: 'divider' },
@@ -104,7 +143,7 @@ const AlbumActionsWrapper = memo((props) => {
     );
 
     return items;
-  }, [album.id, album.uri, inLibrary, handleUserValidation, options]);
+  }, [album.id, album.uri, dispatch, handleUserValidation, inLibrary, options]);
 
   return (
     <Dropdown menu={{ items }} trigger={props.trigger}>

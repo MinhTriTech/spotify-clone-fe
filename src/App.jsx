@@ -1,24 +1,21 @@
 import './styles/App.scss';
 
-// Utils
 import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
-// Components
-import { ConfigProvider } from 'antd';
+import { App as AntdApp, ConfigProvider } from 'antd';
 import AppLayout from './components/Layout';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 
-// Redux
 import { Provider } from 'react-redux';
 import { uiActions } from './store/slices/ui';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 import { fetchUser } from './store/slices/auth';
 
-// Context
-import { AudioProvider } from './contexts/AudioContext';
+import { initSocket } from './services/socket';
 
-// Pages
+import { AudioProvider, useAudio } from './contexts/AudioContext';
+
 import SearchContainer from './pages/Search/Container';
 import { Spinner } from './components/spinner';
 
@@ -27,24 +24,20 @@ const AdminLayout = lazy(() => import('./pages/Admin'));
 const Home = lazy(() => import('./pages/Home'));
 const Page404 = lazy(() => import('./pages/404'));
 const AlbumView = lazy(() => import('./pages/Album'));
-const GenrePage = lazy(() => import('./pages/Genre'));
-const BrowsePage = lazy(() => import('./pages/Browse'));
+const Message = lazy(() => import('./pages/Message'));
+const MessView = lazy(() => import('./pages/Message/components/MessView'));
 const ArtistPage = lazy(() => import('./pages/Artist'));
 const PlaylistView = lazy(() => import('./pages/Playlist'));
-const ArtistDiscographyPage = lazy(() => import('./pages/Discography'));
 
 const Profile = lazy(() => import('./pages/User/Home'));
-const ProfileTracks = lazy(() => import('./pages/User/Songs'));
-const ProfileArtists = lazy(() => import('./pages/User/Artists'));
-const ProfilePlaylists = lazy(() => import('./pages/User/Playlists'));
 
 const SearchPage = lazy(() => import('./pages/Search/Home'));
 const SearchTracks = lazy(() => import('./pages/Search/Songs'));
 const LikedSongsPage = lazy(() => import('./pages/LikedSongs'));
 const SearchAlbums = lazy(() => import('./pages/Search/Albums'));
-const SearchPlaylist = lazy(() => import('./pages/Search/Playlists'));
-const SearchPageArtists = lazy(() => import('./pages/Search/Artists'));
-const RecentlySearched = lazy(() => import('./pages/Search/RecentlySearched'));
+const SearchPlaylists = lazy(() => import('./pages/Search/Playlists'));
+const SearchArtists = lazy(() => import('./pages/Search/Artists'));
+const SearchUsers = lazy(() => import('./pages/Search/Users'));
 
 window.addEventListener('resize', () => {
   const vh = window.innerWidth;
@@ -52,6 +45,24 @@ window.addEventListener('resize', () => {
     store.dispatch(uiActions.collapseLibrary());
   }
 });
+
+const GlobalMedia = () => {
+  const { audioRef, videoRef, currentTrack } = useAudio();
+
+  return (
+    <>
+      <audio ref={audioRef} style={{ display: 'none' }} />
+      {currentTrack?.video && (
+        <video
+          ref={videoRef}
+          style={{ display: 'none' }}
+          muted
+          preload="auto"
+        />
+      )}
+    </>
+  );
+};
 
 const RoutesComponent = memo(() => {
   const location = useLocation();
@@ -70,24 +81,21 @@ const RoutesComponent = memo(() => {
       { path: '/collection/tracks', element: <LikedSongsPage container={container} /> },
       { public: true, path: '/playlist/:playlistId', element: <PlaylistView container={container} /> },
       { path: '/album/:albumId', element: <AlbumView container={container} /> },
-      { path: '/artist/:artistId/discography', element: <ArtistDiscographyPage container={container} /> },
+      { path: '/message', element: <Message container={container} /> },
+      { path: '/message/:idUser/:idChatRoom', element: <MessView container={container} /> },
+      { path: '/message/:idUser', element: <MessView container={container} /> },
       { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
-      { path: '/users/:userId/artists', element: <ProfileArtists container={container} /> },
-      { path: '/users/:userId/playlists', element: <ProfilePlaylists container={container} /> },
-      { path: '/users/:userId/tracks', element: <ProfileTracks container={container} /> },
       { path: '/users/:userId', element: <Profile container={container} /> },
-      { public: true, path: '/genre/:genreId', element: <GenrePage /> },
-      { public: true, path: '/search', element: <BrowsePage /> },
-      { path: '/recent-searches', element: <RecentlySearched /> },
       {
         public: true,
         path: '/search/:search',
         element: <SearchContainer container={container} />,
         children: [
-          { path: 'artists', element: <SearchPageArtists container={container} /> },
-          { path: 'albums', element: <SearchAlbums container={container} /> },
-          { path: 'playlists', element: <SearchPlaylist container={container} /> },
           { path: 'tracks', element: <SearchTracks container={container} /> },
+          { path: 'artists', element: <SearchArtists container={container} /> },
+          { path: 'albums', element: <SearchAlbums container={container} /> },
+          { path: 'playlists', element: <SearchPlaylists container={container} /> },
+          { path: 'users', element: <SearchUsers container={container} /> },
           { path: '', element: <SearchPage container={container} /> },
         ],
       },
@@ -113,18 +121,21 @@ const RoutesComponent = memo(() => {
 });
 
 const RootComponent = () => {
+  const { resetAudio } = useAudio();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => !!state.auth.user);
-  const role = useAppSelector((state) => state.auth.role);
-  const loading = useAppSelector((state) => state.auth.loading);
-  const loginModalMain = useAppSelector((state) => !!state.ui.loginModalMain);
+  const { user, role, loading, loginModalMain } = useAppSelector((state) => ({
+    user: state.auth.user,
+    role: state.auth.role,
+    loading: state.ui.loading,
+    loginModalMain: state.ui.loginModalMain,
+  }));
 
   useEffect(() => {
     if (!user) {
       dispatch(fetchUser());
+      resetAudio();
     }
-  }, [dispatch, user]);
-  
+  }, [dispatch, user, resetAudio]);
 
   useEffect(() => {
     if (!user) return;
@@ -137,37 +148,38 @@ const RootComponent = () => {
     };
   }, [user]);
 
-  if (loading) return <Spinner loading={loading}/>;
+  if (loading) return <Spinner loading={loading} />;
 
   if (!loginModalMain && !user) return <LoginPage />;
 
-  if (role === true) {
-    return (
-      <Router>
-        <AdminLayout />
-      </Router>
-    );
-  }
+  const Layout = role ? AdminLayout : AppLayout;
 
   return (
     <Router>
-      <AppLayout>
-        <RoutesComponent />
-      </AppLayout>
+      <Layout>
+        {!role && <RoutesComponent />}
+      </Layout>
     </Router>
-  );
+  )
 };
 
 function App() {
+  useEffect(() => {
+    initSocket();
+  }, []);
+
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <AudioProvider>
-            <RootComponent />
-          </AudioProvider>
-        </PersistGate>
-      </Provider>
+      <AntdApp> 
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AudioProvider>
+              <GlobalMedia />
+              <RootComponent />
+            </AudioProvider>
+          </PersistGate>
+        </Provider>
+      </AntdApp> 
     </ConfigProvider>
   );
 }

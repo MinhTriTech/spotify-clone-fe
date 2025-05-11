@@ -1,25 +1,26 @@
 import { Space } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
 import Chip from '../../../../components/Chip';
 import { PageHeader } from '../../../../components/Layout/components/Header';
-
-// Redux
 import { useAppSelector } from '../../../../store/store';
-import { useNavigate, useParams } from 'react-router-dom';
 
-const SECTIONS = [
-  { key: 'ALL', label: 'Tất cả' },
-  { key: 'ARTISTS', label: 'Nghệ sĩ' },
-  { key: 'TRACKS', label: 'Bài hát' },
-  { key: 'ALBUMS', label: 'Album' },
-  { key: 'PLAYLISTS', label: 'Danh sách phát' },
-];
+const SECTIONS = ['ALL', 'ARTISTS', 'TRACKS', 'ALBUMS', 'PLAYLISTS', 'USERS'];
+
+const sectionLabels = {
+  ALL: 'TẤT CẢ',
+  ARTISTS: 'NGHỆ SĨ',
+  TRACKS: 'BÀI HÁT',
+  ALBUMS: 'ALBUM',
+  PLAYLISTS: 'DANH SÁCH PHÁT',
+  USERS: 'NGƯỜI DÙNG',
+};
 
 export const SearchHeader = (props) => {
   const { container, sectionContainer, color } = props;
 
   const navigate = useNavigate();
   const params = useParams();
-  const section = useAppSelector((state) => state.search.section);
+  const section = useAppSelector((state) => state.search.section); 
 
   return (
     <PageHeader
@@ -32,11 +33,11 @@ export const SearchHeader = (props) => {
         <Space size={10} style={{ marginLeft: 10, marginTop: 5, marginBottom: 5 }}>
           {SECTIONS.map((item) => (
             <Chip
-              key={item.key}
-              text={item.label}
-              active={section === item.key}
+              key={item}
+              text={sectionLabels[item]} 
+              active={section === item}
               onClick={() =>
-                navigate(`/search/${params.search}/${item.key === 'ALL' ? '' : item.key.toLowerCase()}`)
+                navigate(`/search/${params.search}/${item === 'ALL' ? '' : item.toLowerCase()}`)
               }
             />
           ))}

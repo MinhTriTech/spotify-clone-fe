@@ -1,4 +1,3 @@
-// Utils
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 
@@ -6,10 +5,10 @@ import { useEffect } from 'react';
 import { useAppDispatch } from '../../store/store';
 import { albumActions } from '../../store/slices/album';
 
-// Constants
+// Components
 import AlbumPageContainer from './container';
 
-const AlbumPage = (props) => {
+const AlbumPage = ({ container }) => {
   const dispatch = useAppDispatch();
   const { albumId } = useParams();
 
@@ -20,7 +19,7 @@ const AlbumPage = (props) => {
     };
   }, [dispatch, albumId]);
 
-  return <AlbumPageContainer container={props.container} />;
+  return <AlbumPageContainer container={container} />;
 };
 
 AlbumPage.displayName = 'AlbumPage';

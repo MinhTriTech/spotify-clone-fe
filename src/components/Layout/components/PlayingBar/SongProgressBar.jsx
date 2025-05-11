@@ -4,89 +4,97 @@ import { msToTime } from '../../../../utils';
 import { useAudio } from '../../../../contexts/AudioContext';
 
 const SongProgressBar = memo(() => {
-  const { audioRef } = useAudio();
+  const { audioRef, videoRef  } = useAudio();
   const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [displayTime, setDisplayTime] = useState(0);
   const progressRef = useRef(0);
 
-  const duration = audioRef.current?.duration || 0;
+  const duration = Math.max(
+    audioRef.current?.duration || 0,
+    videoRef?.current?.duration || 0
+  );
 
-  // Cập nhật progress dựa trên sự kiện timeupdate
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    const video = videoRef?.current;
 
     const updateProgress = () => {
       if (!dragging && duration) {
-        const currentTime = audio.currentTime;
+        const currentTime = Math.max(
+          audio?.currentTime || 0,
+          video?.currentTime || 0
+        );
         setDisplayTime(currentTime);
-        progressRef.current = currentTime / duration;
-        setProgress(progressRef.current);
+        const progressVal = currentTime / duration;
+        progressRef.current = progressVal;
+        setProgress(progressVal);
       }
     };
 
-    audio.addEventListener('timeupdate', updateProgress);
-    
-    // Cần lắng nghe sự kiện loadedmetadata để có duration chính xác
-    const handleMetadata = () => {
-      updateProgress();
-    };
-    
-    audio.addEventListener('loadedmetadata', handleMetadata);
-    
-    // Sự kiện seeking và seeked cũng rất quan trọng
-    const handleSeeked = () => {
-      updateProgress();
-    };
-    
-    audio.addEventListener('seeked', handleSeeked);
+    if (audio) {
+      audio.addEventListener('timeupdate', updateProgress);
+      audio.addEventListener('loadedmetadata', updateProgress);
+      audio.addEventListener('seeked', updateProgress);
+    }
+
+    if (video) {
+      video.addEventListener('timeupdate', updateProgress);
+      video.addEventListener('loadedmetadata', updateProgress);
+      video.addEventListener('seeked', updateProgress);
+    }
 
     return () => {
-      audio.removeEventListener('timeupdate', updateProgress);
-      audio.removeEventListener('loadedmetadata', handleMetadata);
-      audio.removeEventListener('seeked', handleSeeked);
-    };
-  }, [audioRef, dragging, duration]);
+      if (audio) {
+        audio.removeEventListener('timeupdate', updateProgress);
+        audio.removeEventListener('loadedmetadata', updateProgress);
+        audio.removeEventListener('seeked', updateProgress);
+      }
 
-  const handleSliderChange = useCallback((val) => {
-    setDragging(true);
-    // Cập nhật hiển thị ngay lập tức để UI phản hồi
-    setProgress(val);
-    if (duration) {
-      setDisplayTime(val * duration);
-    }
-  }, [duration]);
+      if (video) {
+        video.removeEventListener('timeupdate', updateProgress);
+        video.removeEventListener('loadedmetadata', updateProgress);
+        video.removeEventListener('seeked', updateProgress);
+      }
+    };
+  }, [audioRef, videoRef, dragging, duration]);
+
+  const handleSliderChange = useCallback(
+    (val) => {
+      setDragging(true);
+      setProgress(val);
+      if (duration) {
+        setDisplayTime(val * duration);
+      }
+    },
+    [duration]
+  );
 
   const handleSliderChangeComplete = useCallback(
     (val) => {
-      if (!audioRef.current || !duration) return;
+      const audio = audioRef.current;
+      const video = videoRef?.current;
 
-      // Trực tiếp sử dụng tham chiếu đến audio element
+      if (!duration || (!audio && !video)) return;
+
       try {
-        const audio = audioRef.current;
         const newTime = Math.max(0, Math.min(val * duration, duration));
-        
-        // Đặt currentTime, đảm bảo giá trị nằm trong phạm vi hợp lệ
-        audio.currentTime = newTime;
-        
-        // Cập nhật state
+        if (audio) audio.currentTime = newTime;
+        if (video) video.currentTime = newTime;
+
         setDisplayTime(newTime);
         progressRef.current = val;
-        
-        // Đặt timeout ngắn để đảm bảo UI được cập nhật 
-        // trước khi cho phép timeupdate event tiếp tục cập nhật
+
         setTimeout(() => {
           setDragging(false);
         }, 100);
-        
-        console.log(`Seeking to: ${newTime}s (${val * 100}%)`);
+        console.log(`Seeking to: ${newTime}s`);
       } catch (err) {
-        console.error('Error during seek:', err);
+        console.error('Error seeking:', err);
         setDragging(false);
       }
     },
-    [audioRef, duration]
+    [audioRef, videoRef, duration]
   );
 
   return (

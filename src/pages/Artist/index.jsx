@@ -1,11 +1,9 @@
 import { memo, useEffect, useRef, useState } from 'react';
 
-// Utils
 import tinycolor from 'tinycolor2';
 import { useParams } from 'react-router-dom';
 import { getImageAnalysis2 } from '../../utils/imageAnyliser';
 
-// Redux
 import { artistActions, fetchArtist } from '../../store/slices/artist';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
@@ -13,7 +11,7 @@ import ArtistContent from './container/content';
 import { ArtistHeader } from './container/header';
 import ArtistHoverableMenu from './container/scrollHoverable';
 
-const ArtistPage = (props) => {
+const ArtistPage = memo((props) => {
   const dispatch = useAppDispatch();
 
   const [color, setColor] = useState('#535353');
@@ -25,7 +23,6 @@ const ArtistPage = (props) => {
   useEffect(() => {
     if (params.artistId) {
       dispatch(fetchArtist(params.artistId));
-      dispatch(artistActions.fetchOtherArtists(params.artistId));
     }
     return () => {
       dispatch(artistActions.setArtist({ artist: null }));
@@ -43,15 +40,14 @@ const ArtistPage = (props) => {
   if (!artist) return null;
 
   return (
-    <div className="artist-page" ref={ref}>
+    <div className='artist-page' ref={ref}>
       <ArtistHoverableMenu color={color} container={props.container} sectionContainer={ref} />
-
       <ArtistHeader container={props.container} color={color} />
       <div style={{ marginTop: -20 }}>
         <ArtistContent color={color} />
       </div>
     </div>
   );
-};
+});
 
 export default ArtistPage;

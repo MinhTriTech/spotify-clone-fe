@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import tinycolor from 'tinycolor2';
+import { useAppSelector } from '../../../../store/store';
+import { getLibraryCollapsed, isRightLayoutOpen } from '../../../../store/slices/ui';
 
 export const PageHeader = ({
   color,
@@ -13,12 +16,11 @@ export const PageHeader = ({
   const [headerWidth, setHeaderWidth] = useState(0);
   const [activeHeader, setActiveHeader] = useState(false);
 
-  // ✅ MOCK thay thế Redux
-  const rightLayoutOpen = true;
-  const libraryCollapsed = false;
+  const rightLayoutOpen = useAppSelector(isRightLayoutOpen);
+  const libraryCollapsed = useAppSelector(getLibraryCollapsed);
 
   useEffect(() => {
-    const ref = container?.current;
+    const ref = container.current;
     const handleScroll = () => {
       if (ref) {
         setActiveHeader(ref.scrollTop > activeHeider);
@@ -26,6 +28,7 @@ export const PageHeader = ({
     };
     ref?.addEventListener('scroll', handleScroll);
     return () => {
+      window.onresize = null;
       ref?.removeEventListener('scroll', handleScroll);
     };
   }, [container, activeHeider, activeContentHeight]);
@@ -37,9 +40,7 @@ export const PageHeader = ({
         setHeaderWidth(entries[0].contentRect.width);
       });
       observer.observe(ref);
-      return () => {
-        observer.unobserve(ref);
-      };
+      return () => ref && observer.unobserve(ref);
     }
   }, [sectionContainer, libraryCollapsed, rightLayoutOpen]);
 
@@ -56,12 +57,10 @@ export const PageHeader = ({
         style={{
           width: headerWidth,
           opacity: !headerWidth ? 0 : 1,
-          backgroundColor: !activeHeader
-            ? 'transparent'
-            : tinycolor(color).darken(2).toRgbString(),
+          backgroundColor: !activeHeader ? 'transparent' : tinycolor(color).darken(2).toRgbString(),
         }}
       >
-        <div className="nav-header-content" style={{ minHeight: 36 }}>
+        <div className='nav-header-content' style={{ minHeight: 36 }}>
           <div>{!hiddenContent || activeHeader ? children : null}</div>
         </div>
       </div>

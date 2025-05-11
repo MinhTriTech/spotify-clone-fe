@@ -1,65 +1,70 @@
-import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/api/manager/users/";
+import axios from 'axios';
 
-// Hàm lấy tất cả bài hát
-export const fetchSongs = async () => {
-    try {
-        const response = await axios.get(API_URL);
-        return response.data;
-    } catch (error) {
-        console.error("Fetch songs error:", error);
-        throw error;
+const API_URL = 'http://localhost:8000/api/manager/users/';
+
+export const searchUser = async (keyword, page = 1, pageSize = 6) => {
+  const response = await axios.get(`${API_URL}search/`, {
+    params: {
+      q: keyword,
+      page: page,
+      page_size: pageSize
     }
+  });
+  return response.data;
 };
 
-export const fetchSongById = async (id) => {
-    try {
-        const response = await axios.get(`${API_URL}${id}`);
-        return response.data;
-    } catch (error) {
-        console.error("Fetch song by id: " + id + "error", error);
-        throw error;
-    }
+
+export const fetchUser = async (id) => {
+  const response = await axios.get(`${API_URL}${id}/`);
+  return response.data;
 };
 
-// Hàm thêm bài hát
-export const addSong = async (songData) => {
-    try {
-        const response = await axios.post(`${API_URL}add/`, songData, {
-            headers: {
-                "Content-Type": "multipart/form-data", // Phải là multipart để upload file
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Add song error:", error);
-        throw error;
-    }
+
+
+export const addUser = async (userData) => {
+  const formData = new FormData();
+  formData.append("username", userData.username);
+  formData.append("email", userData.email);
+  formData.append("password", userData.password);
+  formData.append("first_name", userData.first_name || "");
+  formData.append("last_name", userData.last_name || "");
+  formData.append("is_active", userData.is_active ? '1' : '0');
+  formData.append("is_staff", userData.is_staff ? '1' : '0');
+  formData.append("is_superuser", userData.is_superuser ? '1' : '0');
+
+  const response = await axios.post(`${API_URL}add/`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
 };
 
-// Hàm cập nhật bài hát
-export const updateSong = async (id, songData) => {
-    try {
-        const response = await axios.put(`${API_URL}${id}/update/`, songData, {
-            headers: {
-                "Content-Type": "multipart/form-data", // Update cũng cần gửi đúng content-type
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Update song error:", error);
-        throw error;
-    }
+export const updateUser = async (id, updateData) => {
+  const response = await axios.put(`${API_URL}${id}/update/`, updateData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
 };
 
-// Hàm xóa bài hát
-export const deleteSong = async (id) => {
-    try {
-        const response = await axios.delete(`${API_URL}${id}/delete/`);
-        return response.data;
-    } catch (error) {
-        console.error("Delete song error:", error);
-        throw error;
-    }
+export const deleteUser = async (id) => {
+  const response = await axios.delete(`${API_URL}${id}/delete/`);
+  return response.data;
+};
+
+export const countUsers = async () => {
+  const response = await axios.get(`${API_URL}count/`);
+  return response.data;
+};
+
+export const resetPassword = async (id, newPassword = '123456') => {
+  const response = await axios.put(`${API_URL}${id}/reset-password/`, {
+    password: newPassword,
+  });
+  return response.data;
+
 };

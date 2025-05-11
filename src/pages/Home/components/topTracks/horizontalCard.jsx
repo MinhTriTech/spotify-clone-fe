@@ -1,32 +1,23 @@
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle } from '../../../../components/Lists/PlayCircle';
-import { TrackActionsWrapper } from '../../../../components/Actions/TrackActions';
+import TrackActionsWrapper from '../../../../components/Actions/TrackActions';
 
-// Utils
 import tinycolor from 'tinycolor2';
-import useIsMobile from '../../../../utils/isMobile';
 import { getImageAnalysis2 } from '../../../../utils/imageAnyliser';
 
-// Contexts
 import { useAudio } from '../../../../contexts/AudioContext';
 
-// Constants
 import { EQUILISER_IMAGE } from '../../../../constants/spotify';
 
 export const HorizontalCard = memo(({ item, setColor }) => {
-  const isMobile = useIsMobile();
-  const { currentSrc, isPlaying } = useAudio(); // Không lấy setSrc, pause ở đây nữa
+  const { currentSrc, isPlaying } = useAudio(); 
 
   const isCurrent = currentSrc.includes(item.file_path);
 
-  const onClick = useCallback(() => {
-    console.log("Log tạm"); 
-  }, [item]);
-
   useEffect(() => {
     if (item) {
-      getImageAnalysis2('https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg').then();
+      getImageAnalysis2(item.image).then();
     }
   }, [item]);
 
@@ -34,12 +25,8 @@ export const HorizontalCard = memo(({ item, setColor }) => {
     <TrackActionsWrapper track={item} trigger={['contextMenu']}>
       <div
         className="horizontal-playlist"
-        onClick={isMobile ? onClick : undefined}
-        onDoubleClick={isMobile ? undefined : onClick}
-        onMouseEnter={
-          !isMobile
-            ? () => {
-                getImageAnalysis2('https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg').then((r) => {
+        onMouseEnter={ () => {
+                getImageAnalysis2(item.image).then((r) => {
                   let color = tinycolor(r);
                   while (color.isLight()) {
                     color = color.darken(10);
@@ -47,14 +34,13 @@ export const HorizontalCard = memo(({ item, setColor }) => {
                   setColor(color.toHexString());
                 });
               }
-            : undefined
         }
       >
         <div style={{ display: 'flex' }}>
           <div className="img-container">
             <div className="img-section">
               <img
-                src={'https://cdnphoto.dantri.com.vn/KIqHdp5-2Jf_jjv87czje1Zl9MM=/thumb_w/1020/2025/04/11/tung-2-1744362502610.jpg'}
+                src={item.image}
                 alt={item.title}
               />
             </div>
@@ -64,13 +50,9 @@ export const HorizontalCard = memo(({ item, setColor }) => {
         <div className="text-container">
           <div className="text-section">
             <div>
-              {isMobile ? (
+              <Link title={item.title}>
                 <p>{item.title}</p>
-              ) : (
-                <Link title={item.title}>
-                  <p>{item.title}</p>
-                </Link>
-              )}
+              </Link>
             </div>
           </div>
 
@@ -78,7 +60,6 @@ export const HorizontalCard = memo(({ item, setColor }) => {
             {isCurrent && isPlaying ? (
               <img height={20} alt={item.title} src={EQUILISER_IMAGE} />
             ) : null}
-            {/* 🆕 Truyền item đầy đủ vào PlayCircle */}
             <PlayCircle size={15} isCurrent={isCurrent} context={item} />
           </div>
         </div>
