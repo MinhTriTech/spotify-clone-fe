@@ -170,10 +170,12 @@ function App() {
     initSocket();
   }, []);
 
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
       <AntdApp>
-        <GoogleOAuthProvider clientId="674163388601-d7dk6m8us1j3duai1cp1ipejcoce3339.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={clientId}>
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <AudioProvider>
