@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { handleLogin, handleRegister } from '../../store/slices/auth';
-import { GoogleIcon } from '../../components/Icons';
+import { handleLogin, handleRegister, handleLoginWithGoogle } from '../../store/slices/auth';
 import { uiActions } from '../../store/slices/ui';
+
+import { GoogleLogin  } from '@react-oauth/google';
 
 function LoginPage() {
   const dispatch = useDispatch();
@@ -43,13 +44,10 @@ function LoginPage() {
       alert('Đăng ký thành công! Vui lòng đăng nhập.');
       setActiveTab('login');
     } catch (err) {
-      setErrorMessage('Đăng ký thất bại. Username hoặc Email đã tồn tại.');
+      setErrorMessage('Đăng ký thất bại.');
     }
   };
 
-  const handleGoogleLogin = async () => {
-    // Logic cho đăng nhập bằng Google
-  };
 
   const handleViewWithoutLogin = () => {
     dispatch(uiActions.toggleLoginModalMain());
@@ -64,7 +62,6 @@ function LoginPage() {
       <div className="modalContent" onClick={(e) => e.stopPropagation()}>
         <button onClick={handleClosePage} className="closeButton">×</button>
         <div className="contentWrapper">
-          {/* Cột trái: Tabs và Form */}
           <div className="leftColumn">
             <div className="tabContainer">
               <button
@@ -160,18 +157,25 @@ function LoginPage() {
             )}
           </div>
 
-          {/* Đường phân tách dọc */}
           <div className="verticalSeparator"></div>
 
-          {/* Phân tách ngang "Hoặc" cho mobile */}
           <div className="separator">Hoặc</div>
 
-          {/* Cột phải: Nút Google và Xem mà không đăng nhập */}
           <div className="rightColumn">
-            <button className="googleButton" onClick={handleGoogleLogin}>
-              <GoogleIcon />
-              Đăng nhập bằng Google
-            </button>
+            <div className="googleLoginWrapper">
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  const token = credentialResponse.credential;
+                  dispatch(handleLoginWithGoogle({ token }));
+                }}
+                onError={() => {
+                  setErrorMessage('Đăng nhập bằng Google thất bại.');
+                }}
+                width="100%"
+              />
+            </div>
+
+
             <button
               type="button"
               className="viewWithoutLoginButton"

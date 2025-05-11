@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { register, login, logout, fetchUserApi } from '../../services/auth';
+import { register, login, logout, loginWithGoogle, fetchUserApi } from '../../services/auth';
 
 import { uiActions } from './ui'
 
@@ -20,6 +20,21 @@ export const handleLogin = createAsyncThunk(
     dispatch(uiActions.setLoading(true));
     try {
       const response = await login(userData);
+      return response;
+    } finally {
+      dispatch(uiActions.setLoading(false));
+    }
+  }
+);
+
+export const handleLoginWithGoogle = createAsyncThunk(
+  'auth/loginWithGoogle',
+  async (token, { dispatch }) => {
+    dispatch(uiActions.setLoading(true));
+    try {
+      const response = await loginWithGoogle(token);
+      console.log(response);
+      
       return response;
     } finally {
       dispatch(uiActions.setLoading(false));
@@ -72,6 +87,10 @@ const authSlice = createSlice({
       .addCase(handleLogout.fulfilled, (state, action) => {
         state.user = null;
         state.role = false;
+      })
+      .addCase(handleLoginWithGoogle.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.role = action.payload.is_staff;
       })
   },
 });

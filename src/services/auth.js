@@ -10,6 +10,11 @@ export const login = async (userData) => {
   return response.data;
 };
 
+export const loginWithGoogle = async (token) => {
+  const response = await axios.post('api/auth/google-login/', token);
+  return response.data;
+};
+
 export const fetchUserApi = async (userData) => {
   const response = await axios.get('api/auth/userInfo/', userData);
   return response.data;

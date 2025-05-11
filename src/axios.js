@@ -18,7 +18,6 @@ axios.interceptors.response.use(
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       if (originalRequest.url.includes('/api/auth/refresh/')) {
         console.error('Refresh token failed.');
-        // window.location.href = '/'; 
         return Promise.reject(error);
       }
 
@@ -29,7 +28,6 @@ axios.interceptors.response.use(
         return axios(originalRequest);
       } catch (refreshError) {
         console.error('Refresh token failed:', refreshError);
-        // window.location.href = '/';
         return Promise.reject(refreshError);
       }
     }
