@@ -3,7 +3,7 @@ let listeners = new Set();
 
 export const initSocket = () => {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
-    socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/`);
+    socket = new WebSocket(`ws://${import.meta.env.VITE_API_PORT}/ws/chat/`);
 
     socket.onopen = () => console.log('🔌 Socket connected');
 

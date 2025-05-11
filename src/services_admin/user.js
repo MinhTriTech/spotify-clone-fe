@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/manager/users/';
+const API_URL = `${import.meta.env.VITE_API_URL}api/manager/users/`;
 
 export const searchUser = async (keyword, page = 1, pageSize = 6) => {
   const response = await axios.get(`${API_URL}search/`, {
