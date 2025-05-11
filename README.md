@@ -1,6 +1,8 @@
 # Spotify Clone – Frontend
 Đây là phần **Frontend** của dự án Spotify Clone, được xây dựng bằng **React** và **Vite**.
 > 💡 Lưu ý: Repository này chỉ chứa phần frontend.
+> 
+> 🔗 Phần Backend của dự án có thể được tìm thấy tại: [Spotify_Clone_BE](https://github.com/tranlinh102/Spotify_Clone_BE)
 
 > 🔄 Dự án này được lấy nguồn và tùy chỉnh từ [spotify-react-web-client](https://github.com/francoborrelli/spotify-react-web-client) của francoborrelli.
 ---
@@ -31,6 +33,12 @@
    npm run dev
    ```
 ---
+## 👥 Thành viên dự án
+- **Ngô Hoàng Minh Trí** - Phát triển giao diện User
+- **Nguyễn Hữu Hậu** - Phát triển giao diện User
+- **Nguyễn Quốc Đại** - Phát triển giao diện Admin
+- **Lê Duy Khánh** - Phát triển giao diện Admin
+
 ## Liên hệ
 - Nếu bạn có bất kỳ câu hỏi hoặc góp ý nào, vui lòng liên hệ qua email: **hoangminhtri.ngo@gmail.com**.
 ---
