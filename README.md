@@ -19,6 +19,7 @@
 - 🎨 **FontAwesome**, **React Icons**, **ColorThief**, **TinyColor2** – Icon và xử lý màu
 - ⚙️ **React Drag ListView**, **React Resizable Panels**, **React Full Screen** – Tương tác UI nâng cao
 - ✅ **ESLint**, **eslint-plugin-react-hooks**, **eslint-plugin-react-refresh** – Kiểm tra chất lượng mã
+- 🔑 **@react-oauth/google** – Hỗ trợ tích hợp đăng nhập OAuth với Google
 
 ---
 
