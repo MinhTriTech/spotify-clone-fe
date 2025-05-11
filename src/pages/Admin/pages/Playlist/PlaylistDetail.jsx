@@ -27,17 +27,17 @@ const PlaylistDetail = () => {
                 setLoading(true);
 
                 // Lấy thông tin playlist
-                const playlistResponse = await axios.get(`http://127.0.0.1:8000/api/manager/playlists/${id}/`);
+                const playlistResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/playlists/${id}/`);
                 setPlaylist(playlistResponse.data);
 
                 // Lấy người tạo playlist
                 if (playlistResponse.data.created_by_id) {
-                    const userResponse = await axios.get(`http://127.0.0.1:8000/api/manager/users/${playlistResponse.data.created_by_id}/`);
+                    const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/users/${playlistResponse.data.created_by_id}/`);
                     setCreator(userResponse.data);
                 }
 
                 // Lấy danh sách bài hát trong playlist
-                const songsResponse = await axios.get(`http://127.0.0.1:8000/api/manager/playlist_songs/`, {
+                const songsResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/playlist_songs/`, {
                     params: { playlist_id: id },
                 });
 
@@ -46,7 +46,7 @@ const PlaylistDetail = () => {
                     const songDetails = await Promise.all(
                         songsResponse.data.map(async (playlistSong) => {
                             try {
-                                const songResponse = await axios.get(`http://127.0.0.1:8000/api/manager/songs/${playlistSong.song_id}/`);
+                                const songResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/songs/${playlistSong.song_id}/`);
                                 return {
                                     ...playlistSong,
                                     songDetails: songResponse.data,

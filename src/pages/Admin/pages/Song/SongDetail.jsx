@@ -25,7 +25,7 @@ const SongDetail = () => {
         // Gọi API lấy danh sách nghệ sĩ
         const fetchArtists = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/manager/artists/");
+                const response = await fetch(`${import.meta.env.VITE_API_URL}api/manager/artists/`);
                 const data = await response.json();
                 setArtists(data);
             } catch (error) {
@@ -51,7 +51,7 @@ const SongDetail = () => {
                 setSelectedAlbum(data.album ? String(data.album.id) : "");
 
                 // Lấy ca sĩ chính và ca sĩ phụ
-                const artistSongsResponse = await axios.get(`http://127.0.0.1:8000/api/manager/artist_songs/?song_id=${id}`);
+                const artistSongsResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/?song_id=${id}`);
                 const artistSongs = artistSongsResponse.data;
                 console.log("ArtistSongs data:", artistSongs);
 
@@ -92,8 +92,8 @@ const SongDetail = () => {
         const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa bài hát này? (Thao tác này không thể hoàn tác)");
         if (confirmDelete) {
             try {
-                await axios.delete(`http://127.0.0.1:8000/api/manager/artist_songs/delete_by_song/?song_id=${id}`);
-                await axios.delete(`http://127.0.0.1:8000/api/manager/album_songs/delete_by_song/?song_id=${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/delete_by_song/?song_id=${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL}api/manager/album_songs/delete_by_song/?song_id=${id}`);
                 await deleteSong(id);
                 alert("Đã xóa bài hát thành công!");
                 await loadSongs();

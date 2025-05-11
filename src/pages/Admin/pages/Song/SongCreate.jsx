@@ -27,7 +27,7 @@ const SongCreate = () => {
         // Gọi API lấy danh sách nghệ sĩ
         const fetchArtists = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/manager/artists/");
+                const response = await fetch(`${import.meta.env.VITE_API_URL}api/manager/artists/`);
                 const data = await response.json();
                 setArtists(data);
             } catch (error) {
@@ -89,7 +89,7 @@ const SongCreate = () => {
         try {
             // Gửi yêu cầu tạo bài hát
             console.log("Đang tạo bài hát...");
-            const songResponse = await axios.post("http://127.0.0.1:8000/api/manager/songs/add/", data, { headers: { "Content-Type": "multipart/form-data" } });
+            const songResponse = await axios.post(`${import.meta.env.VITE_API_URL}api/manager/songs/add/`, data, { headers: { "Content-Type": "multipart/form-data" } });
 
             if (!songResponse.data || !songResponse.data.song || !songResponse.data.song.song_id) {
                 throw new Error("Không nhận được ID bài hát từ server");
@@ -105,7 +105,7 @@ const SongCreate = () => {
 
             const albumSongResponse = await axios({
                 method: "post",
-                url: "http://127.0.0.1:8000/api/manager/album_songs/add/",
+                url: `${import.meta.env.VITE_API_URL}api/manager/album_songs/add/`,
                 data: albumSongData,
                 headers: { "Content-Type": "application/json" },
             });
@@ -124,7 +124,7 @@ const SongCreate = () => {
 
             const mainArtistResponse = await axios({
                 method: "post",
-                url: "http://127.0.0.1:8000/api/manager/artist_songs/add/",
+                url: `${import.meta.env.VITE_API_URL}api/manager/artist_songs/add/`,
                 data: mainArtistData,
                 headers: { "Content-Type": "application/json" },
             });
@@ -145,7 +145,7 @@ const SongCreate = () => {
 
                     const response = await axios({
                         method: "post",
-                        url: "http://127.0.0.1:8000/api/manager/artist_songs/add/",
+                        url: `${import.meta.env.VITE_API_URL}api/manager/artist_songs/add/`,
                         data: featuredArtistData,
                         headers: { "Content-Type": "application/json" },
                     });

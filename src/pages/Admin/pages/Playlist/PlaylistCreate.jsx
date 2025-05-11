@@ -21,7 +21,7 @@ const PlaylistCreate = () => {
     useEffect(() => {
         const loadSongs = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/manager/songs/");
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/songs/`);
                 console.log("Songs data:", response.data);
                 if (Array.isArray(response.data)) {
                     setSongs(response.data);
@@ -38,7 +38,7 @@ const PlaylistCreate = () => {
 
         const loadUsers = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/manager/users/");
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/users/`);
                 console.log("Users data:", response.data);
                 if (Array.isArray(response.data)) {
                     setUsers(response.data);
@@ -88,7 +88,7 @@ const PlaylistCreate = () => {
 
         try {
             // Bước 1: Tạo playlist mới
-            const playlistResponse = await axios.post("http://127.0.0.1:8000/api/manager/playlists/add/", data, {
+            const playlistResponse = await axios.post(`${import.meta.env.VITE_API_URL}api/manager/playlists/add/`, data, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             console.log("Playlist created:", playlistResponse.data);
@@ -104,7 +104,7 @@ const PlaylistCreate = () => {
                 };
 
                 try {
-                    const response = await axios.post("http://127.0.0.1:8000/api/manager/playlist_songs/add/", playlistSongData);
+                    const response = await axios.post(`${import.meta.env.VITE_API_URL}api/manager/playlist_songs/add/`, playlistSongData);
                     console.log(`Đã thêm bài hát ID ${songId} vào playlist:`, response.data);
                     return response.data;
                 } catch (error) {

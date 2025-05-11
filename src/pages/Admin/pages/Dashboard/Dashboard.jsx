@@ -19,38 +19,38 @@ const Dashboard = () => {
 
     useEffect(() => {
         const loadAllArtists = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/api/manager/artists/count/");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/artists/count/`);
             setCountArtists(response.data.total_artists);
         };
 
         const loadAllAlbums = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/api/manager/albums/count/");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/albums/count/`);
             setCountAlbums(response.data.total_albums);
         };
 
         const loadAllSongs = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/api/manager/songs/count/");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/songs/count/`);
             setCountSongs(response.data.total_songs);
         };
 
         const loadAllPlaylist = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/api/manager/playlists/count/");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/playlists/count/`);
             setCountPlaylists(response.data.total_playlists);
         };
 
         const loadAllUser = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/api/manager/users/count/");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/users/count/`);
             setCountUsers(response.data.total_users);
         };
 
         const loadTopFavoriteSongs = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/api/manager/songs/top-favourite/");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/songs/top-favourite/`);
             setTopFavorite(response.data);
             console.log("haha: ", response.data);
         };
 
         const loadTopFollowedArtists = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/api/manager/artists/top-followed/");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/artists/top-followed/`);
             setTopFollowed(response.data);
         };
 

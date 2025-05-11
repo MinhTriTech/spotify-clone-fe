@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/api/manager/playlists/";
+const API_URL = `${import.meta.env.VITE_API_URL}api/manager/playlists/`;
 
 export const fetchPlaylists = async (params = {}) => {
     try {

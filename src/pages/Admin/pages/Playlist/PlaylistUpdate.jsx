@@ -28,7 +28,7 @@ const PlaylistUpdate = () => {
                 setLoading(true);
 
                 // Lấy thông tin playlist
-                const playlistResponse = await axios.get(`http://127.0.0.1:8000/api/manager/playlists/${id}/`);
+                const playlistResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/playlists/${id}/`);
                 setPlaylist(playlistResponse.data);
                 setFormData({
                     title: playlistResponse.data.title,
@@ -37,7 +37,7 @@ const PlaylistUpdate = () => {
                 setPreviewImage(playlistResponse.data.image);
 
                 // Lấy danh sách bài hát trong playlist
-                const songsResponse = await axios.get(`http://127.0.0.1:8000/api/manager/playlist_songs/`, {
+                const songsResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/playlist_songs/`, {
                     params: { playlist_id: id },
                 });
 
@@ -46,7 +46,7 @@ const PlaylistUpdate = () => {
                     const songDetails = await Promise.all(
                         songsResponse.data.map(async (playlistSong) => {
                             try {
-                                const songResponse = await axios.get(`http://127.0.0.1:8000/api/manager/songs/${playlistSong.song_id}/`);
+                                const songResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/songs/${playlistSong.song_id}/`);
                                 return {
                                     ...playlistSong,
                                     songDetails: songResponse.data,
@@ -66,7 +66,7 @@ const PlaylistUpdate = () => {
                 }
 
                 // Lấy tất cả bài hát để hiển thị trong dropdown
-                const allSongsResponse = await axios.get(`http://127.0.0.1:8000/api/manager/songs/`);
+                const allSongsResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/songs/`);
                 setAllSongs(allSongsResponse.data);
 
                 setLoading(false);
@@ -127,7 +127,7 @@ const PlaylistUpdate = () => {
 
             if (selectedSongs.length > 0) {
                 for (const songId of selectedSongs) {
-                    await axios.post(`http://127.0.0.1:8000/api/manager/playlist_songs/`, {
+                    await axios.post(`${import.meta.env.VITE_API_URL}api/manager/playlist_songs/`, {
                         playlist_id: id,
                         song_id: songId,
                     });

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/api/manager/albums/';
+const API_URL = `${import.meta.env.VITE_API_URL}api/manager/albums/`;
 
 // Hàm lấy tất cả albums
 export const fetchAlbums = async () => {
@@ -27,7 +27,7 @@ export const fetchAlbumById = async (id) => {
 // Hàm thêm album
 export const addAlbum = async (albumData) => {
     try {
-        const response = await axios.post("http://127.0.0.1:8000/api/manager/albums/add/", albumData, {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}api/manager/albums/add/`, albumData, {
             headers: {
                 "Content-Type": "multipart/form-data", // Vì có thể có ảnh
             },

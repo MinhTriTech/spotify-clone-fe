@@ -29,7 +29,7 @@ const SongUpdate = () => {
         // Gọi API lấy danh sách nghệ sĩ
         const fetchArtists = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/manager/artists/");
+                const response = await fetch(`${import.meta.env.VITE_API_URL}api/manager/artists/`);
                 const data = await response.json();
                 console.log("Artists data:", data);
                 setArtists(data);
@@ -54,7 +54,7 @@ const SongUpdate = () => {
         // Gọi API lấy thông tin bài hát hiện tại
         const fetchSong = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/manager/songs/${id}/detail/`);
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/songs/${id}/detail/`);
                 const song = response.data;
                 console.log("Song data:", song);
 
@@ -70,7 +70,7 @@ const SongUpdate = () => {
                 setExistingImage(song.image || thumbnail); // Lưu URL ảnh hiện tại
 
                 // Lấy ca sĩ chính và ca sĩ phụ
-                const artistSongsResponse = await axios.get(`http://127.0.0.1:8000/api/manager/artist_songs/?song_id=${id}`);
+                const artistSongsResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/?song_id=${id}`);
                 const artistSongs = artistSongsResponse.data;
                 console.log("ArtistSongs data:", artistSongs);
 
@@ -131,11 +131,11 @@ const SongUpdate = () => {
         try {
             // Gửi yêu cầu cập nhật bài hát
             console.log("Đang cập nhật bài hát...");
-            const songResponse = await axios.put(`http://127.0.0.1:8000/api/manager/songs/${id}/update/`, data, { headers: { "Content-Type": "multipart/form-data" } });
+            const songResponse = await axios.put(`${import.meta.env.VITE_API_URL}api/manager/songs/${id}/update/`, data, { headers: { "Content-Type": "multipart/form-data" } });
             console.log("Bài hát đã được cập nhật:", songResponse.data);
 
             // Lấy danh sách liên kết nghệ sĩ hiện tại
-            const artistSongsResponse = await axios.get(`http://127.0.0.1:8000/api/manager/artist_songs/?song_id=${id}`);
+            const artistSongsResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/?song_id=${id}`);
             const currentArtistSongs = artistSongsResponse.data;
             const currentArtistIds = currentArtistSongs.map((as) => String(as.artist_id));
 
@@ -156,20 +156,20 @@ const SongUpdate = () => {
             if (oldMainArtist) {
                 if (String(oldMainArtist.artist_id) === mainArtist) {
                     // Nếu ca sĩ chính không thay đổi, chỉ cập nhật thông tin
-                    await axios.put(`http://127.0.0.1:8000/api/manager/artist_songs/${oldMainArtist.id}/update/`, mainArtistData, { headers: { "Content-Type": "application/json" } });
+                    await axios.put(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/${oldMainArtist.id}/update/`, mainArtistData, { headers: { "Content-Type": "application/json" } });
                     console.log("Đã cập nhật ca sĩ chính:", oldMainArtist.id);
                 } else {
                     // Nếu đổi ca sĩ chính, xóa ca sĩ chính cũ
-                    await axios.delete(`http://127.0.0.1:8000/api/manager/artist_songs/${oldMainArtist.id}/delete/`);
+                    await axios.delete(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/${oldMainArtist.id}/delete/`);
                     console.log("Đã xóa ca sĩ chính cũ:", oldMainArtist.id);
 
                     // Thêm ca sĩ chính mới
-                    const addMainResponse = await axios.post(`http://127.0.0.1:8000/api/manager/artist_songs/add/`, mainArtistData, { headers: { "Content-Type": "application/json" } });
+                    const addMainResponse = await axios.post(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/add/`, mainArtistData, { headers: { "Content-Type": "application/json" } });
                     console.log("Đã thêm ca sĩ chính mới:", addMainResponse.data);
                 }
             } else {
                 // Nếu chưa có ca sĩ chính, thêm mới
-                const addMainResponse = await axios.post(`http://127.0.0.1:8000/api/manager/artist_songs/add/`, mainArtistData, { headers: { "Content-Type": "application/json" } });
+                const addMainResponse = await axios.post(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/add/`, mainArtistData, { headers: { "Content-Type": "application/json" } });
                 console.log("Đã thêm ca sĩ chính mới (không có cũ):", addMainResponse.data);
             }
 
@@ -184,11 +184,11 @@ const SongUpdate = () => {
                 const existingFeaturedArtist = currentArtistSongs.find((as) => !as.main_artist && String(as.artist_id) === artistId);
                 if (existingFeaturedArtist) {
                     // Cập nhật nếu ca sĩ phụ đã tồn tại
-                    await axios.put(`http://127.0.0.1:8000/api/manager/artist_songs/${existingFeaturedArtist.id}/update/`, featuredArtistData, { headers: { "Content-Type": "application/json" } });
+                    await axios.put(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/${existingFeaturedArtist.id}/update/`, featuredArtistData, { headers: { "Content-Type": "application/json" } });
                     console.log("Đã cập nhật ca sĩ phụ:", existingFeaturedArtist.id);
                 } else {
                     // Thêm ca sĩ phụ mới
-                    const addFeaturedResponse = await axios.post(`http://127.0.0.1:8000/api/manager/artist_songs/add/`, featuredArtistData, { headers: { "Content-Type": "application/json" } });
+                    const addFeaturedResponse = await axios.post(`${import.meta.env.VITE_API_URL}api/manager/artist_songs/add/`, featuredArtistData, { headers: { "Content-Type": "application/json" } });
                     console.log("Đã thêm ca sĩ phụ mới:", addFeaturedResponse.data);
                 }
             }
