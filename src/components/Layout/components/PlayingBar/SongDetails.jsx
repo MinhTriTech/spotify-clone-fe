@@ -1,5 +1,4 @@
 import { memo, useState } from 'react';
-import {AddSongToLibraryButton} from '../../../Actions/AddSongToLibrary';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 import { uiActions } from '../../../../store/slices/ui';
 import { Link } from 'react-router-dom';
@@ -96,15 +95,6 @@ const SongDetails = memo((props) => {
           ))}
         </span>
       </div>
-
-      {!props.isMobile && (
-        <AddSongToLibraryButton
-          size={17}
-          id={currentTrack?.id}
-          isSaved={liked}
-          onToggle={() => setLiked(!liked)}
-        />
-      )}
     </div>
   );
 });

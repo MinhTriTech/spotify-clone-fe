@@ -85,12 +85,6 @@ const NowPlayingBarMobile = () => {
               }}
             >
               <QueueButton />
-              <AddSongToLibraryButton
-                size={17}
-                isSaved={liked}
-                id={currentSong?.id}
-                onToggle={() => setLiked(!liked)}
-              />
               <PlayButton isPlaying={isPlaying} togglePlay={() => setIsPlaying(!isPlaying)} />
             </div>
           </Col>

@@ -29,4 +29,9 @@ const likedSongsSlice = createSlice({
   },
 });
 
+export const likedSongsActions = {
+  ...likedSongsSlice.actions,
+  fetchLikeSongs,
+};
+
 export default likedSongsSlice.reducer;
