@@ -1,5 +1,5 @@
 import { Col, Row } from 'antd';
-import UsersSearchSection from '../components/artists';
+import UsersSearchSection from '../components/users';
 
 const SearchUsersPageContainer = (props) => {
   return (

@@ -14,7 +14,7 @@ export const MyPlaylistsSection = memo(() => {
     <div style={{ marginTop: 10 }}>
       <GridItemList
         items={playlists}
-        title="Playlist công khai"
+        title="Playlist"
         moreUrl={playlists.length > 6 ? `/users/${user.id}/playlists` : undefined}
       />
     </div>

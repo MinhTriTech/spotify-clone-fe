@@ -1,9 +1,8 @@
 import { PlayCircle } from './PlayCircle';
-import TrackActionsWrapper from '../Actions/TrackActions';
 import { useNavigate } from 'react-router-dom';
 import { useAudio } from '../../contexts/AudioContext';
 import ArtistActionsWrapper from '../Actions/ArtistActions';
-import { ARTISTS_DEFAULT_IMAGE } from '../../constants/spotify';
+import { ARTISTS_DEFAULT_IMAGE, PLAYLIST_DEFAULT_IMAGE } from '../../constants/spotify';
 
 const Card = ({ title, image, rounded, description, onClick, context }) => {
   const { isPlaying, currentTrack, playlist, currentIndex, currentPlaylistId, currentAlbumId, currentArtistId } = useAudio();
@@ -155,7 +154,7 @@ export const TrackCard = ({ item, onClick }) => {
         type: "playlist",
         title: item.title
       }}
-      image={item.image}
+      image={item.image ? item.image : PLAYLIST_DEFAULT_IMAGE}
       onClick={() => navigate(`/playlist/${item.playlist_id}`)}
     />
   );
