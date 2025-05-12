@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import {AddSongToLibraryButton} from '../../../Actions/AddSongToLibrary';
 import { useAppDispatch, useAppSelector } from '../../../../store/store';
 import { uiActions } from '../../../../store/slices/ui';
@@ -38,6 +38,7 @@ const ArrowUp = (
 const SongDetails = memo((props) => {
   const dispatch = useAppDispatch();
   const { currentTrack } = useAudio();
+  const [liked, setLiked] = useState(false);
 
   const detailsOpen = useAppSelector((state) => !state.ui.detailsCollapsed);
 
@@ -100,6 +101,8 @@ const SongDetails = memo((props) => {
         <AddSongToLibraryButton
           size={17}
           id={currentTrack?.id}
+          isSaved={liked}
+          onToggle={() => setLiked(!liked)}
         />
       )}
     </div>
