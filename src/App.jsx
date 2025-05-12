@@ -133,6 +133,12 @@ const RootComponent = () => {
   }));
 
   useEffect(() => {
+    if (user) {
+      initSocket();
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (!user) {
       dispatch(fetchUser());
       resetAudio();
@@ -166,12 +172,7 @@ const RootComponent = () => {
 };
 
 function App() {
-  useEffect(() => {
-    initSocket();
-  }, []);
-
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
       <AntdApp>

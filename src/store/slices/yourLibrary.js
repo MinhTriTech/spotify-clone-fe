@@ -66,7 +66,7 @@ export const getLibraryItems = createSelector(
 
     const likedSongs = {
       id: 'liked-songs',
-      title: 'Liked Songs',
+      title: 'Danh sách yêu thích',
       type: 'playlist',
       image: LIKED_SONGS_IMAGE,
       context: myLikeSongs,
