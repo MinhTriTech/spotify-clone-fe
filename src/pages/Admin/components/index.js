@@ -6,3 +6,4 @@ export { default as DashboardItem } from "./DashboardItem";
 export { default as MiniAudioPlayer } from "./MiniAudioPlayer";
 export { default as VideoPlayerModal } from "./VideoPlayerModal";
 export { default as PlayVideoButton } from "./PlayVideoButton";
+export { default as DashboardChart } from "./DashboardChart";
