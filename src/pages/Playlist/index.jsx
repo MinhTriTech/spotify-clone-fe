@@ -1,13 +1,10 @@
-// Components
 import { PlaylistList } from './table';
-import { PlaylistHeader } from './header';
+import PlaylistHeader from './header';
 
-// Utils
 import { useParams } from 'react-router-dom';
 import { getImageAnalysis2 } from '../../utils/imageAnyliser';
 import { useEffect, useRef, useState } from 'react';
 
-// Redux
 import { playlistActions } from '../../store/slices/playlist';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
@@ -15,17 +12,17 @@ import { useAppDispatch, useAppSelector } from '../../store/store';
 import { DEFAULT_PAGE_COLOR } from '../../constants/spotify';
 import tinycolor from 'tinycolor2';
 
-const PlaylistView = (props) => {
+const PlaylistView = ({ container }) => {
   const dispatch = useAppDispatch();
   const containerRef = useRef(null);
   const { playlistId } = useParams();
 
   const [color, setColor] = useState(DEFAULT_PAGE_COLOR);
   const playlist = useAppSelector((state) => state.playlist.playlist);
-
+  
   useEffect(() => {
-    if (playlist && playlist.images?.length) {
-      getImageAnalysis2(playlist.images[0].url).then((color) => {
+    if (playlist && playlist.image) {
+      getImageAnalysis2(playlist.image).then((color) => {
         let item = tinycolor(color);
         while (item.isLight()) {
           item = item.darken(10);
@@ -47,8 +44,8 @@ const PlaylistView = (props) => {
   if (!playlist) return null;
 
   return (
-    <div className='Playlist-section' ref={containerRef}>
-      <PlaylistHeader color={color} container={props.container} sectionContainer={containerRef} />
+    <div className="Playlist-section" ref={containerRef}>
+      <PlaylistHeader color={color} container={container} sectionContainer={containerRef} />
       <PlaylistList color={color} />
     </div>
   );

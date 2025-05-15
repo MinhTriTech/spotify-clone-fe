@@ -123,6 +123,7 @@ const AlbumTable = ({ searchTerm }) => {
       </div>
     </div>
   );
+
 };
 
 export default AlbumTable;

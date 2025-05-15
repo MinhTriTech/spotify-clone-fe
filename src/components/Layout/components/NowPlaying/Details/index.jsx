@@ -4,8 +4,8 @@ import { NowPlayingCard } from './data';
 import { Link } from 'react-router-dom';
 import { NowPlayingLayout } from '../layout';
 import { MenuIcon } from '../../../../Icons';
-import {TrackActionsWrapper} from '../../../../Actions/TrackActions';
-import AddSongToLibraryButton from '../../../../Actions/AddSongToLibrary';
+import TrackActionsWrapper from '../../../../Actions/TrackActions';
+import {AddSongToLibraryButton} from '../../../../Actions/AddSongToLibrary';
 
 // Redux
 import { spotifyActions } from '../../../../../store/slices/spotify';
@@ -13,8 +13,6 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/store';
 
 import { memo, useEffect, useMemo } from 'react';
 
-// Redux
-import { fetchArtist } from '../../../../../store/slices/playingNow';
 
 const Container = memo(({ song }) => {
   const dispatch = useAppDispatch();
@@ -115,10 +113,6 @@ const Details = memo(() => {
   );
 
   const artistId = useMemo(() => song?.artists[0].uri.split(':')[2], [song]);
-
-  useEffect(() => {
-    if (artistId) dispatch(fetchArtist(artistId));
-  }, [artistId, dispatch]);
 
   if (!song) return null;
 

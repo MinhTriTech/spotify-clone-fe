@@ -11,6 +11,7 @@ const ArtistTable = ({ searchTerm }) => {
   const navigate = useNavigate();
   const pageSize = 6;
 
+
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -123,6 +124,7 @@ const ArtistTable = ({ searchTerm }) => {
           >
             Next
           </button>
+
         </div>
     </div>
   );

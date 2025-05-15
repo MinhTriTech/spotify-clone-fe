@@ -1,15 +1,14 @@
 import { memo, useEffect, useState } from 'react';
 
-// Components
 import { Col, Row } from 'antd';
 import { Navbar } from './components/Navbar';
 import { Library } from './components/Library';
 import PlayingBar from './components/PlayingBar';
 import PlayingNow from './components/NowPlaying';
-import {LanguageModal} from '../Modals/LanguageModal';
 import {LibraryDrawer} from '../Drawers/LibraryDrawer';
 import { PlayingNowDrawer } from '../Drawers/PlayingNowDrawer';
-import {EditPlaylistModal} from '../Modals/EditPlaylistModal';
+import { EditPlaylistModal } from '../Modals/EditPlaylistModal';
+import { DeletePlaylistModal } from '../Modals/DeletePlaylistModal';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 // Redux
@@ -53,14 +52,12 @@ const AppLayout = memo((props) => {
 
   return (
     <>
-      {/* Modals & Drawers */}
-      {/* <LanguageModal /> */}
       <LibraryDrawer />
       <PlayingNowDrawer />
       <EditPlaylistModal />
+      <DeletePlaylistModal />
       <LoginModal />
 
-      {/* Main Component */}
       <div className='main-container'>
         <Row
           wrap
