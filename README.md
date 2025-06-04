@@ -59,9 +59,7 @@
 
 ## 👥 Thành viên dự án
 - **Ngô Hoàng Minh Trí** - Phát triển giao diện User
-- **Nguyễn Hữu Hậu** - Phát triển giao diện User
 - **Nguyễn Quốc Đại** - Phát triển giao diện Admin
-- **Lê Duy Khánh** - Phát triển giao diện Admin
 
 ---
 
